@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:gyeonggi_express/themes/color_styles.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:gyeonggi_express/screen/login_screen.dart';
+import 'package:gyeonggi_express/screen/splash_screen.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  await Future.delayed(const Duration(seconds: 1));
+  FlutterNativeSplash.remove();
   runApp(const GyeonggiExpressApp());
 }
 
@@ -12,22 +18,10 @@ class GyeonggiExpressApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
       theme: ThemeData(
         fontFamily: "Pretendard"
       ),
-      home: const Scaffold(
-        body: Center(
-          child: Text(
-            "경기행",
-            style: TextStyle(
-              fontSize: 48,
-              fontWeight: FontWeight.bold,
-              color: ColorStyles.primary
-            )
-          ),
-        )
-      ),
+      home: const LoginScreen()
     );
   }
 }
