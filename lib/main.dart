@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:gyeonggi_express/screen/login_screen.dart';
-import 'package:gyeonggi_express/screen/splash_screen.dart';
+import 'package:gyeonggi_express/ui/login/login_screen.dart';
 
 Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +20,12 @@ class GyeonggiExpressApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: "Pretendard"
       ),
-      home: const LoginScreen()
+      home: const Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: LoginScreen()
+        )
+      ),
     );
   }
 }
