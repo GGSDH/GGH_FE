@@ -20,7 +20,7 @@ class SplashScreen extends StatelessWidget {
           color: Color(0xFF1778FB)
         ),
         child: Align(
-          alignment: const Alignment(0.0, -7.0 / 25.0),
+          alignment: const Alignment(0.0, -0.33),
           child: SvgPicture.asset(
             "assets/icons/ic_splash_logo.svg",
             width: 205,
