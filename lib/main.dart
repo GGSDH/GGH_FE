@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:gyeonggi_express/routes.dart';
 import 'package:gyeonggi_express/ui/login/login_screen.dart';
 
 Future<void> main() async {
@@ -16,16 +17,17 @@ class GyeonggiExpressApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       theme: ThemeData(
         fontFamily: "Pretendard"
       ),
-      home: const Scaffold(
+      routerConfig: Routes.config,
+      /*home: const Scaffold(
         backgroundColor: Colors.white,
         body: SafeArea(
           child: LoginScreen()
         )
-      ),
+      ),*/
     );
   }
 }
