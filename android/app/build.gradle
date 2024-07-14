@@ -23,8 +23,13 @@ if (flutterVersionName == null) {
     flutterVersionName = "1.0"
 }
 
+def kakaoNativeAppKey = localProperties.getProperty("kakao.native.app.key")
+if (kakaoNativeAppKey == null) {
+    throw new GradleException("kakao.native.app.key.full is missing in local.properties")
+}
+
 android {
-    namespace = "com.ggsdh.gyeonggiexpress.gyeonggi_express"
+    namespace = "com.ggsdh.gyeonggiexpress"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -35,13 +40,19 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.ggsdh.gyeonggiexpress.gyeonggi_express"
+        applicationId = "com.ggsdh.gyeonggiexpress"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
+
+        resValue(
+            "string",
+            "KAKAO_NATIVE_APP_KEY",
+            kakaoNativeAppKey
+        )
     }
 
     buildTypes {

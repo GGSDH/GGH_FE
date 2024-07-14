@@ -1,4 +1,4 @@
-package com.ggsdh.gyeonggiexpress.gyeonggi_express
+package com.ggsdh.gyeonggiexpress
 
 import io.flutter.embedding.android.FlutterActivity
 
