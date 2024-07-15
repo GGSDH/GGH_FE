@@ -20,7 +20,6 @@ Future<void> main() async {
 class GyeonggiExpressApp extends StatelessWidget {
   const GyeonggiExpressApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
@@ -28,6 +27,7 @@ class GyeonggiExpressApp extends StatelessWidget {
         fontFamily: "Pretendard"
       ),
       routerConfig: Routes.config,
+      debugShowCheckedModeBanner: false,
       /*home: const Scaffold(
         backgroundColor: Colors.white,
         body: SafeArea(
