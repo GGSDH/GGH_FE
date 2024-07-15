@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/ui/login/component/page_content.dart';
 import 'package:gyeonggi_express/ui/login/login_bloc.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -49,6 +50,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
         listener: (context, state) {
           if (state is LoginSuccess) {
             log("Login Success");
+            context.go('/home');
           } else if (state is LoginFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
