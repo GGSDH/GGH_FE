@@ -2,10 +2,12 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:gyeonggi_express/ui/login/component/page_content.dart';
 import 'package:gyeonggi_express/ui/login/login_bloc.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
+import '../../data/repository/auth_repository.dart';
 import '../../themes/color_styles.dart';
 import 'component/social_login_button.dart';
 
@@ -26,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     super.initState();
     _pageViewController = PageController();
     _tabController = TabController(length: 3, vsync: this);
-    _loginBloc = LoginBloc();
+    _loginBloc = LoginBloc(authRepository: GetIt.instance.get<AuthRepository>());
   }
 
   @override

@@ -1,6 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 
+import '../../data/repository/auth_repository.dart';
+
 sealed class LoginState { }
 final class LoginInitial extends LoginState { }
 final class LoginLoading extends LoginState { }
@@ -16,7 +18,11 @@ final class LoginButtonClicked extends LoginEvent { }
 
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  LoginBloc() : super(LoginInitial()) {
+  final AuthRepository _authRepository;
+
+  LoginBloc({
+    required AuthRepository authRepository
+  }) : _authRepository = authRepository, super(LoginInitial()) {
     on<LoginButtonClicked>(_onLoginButtonClicked);
   }
 
@@ -27,8 +33,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     emit(LoginLoading());
     try {
       OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
+      await _authRepository.socialLogin(
+        accessToken: token.accessToken,
+        refreshToken: token.refreshToken ?? "",
+        provider: 'KAKAO'
+      );
       emit(LoginSuccess());
-      print(token.accessToken);
     } catch (error) {
       emit(LoginFailure(error.toString()));
     }

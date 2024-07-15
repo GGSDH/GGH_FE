@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:gyeonggi_express/config.dart';
 import 'package:gyeonggi_express/routes.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+
+import 'data/di/data_module.dart';
 
 Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  await dotenv.load(fileName: "assets/config/.env");
+  setupLocator();
+  await Config.init();
+
   KakaoSdk.init(
-    nativeAppKey: dotenv.env['KAKAO_NATIVE_APP_KEY'] as String,
+    nativeAppKey: Config.kakaoNativeAppKey,
   );
 
   FlutterNativeSplash.remove();
