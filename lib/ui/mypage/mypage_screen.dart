@@ -17,12 +17,204 @@ class MyPageScreen extends StatelessWidget {
             context.push('/mypage/setting');
           },
         ),
-        _buildSettingsSection(),
+        _buildSettingsSection(
+          onTapLogOut: () {
+            _showLogoutDialog(context);
+          },
+          onTapWithdrawal: () {
+            _showWithdrawalDialog(context);
+          }
+        ),
       ],
     );
   }
 
-  Widget _buildSettingsSection() {
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => Dialog(
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color: Colors.white,
+          ),
+          padding: const EdgeInsets.fromLTRB(20, 30, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "로그아웃 하시겠습니까?",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: TextButton(
+                        onPressed: () {
+                          context.pop();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: ColorStyles.gray100,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text(
+                          "취소",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: ColorStyles.gray500,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: TextButton(
+                        onPressed: () {
+                          context.pop();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: ColorStyles.primary,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text(
+                          "확인",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: ColorStyles.grayWhite,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showWithdrawalDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => Dialog(
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color: Colors.white,
+          ),
+          padding: const EdgeInsets.fromLTRB(20, 30, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SvgPicture.asset(
+                "assets/icons/ic_warning.svg",
+                width: 40,
+                height: 40,
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                "정말로 경기선을 탈퇴하시겠습니까?",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                "지금 탈퇴하시면,\n모든 데이터가 삭제되어 복구될 수 없어요",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: ColorStyles.gray400,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: TextButton(
+                        onPressed: () {
+                          context.pop();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: ColorStyles.gray100,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text(
+                          "취소",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: ColorStyles.gray500,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: TextButton(
+                        onPressed: () {
+                          context.pop();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: ColorStyles.primary,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text(
+                          "확인",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: ColorStyles.grayWhite,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSettingsSection({
+    required VoidCallback onTapLogOut,
+    required VoidCallback onTapWithdrawal
+  }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       alignment: Alignment.topLeft,
@@ -40,28 +232,24 @@ class MyPageScreen extends StatelessWidget {
           _buildMenuItem(
             "assets/icons/ic_terms_of_use.svg",
             "이용약관",
-                () {
+            () {
               // Handle Terms of Use tap
             },
           ),
           _buildMenuItem(
             "assets/icons/ic_privacy_policy.svg",
             "개인정보 처리방침",
-                () {
+            () {
               // Handle Privacy Policy tap
             },
           ),
           _buildMenuItem(
             "assets/icons/ic_logout.svg",
             "로그아웃",
-                () {
-              // Handle Logout tap
-            },
+            onTapLogOut,
           ),
           _buildVersionInfoItem("1.0.0v"),
-          _buildWithdrawalButton(() {
-            // Handle withdrawal tap
-          }),
+          _buildWithdrawalButton(onTapWithdrawal),
         ],
       ),
     );
@@ -322,7 +510,7 @@ class ProfileSection extends StatelessWidget {
           ),
           _buildIconButton(
             "assets/icons/ic_setting.svg",
-                () {
+            () {
               context.push('/mypage/setting');
             },
             width: 36,
@@ -340,6 +528,188 @@ class ProfileSection extends StatelessWidget {
         assetPath,
         width: width,
         height: height,
+      ),
+    );
+  }
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => Dialog(
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color: Colors.white,
+          ),
+          padding: const EdgeInsets.fromLTRB(20, 30, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "로그아웃 하시겠습니까?",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: TextButton(
+                        onPressed: () {
+                          context.pop();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: ColorStyles.gray100,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text(
+                          "취소",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: ColorStyles.gray500,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: TextButton(
+                        onPressed: () {
+                          context.pop();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: ColorStyles.primary,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text(
+                          "확인",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: ColorStyles.grayWhite,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showWithdrawalDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => Dialog(
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color: Colors.white,
+          ),
+          padding: const EdgeInsets.fromLTRB(20, 30, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SvgPicture.asset(
+                "assets/icons/ic_warning.svg",
+                width: 40,
+                height: 40,
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                "정말로 경기선을 탈퇴하시겠습니까?",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                "지금 탈퇴하시면,\n모든 데이터가 삭제되어 복구될 수 없어요",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: ColorStyles.gray400,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: TextButton(
+                        onPressed: () {
+                          context.pop();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: ColorStyles.gray100,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text(
+                          "취소",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: ColorStyles.gray500,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: TextButton(
+                        onPressed: () {
+                          context.pop();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: ColorStyles.primary,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text(
+                          "확인",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: ColorStyles.grayWhite,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
