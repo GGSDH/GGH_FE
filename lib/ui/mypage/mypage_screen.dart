@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../constants.dart';
 import '../../themes/color_styles.dart';
 
 class MyPageScreen extends StatelessWidget {
@@ -18,6 +19,12 @@ class MyPageScreen extends StatelessWidget {
           },
         ),
         _buildSettingsSection(
+          onTapPrivacyPolicy: () {
+            context.push('/mypage/policy/privacy?title=개인정보처리방침&url=${Constants.PRIVACY_POLICY_URL}');
+          },
+          onTapTermsOfUse: () {
+            context.push('/mypage/policy/privacy?title=이용약관&url=${Constants.TERMS_OF_USE_URL}');
+          },
           onTapLogOut: () {
             _showLogoutDialog(context);
           },
@@ -212,8 +219,10 @@ class MyPageScreen extends StatelessWidget {
   }
 
   Widget _buildSettingsSection({
+    required VoidCallback onTapTermsOfUse,
+    required VoidCallback onTapPrivacyPolicy,
     required VoidCallback onTapLogOut,
-    required VoidCallback onTapWithdrawal
+    required VoidCallback onTapWithdrawal,
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
@@ -232,16 +241,12 @@ class MyPageScreen extends StatelessWidget {
           _buildMenuItem(
             "assets/icons/ic_terms_of_use.svg",
             "이용약관",
-            () {
-              // Handle Terms of Use tap
-            },
+            onTapTermsOfUse
           ),
           _buildMenuItem(
             "assets/icons/ic_privacy_policy.svg",
             "개인정보 처리방침",
-            () {
-              // Handle Privacy Policy tap
-            },
+            onTapPrivacyPolicy
           ),
           _buildMenuItem(
             "assets/icons/ic_logout.svg",

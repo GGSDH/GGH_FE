@@ -4,6 +4,7 @@ import 'package:gyeonggi_express/router_observer.dart';
 import 'package:gyeonggi_express/ui/component/bottom_navigation_bar.dart';
 import 'package:gyeonggi_express/ui/home/home_screen.dart';
 import 'package:gyeonggi_express/ui/login/login_screen.dart';
+import 'package:gyeonggi_express/ui/mypage/mypage_policy_screen.dart';
 import 'package:gyeonggi_express/ui/mypage/mypage_screen.dart';
 import 'package:gyeonggi_express/ui/mypage/mypage_setting_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_screen.dart';
@@ -13,11 +14,17 @@ import 'package:gyeonggi_express/ui/splash/splash_screen.dart';
 enum Routes {
   splash,
   login,
+
   home,
+
   recommend,
+
   photobook,
+
   mypage,
-  mypage_setting;
+  mypage_setting,
+  mypage_service_policy,
+  mypage_privacy_policy;
 
   static final GoRouter config = GoRouter(
     initialLocation: '/',
@@ -94,7 +101,25 @@ enum Routes {
         path: '/mypage/setting',
         name: Routes.mypage_setting.name,
         builder: (context, state) => const MyPageSettingScreen()
-      )
+      ),
+
+      GoRoute(
+        path: '/mypage/policy/service',
+        name: Routes.mypage_service_policy.name,
+        builder: (context, state) => MyPagePolicyScreen(
+          title: state.uri.queryParameters['title']!,
+          url: state.uri.queryParameters['url']!,
+        ),
+      ),
+
+      GoRoute(
+        path: '/mypage/policy/privacy',
+        name: Routes.mypage_privacy_policy.name,
+        builder: (context, state) => MyPagePolicyScreen(
+          title: state.uri.queryParameters['title']!,
+          url: state.uri.queryParameters['url']!,
+        ),
+      ),
     ]
   );
 }
