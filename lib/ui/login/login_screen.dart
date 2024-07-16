@@ -78,8 +78,8 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
             ),
 
             PageView(
-                controller: _pageViewController,
-                children: pages
+              controller: _pageViewController,
+              children: pages
             ),
 
             Column(

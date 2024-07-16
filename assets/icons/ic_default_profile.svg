@@ -1,13 +1,10 @@
-<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g id="Mask group">
-<mask id="mask0_483_10133" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="60" height="60">
-<rect id="Rectangle 716" width="60" height="60" rx="30" fill="#F5F6F6"/>
+<svg width="101" height="100" viewBox="0 0 101 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="0.500488" width="100" height="100" rx="50" fill="#F2F4F6"/>
+<mask id="mask0_489_13878" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="101" height="100">
+<rect x="0.500488" width="100" height="100" rx="50" fill="#F5F6F6"/>
 </mask>
-<g mask="url(#mask0_483_10133)">
-<g id="Group 7093">
-<circle id="Ellipse 3" cx="30" cy="22" r="10" fill="#D1D6DB"/>
-<rect id="Rectangle 716_2" x="11" y="36" width="38" height="38" rx="15.5" fill="#D1D6DB"/>
-</g>
-</g>
+<g mask="url(#mask0_489_13878)">
+<circle cx="50.5002" cy="36.6667" r="16.6667" fill="#D1D6DB"/>
+<rect x="18.8335" y="60" width="63.3333" height="63.3333" rx="25.8333" fill="#D1D6DB"/>
 </g>
 </svg>

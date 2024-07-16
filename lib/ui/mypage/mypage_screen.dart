@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../themes/color_styles.dart';
 
@@ -11,7 +12,11 @@ class MyPageScreen extends StatelessWidget {
     return Column(
       children: [
         _buildAppBar(),
-        _buildProfileSection(),
+        _buildProfileSection(
+          onTapSetting: () {
+            context.push('/mypage/setting');
+          },
+        ),
         _buildSettingsSection(),
       ],
     );
@@ -180,7 +185,88 @@ class MyPageScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileSection() {
+  Widget _buildProfileSection({required Function() onTapSetting}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      alignment: Alignment.topLeft,
+      child: Row(
+        children: [
+          Stack(
+            children: [
+              Image.network(
+                "",
+                width: 60,
+                height: 60,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return SvgPicture.asset(
+                    "assets/icons/ic_default_profile.svg",
+                    width: 60,
+                    height: 60,
+                  );
+                },
+              ),
+              Positioned(
+                right: 0,
+                bottom: 0,
+                child: SvgPicture.asset(
+                  "assets/icons/ic_profile_kakao.svg",
+                  width: 18,
+                  height: 18,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(width: 18),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'yena009',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  'yena009@naver.com',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: ColorStyles.gray400,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          _buildIconButton(
+            "assets/icons/ic_setting.svg",
+            onTapSetting,
+            width: 36,
+            height: 36,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildIconButton(String assetPath, VoidCallback onTap, {double width = 24, double height = 24}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: SvgPicture.asset(
+        assetPath,
+        width: width,
+        height: height,
+      ),
+    );
+  }
+}
+
+class ProfileSection extends StatelessWidget {
+  const ProfileSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       alignment: Alignment.topLeft,
@@ -237,7 +323,7 @@ class MyPageScreen extends StatelessWidget {
           _buildIconButton(
             "assets/icons/ic_setting.svg",
                 () {
-              // Handle setting icon tap
+              context.push('/mypage/setting');
             },
             width: 36,
             height: 36,

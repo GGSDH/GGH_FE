@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:gyeonggi_express/component/bottom_navigation_bar.dart';
 import 'package:gyeonggi_express/router_observer.dart';
+import 'package:gyeonggi_express/ui/component/bottom_navigation_bar.dart';
 import 'package:gyeonggi_express/ui/home/home_screen.dart';
 import 'package:gyeonggi_express/ui/login/login_screen.dart';
 import 'package:gyeonggi_express/ui/mypage/mypage_screen.dart';
+import 'package:gyeonggi_express/ui/mypage/mypage_setting_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_screen.dart';
 import 'package:gyeonggi_express/ui/splash/splash_screen.dart';
 
 enum Routes {
-  splash, login, home, recommend, photobook, mypage;
+  splash,
+  login,
+  home,
+  recommend,
+  photobook,
+  mypage,
+  mypage_setting;
 
   static final GoRouter config = GoRouter(
     initialLocation: '/',
@@ -81,6 +88,12 @@ enum Routes {
             builder: (context, state) => const MyPageScreen()
           )
         ]
+      ),
+
+      GoRoute(
+        path: '/mypage/setting',
+        name: Routes.mypage_setting.name,
+        builder: (context, state) => const MyPageSettingScreen()
       )
     ]
   );

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../themes/color_styles.dart';
+import '../../themes/color_styles.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {
   final int currentIndex;
