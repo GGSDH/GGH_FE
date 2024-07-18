@@ -4,7 +4,9 @@ import 'package:gyeonggi_express/router_observer.dart';
 import 'package:gyeonggi_express/ui/component/bottom_navigation_bar.dart';
 import 'package:gyeonggi_express/ui/home/home_screen.dart';
 import 'package:gyeonggi_express/ui/login/login_screen.dart';
+import 'package:gyeonggi_express/ui/mypage/mypage_policy_screen.dart';
 import 'package:gyeonggi_express/ui/mypage/mypage_screen.dart';
+import 'package:gyeonggi_express/ui/mypage/mypage_setting_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_screen.dart';
 import 'package:gyeonggi_express/ui/signup/signup_screen.dart';
@@ -59,23 +61,21 @@ enum Routes {
         observers: [RouterObserver()],
         builder: (context, state, child) => Scaffold(
           backgroundColor: Colors.white,
-          body: Scaffold(
-            body: child,
-            bottomNavigationBar: CustomBottomNavigationBar(
-              currentIndex: 0,
-              onTap: (index) {
-                if (index == 0) {
-                  context.go('/home');
-                } else if (index == 1) {
-                  context.go('/recommend');
-                } else if (index == 2) {
-                  context.go('/photobook');
-                } else if (index == 3) {
-                  context.go('/mypage');
-                }
-              },
-            ),
-          )
+          body: SafeArea(child: child),
+          bottomNavigationBar: CustomBottomNavigationBar(
+            currentIndex: 0,
+            onTap: (index) {
+              if (index == 0) {
+                context.go('/home');
+              } else if (index == 1) {
+                context.go('/recommend');
+              } else if (index == 2) {
+                context.go('/photobook');
+              } else if (index == 3) {
+                context.go('/mypage');
+              }
+            },
+          ),
         ),
         routes: [
           GoRoute(
