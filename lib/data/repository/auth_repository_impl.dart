@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:gyeonggi_express/data/datasource/auth_datasource.dart';
 
+import '../models/api_result.dart';
 import 'auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
@@ -9,7 +10,7 @@ class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl(this._authDataSource);
 
   @override
-  Future<Response> socialLogin({
+  Future<ApiResult> socialLogin({
     required String accessToken,
     required String refreshToken,
     required String provider

@@ -31,14 +31,23 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     Emitter<LoginState> emit
   ) async {
     emit(LoginLoading());
+
     try {
       OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
-      await _authRepository.socialLogin(
+      final response = await _authRepository.socialLogin(
         accessToken: token.accessToken,
         refreshToken: token.refreshToken ?? "",
-        provider: 'KAKAO'
+        provider: 'KAKAO',
       );
-      emit(LoginSuccess());
+
+      response.when(
+        success: (data) {
+          emit(LoginSuccess());
+        },
+        apiError: (errorMessage, errorCode) {
+          emit(LoginFailure(errorMessage));
+        },
+      );
     } catch (error) {
       emit(LoginFailure(error.toString()));
     }
