@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../themes/color_styles.dart';
+import '../../themes/text_styles.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {
   final int currentIndex;
@@ -49,9 +50,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
             const SizedBox(height: 4),
             Text(
               label,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
+              style: TextStyles.bodyXSmall.copyWith(
                 color: isSelected ? ColorStyles.gray900 : ColorStyles.gray500,
               ),
             ),

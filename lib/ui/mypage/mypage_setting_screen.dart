@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../themes/color_styles.dart';
+import '../../themes/text_styles.dart';
 
 class MyPageSettingScreen extends StatefulWidget {
   const MyPageSettingScreen({super.key});
@@ -53,12 +54,10 @@ class _MyPageSettingScreenState extends State<MyPageSettingScreen> {
                       borderRadius: BorderRadius.circular(8),
                     )
                   ),
-                  child: const Text(
+                  child: Text(
                     "완료",
-                    style: TextStyle(
+                    style: TextStyles.titleMedium.copyWith(
                       color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -88,13 +87,11 @@ class _MyPageSettingScreenState extends State<MyPageSettingScreen> {
               ),
             ),
           ),
-          const Center(
+          Center(
             child: Text(
               "내정보",
-              style: TextStyle(
-                color: ColorStyles.gray900,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
+              style: TextStyles.titleLarge.copyWith(
+                color: ColorStyles.gray900
               ),
             ),
           ),
@@ -115,28 +112,6 @@ class _MyPageSettingScreenState extends State<MyPageSettingScreen> {
             height: 100,
           ),
           const SizedBox(height: 14),
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "홍길동",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w600,
-                  color: ColorStyles.gray900,
-                ),
-              ),
-              SizedBox(width: 6),
-              Text(
-                "님",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w400,
-                  color: ColorStyles.gray900,
-                ),
-              ),
-            ],
-          ),
         ],
       ),
     );
@@ -147,24 +122,20 @@ class _MyPageSettingScreenState extends State<MyPageSettingScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       child: Column(
         children: [
-          const Padding(
-            padding: EdgeInsets.fromLTRB(0, 4, 0, 8),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 4, 0, 8),
             child: Row(
               children: [
                 Text(
                   '아이디',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
+                  style: TextStyles.bodyLarge.copyWith(
                     color: ColorStyles.gray800,
                   ),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 Text(
                   "카카오로 가입한 계정이에요.",
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
+                  style: TextStyles.bodySmall.copyWith(
                     color: ColorStyles.gray500,
                   ),
                 ),

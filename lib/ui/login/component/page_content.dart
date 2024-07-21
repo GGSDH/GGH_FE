@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../themes/text_styles.dart';
+
 class PageContent extends StatelessWidget {
   final int pageIndex;
 
@@ -23,21 +25,15 @@ class PageContent extends StatelessWidget {
             children: [
               Text(
                 _getPageText(),
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black
-                ),
+                style: TextStyles.title2ExtraLarge
               ),
 
               if (pageIndex == 1) ...[
                 const SizedBox(height: 10),
-                const Text(
+                Text(
                   "*여행지: 숙박/관광지/음식점",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF898989)
+                  style: TextStyles.titleSmall.copyWith(
+                    color: const Color(0xFF898989)
                   ),
                 ),
               ]

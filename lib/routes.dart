@@ -61,7 +61,7 @@ enum Routes {
         observers: [RouterObserver()],
         builder: (context, state, child) => Scaffold(
           backgroundColor: Colors.white,
-          body: SafeArea(child: child),
+          body: child,
           bottomNavigationBar: CustomBottomNavigationBar(
             currentIndex: 0,
             onTap: (index) {

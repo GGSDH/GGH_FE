@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
+import '../../../themes/text_styles.dart';
+
 enum SocialLoginType {
   APPLE, KAKAO
 }
@@ -33,7 +35,8 @@ class SocialLoginButton extends StatelessWidget {
             ),
           ),
           child: Row(
-            mainAxisSize: MainAxisSize.max,
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SvgPicture.asset(
                 _getButtonIcon(),
@@ -43,16 +46,10 @@ class SocialLoginButton extends StatelessWidget {
 
               const SizedBox(width: 14),
 
-              Expanded(
-                child: Center(
-                  child: Text(
-                    _getButtonText(),
-                    style: TextStyle(
-                      color: _getButtonTextColor(),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+              Text(
+                _getButtonText(),
+                style: TextStyles.titleMedium.copyWith(
+                  color: _getButtonTextColor(),
                 ),
               ),
             ],

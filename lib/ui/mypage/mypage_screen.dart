@@ -4,35 +4,38 @@ import 'package:go_router/go_router.dart';
 
 import '../../constants.dart';
 import '../../themes/color_styles.dart';
+import '../../themes/text_styles.dart';
 
 class MyPageScreen extends StatelessWidget {
   const MyPageScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _buildAppBar(),
-        _buildProfileSection(
-          onTapSetting: () {
-            context.push('/mypage/setting');
-          },
-        ),
-        _buildSettingsSection(
-          onTapPrivacyPolicy: () {
-            context.push('/mypage/policy/privacy?title=개인정보처리방침&url=${Constants.PRIVACY_POLICY_URL}');
-          },
-          onTapTermsOfUse: () {
-            context.push('/mypage/policy/privacy?title=이용약관&url=${Constants.TERMS_OF_USE_URL}');
-          },
-          onTapLogOut: () {
-            _showLogoutDialog(context);
-          },
-          onTapWithdrawal: () {
-            _showWithdrawalDialog(context);
-          }
-        ),
-      ],
+    return SafeArea(
+      child: Column(
+        children: [
+          _buildAppBar(),
+          _buildProfileSection(
+            onTapSetting: () {
+              context.push('/mypage/setting');
+            },
+          ),
+          _buildSettingsSection(
+            onTapPrivacyPolicy: () {
+              context.push('/mypage/policy/privacy?title=개인정보처리방침&url=${Constants.PRIVACY_POLICY_URL}');
+            },
+            onTapTermsOfUse: () {
+              context.push('/mypage/policy/privacy?title=이용약관&url=${Constants.TERMS_OF_USE_URL}');
+            },
+            onTapLogOut: () {
+              _showLogoutDialog(context);
+            },
+            onTapWithdrawal: () {
+              _showWithdrawalDialog(context);
+            }
+          ),
+        ],
+      ),
     );
   }
 
@@ -49,12 +52,9 @@ class MyPageScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
+              Text(
                 "로그아웃 하시겠습니까?",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyles.titleLarge,
               ),
               const SizedBox(height: 24),
               Row(
@@ -73,12 +73,10 @@ class MyPageScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: const Text(
+                        child: Text(
                           "취소",
-                          style: TextStyle(
-                            fontSize: 16,
+                          style: TextStyles.titleMedium.copyWith(
                             color: ColorStyles.gray500,
-                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
@@ -99,12 +97,10 @@ class MyPageScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: const Text(
+                        child: Text(
                           "확인",
-                          style: TextStyle(
-                            fontSize: 16,
+                          style: TextStyles.titleMedium.copyWith(
                             color: ColorStyles.grayWhite,
-                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
@@ -138,20 +134,17 @@ class MyPageScreen extends StatelessWidget {
                 height: 40,
               ),
               const SizedBox(height: 10),
-              const Text(
+              Text(
                 "정말로 경기선을 탈퇴하시겠습니까?",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyles.titleLarge.copyWith(
+                  color: ColorStyles.gray800
+                )
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 "지금 탈퇴하시면,\n모든 데이터가 삭제되어 복구될 수 없어요",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: ColorStyles.gray400,
+                style: TextStyles.bodyMedium.copyWith(
+                  color: ColorStyles.gray600
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -172,12 +165,10 @@ class MyPageScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: const Text(
+                        child: Text(
                           "취소",
-                          style: TextStyle(
-                            fontSize: 16,
+                          style: TextStyles.titleMedium.copyWith(
                             color: ColorStyles.gray500,
-                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
@@ -198,12 +189,10 @@ class MyPageScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: const Text(
+                        child: Text(
                           "확인",
-                          style: TextStyle(
-                            fontSize: 16,
+                          style: TextStyles.titleMedium.copyWith(
                             color: ColorStyles.grayWhite,
-                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
@@ -231,12 +220,9 @@ class MyPageScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
+          Text(
             "설정",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
+            style: TextStyles.titleLarge,
           ),
           _buildMenuItem(
             "assets/icons/ic_terms_of_use.svg",
@@ -275,9 +261,8 @@ class MyPageScreen extends StatelessWidget {
             const SizedBox(width: 10),
             Text(
               menuText,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
+              style: TextStyles.bodyLarge.copyWith(
+                color: ColorStyles.gray900
               ),
             ),
             const Spacer(),
@@ -303,19 +288,16 @@ class MyPageScreen extends StatelessWidget {
             height: 24,
           ),
           const SizedBox(width: 10),
-          const Text(
+          Text(
             '버전 정보',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
+            style: TextStyles.bodyLarge.copyWith(
+              color: ColorStyles.gray900
             ),
           ),
           const Spacer(),
           Text(
             version,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
+            style: TextStyles.titleMedium.copyWith(
               color: ColorStyles.gray500,
             ),
           ),
@@ -328,13 +310,11 @@ class MyPageScreen extends StatelessWidget {
     return Center(
       child: GestureDetector(
         onTap: onTap,
-        child: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Text(
             "탈퇴하기",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
+            style: TextStyles.bodyMedium.copyWith(
               color: ColorStyles.gray500,
               decoration: TextDecoration.underline,
             ),
@@ -352,22 +332,24 @@ class MyPageScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Text(
+          Text(
             "마이",
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+            style: TextStyles.headlineXSmall.copyWith(
+              color: ColorStyles.gray900
+            ),
           ),
           Row(
             children: [
               _buildIconButton(
-                "assets/icons/ic_heart.svg",
-                    () {
+                "assets/icons/ic_heart_white.svg",
+                () {
                   // Handle heart icon tap
                 },
               ),
               const SizedBox(width: 14),
               _buildIconButton(
-                "assets/icons/ic_search.svg",
-                    () {
+                "assets/icons/ic_search_white.svg",
+                () {
                   // Handle search icon tap
                 },
               ),
@@ -411,21 +393,21 @@ class MyPageScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(width: 18),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   'yena009',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  style: TextStyles.titleLarge.copyWith(
+                    color: ColorStyles.gray900
+                  ),
                 ),
-                SizedBox(height: 2),
+                const SizedBox(height: 2),
                 Text(
                   'yena009@naver.com',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
+                  style: TextStyles.bodyMedium.copyWith(
                     color: ColorStyles.gray400,
                   ),
                 ),
@@ -450,271 +432,6 @@ class MyPageScreen extends StatelessWidget {
         assetPath,
         width: width,
         height: height,
-      ),
-    );
-  }
-}
-
-class ProfileSection extends StatelessWidget {
-  const ProfileSection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      alignment: Alignment.topLeft,
-      child: Row(
-        children: [
-          Stack(
-            children: [
-              Image.network(
-                "",
-                width: 60,
-                height: 60,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return SvgPicture.asset(
-                    "assets/icons/ic_default_profile.svg",
-                    width: 60,
-                    height: 60,
-                  );
-                },
-              ),
-              Positioned(
-                right: 0,
-                bottom: 0,
-                child: SvgPicture.asset(
-                  "assets/icons/ic_profile_kakao.svg",
-                  width: 18,
-                  height: 18,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(width: 18),
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'yena009',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-                SizedBox(height: 2),
-                Text(
-                  'yena009@naver.com',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: ColorStyles.gray400,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          _buildIconButton(
-            "assets/icons/ic_setting.svg",
-            () {
-              context.push('/mypage/setting');
-            },
-            width: 36,
-            height: 36,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildIconButton(String assetPath, VoidCallback onTap, {double width = 24, double height = 24}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: SvgPicture.asset(
-        assetPath,
-        width: width,
-        height: height,
-      ),
-    );
-  }
-
-  void _showLogoutDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => Dialog(
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            color: Colors.white,
-          ),
-          padding: const EdgeInsets.fromLTRB(20, 30, 20, 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                "로그아웃 하시겠습니까?",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  Expanded(
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: TextButton(
-                        onPressed: () {
-                          context.pop();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: ColorStyles.gray100,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: const Text(
-                          "취소",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: ColorStyles.gray500,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: TextButton(
-                        onPressed: () {
-                          context.pop();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: ColorStyles.primary,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: const Text(
-                          "확인",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: ColorStyles.grayWhite,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showWithdrawalDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => Dialog(
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            color: Colors.white,
-          ),
-          padding: const EdgeInsets.fromLTRB(20, 30, 20, 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SvgPicture.asset(
-                "assets/icons/ic_warning.svg",
-                width: 40,
-                height: 40,
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                "정말로 경기선을 탈퇴하시겠습니까?",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                "지금 탈퇴하시면,\n모든 데이터가 삭제되어 복구될 수 없어요",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: ColorStyles.gray400,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  Expanded(
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: TextButton(
-                        onPressed: () {
-                          context.pop();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: ColorStyles.gray100,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: const Text(
-                          "취소",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: ColorStyles.gray500,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: TextButton(
-                        onPressed: () {
-                          context.pop();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: ColorStyles.primary,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: const Text(
-                          "확인",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: ColorStyles.grayWhite,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

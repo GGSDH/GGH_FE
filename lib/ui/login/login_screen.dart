@@ -10,6 +10,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../data/repository/auth_repository.dart';
 import '../../themes/color_styles.dart';
+import '../../themes/text_styles.dart';
 import 'component/social_login_button.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -49,7 +50,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       child: BlocListener<LoginBloc, LoginState>(
         listener: (context, state) {
           if (state is LoginSuccess) {
-            log("Login Success");
             context.go('/home');
           } else if (state is LoginFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -103,18 +103,16 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                 const SizedBox(height: 24),
 
                 RichText(
-                  text: const TextSpan(
+                  text: TextSpan(
                     text: '첫 로그인 시, ', // 기본 스타일이 적용된 텍스트
-                    style: TextStyle(
-                        color: ColorStyles.gray500,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500
+                    style: TextStyles.bodySmall.copyWith(
+                      color: ColorStyles.gray500
                     ),
-                    children: <TextSpan>[
+                    children: const <TextSpan>[
                       TextSpan(
                         text: '서비스 이용약관', // 밑줄 텍스트
                         style: TextStyle(
-                            decoration: TextDecoration.underline
+                          decoration: TextDecoration.underline
                         ),
                       ),
                       TextSpan(

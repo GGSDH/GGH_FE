@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../themes/color_styles.dart';
+import '../../themes/text_styles.dart';
 
 class MyPagePolicyScreen extends StatefulWidget {
   final String title;
@@ -14,8 +15,6 @@ class MyPagePolicyScreen extends StatefulWidget {
     required this.url,
     super.key
   });
-
-
 
   @override
   State<StatefulWidget> createState() => _MyPagePolicyScreenState();
@@ -76,10 +75,8 @@ class _MyPagePolicyScreenState extends State<MyPagePolicyScreen> {
           Center(
             child: Text(
               widget.title,
-              style: const TextStyle(
-                color: ColorStyles.gray900,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
+              style: TextStyles.titleLarge.copyWith(
+                color: ColorStyles.gray900
               ),
             ),
           ),
