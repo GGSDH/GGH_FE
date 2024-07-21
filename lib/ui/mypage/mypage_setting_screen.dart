@@ -22,6 +22,14 @@ class _MyPageSettingScreenState extends State<MyPageSettingScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _controller.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.white,
@@ -35,33 +43,12 @@ class _MyPageSettingScreenState extends State<MyPageSettingScreen> {
             ),
             _buildProfileImageSection(),
             _buildProfileIdSection(),
+            _buildNicknameSection(),
             const Spacer(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    context.pop();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: ColorStyles.primary,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 16,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    )
-                  ),
-                  child: Text(
-                    "완료",
-                    style: TextStyles.titleMedium.copyWith(
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
+            _buildSaveButton(
+              () {
+                context.pop();
+              }
             )
           ],
         ),
@@ -111,7 +98,6 @@ class _MyPageSettingScreenState extends State<MyPageSettingScreen> {
             width: 100,
             height: 100,
           ),
-          const SizedBox(height: 14),
         ],
       ),
     );
@@ -119,7 +105,7 @@ class _MyPageSettingScreenState extends State<MyPageSettingScreen> {
 
   Widget _buildProfileIdSection() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+      padding: const EdgeInsets.fromLTRB(20, 14, 20, 18),
       child: Column(
         children: [
           Padding(
@@ -143,32 +129,126 @@ class _MyPageSettingScreenState extends State<MyPageSettingScreen> {
             ),
           ),
           TextField(
-            controller: _controller,
-            decoration: const InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            enabled: false,
+            decoration: InputDecoration(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               hintText: "yena009@naver.com",
-              hintStyle: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
+              hintStyle: TextStyles.bodyLarge.copyWith(
                 color: ColorStyles.gray500,
               ),
-              border: OutlineInputBorder(
+              border: const OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(8.0)), // Adding borderRadius to round the edges
                 borderSide: BorderSide(
-                  color: ColorStyles.gray200,
+                  color: ColorStyles.gray50,
                   width: 1,
                 ),
               ),
-              focusedBorder: OutlineInputBorder(
+              focusedBorder: const OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(8.0)), // Adding borderRadius to round the edges
                 borderSide: BorderSide(
-                  color: ColorStyles.gray200,
+                  color: ColorStyles.gray50,
                   width: 1,
                 ),
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildNicknameSection() {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '닉네임',
+            style: TextStyles.bodyLarge.copyWith(
+              color: ColorStyles.gray800,
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: _controller,
+            decoration: InputDecoration(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              hintText: "닉네임을 입력해주세요",
+              hintStyle: TextStyles.bodyLarge.copyWith(
+                color: ColorStyles.gray500,
+              ),
+              border: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8.0)), // Adding borderRadius to round the edges
+                borderSide: BorderSide(
+                  color: ColorStyles.gray200,
+                  width: 1,
+                ),
+              ),
+              focusedBorder: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8.0)), // Adding borderRadius to round the edges
+                borderSide: BorderSide(
+                  color: ColorStyles.gray900,
+                  width: 1,
+                ),
+              ),
+              enabledBorder: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8.0)), // Adding borderRadius to round the edges
+                borderSide: BorderSide(
+                  color: ColorStyles.gray200,
+                  width: 1,
+                ),
+              ),
+              suffixIcon: _controller.text.isNotEmpty
+                ? IconButton(
+                  onPressed: () {
+                    _controller.clear();
+                  },
+                  icon: SvgPicture.asset(
+                    "assets/icons/ic_clear.svg",
+                    width: 20,
+                    height: 20,
+                  ),
+                )
+                : null
+            ),
+            style: TextStyles.bodyLarge.copyWith(
+              color: ColorStyles.gray900,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSaveButton(VoidCallback onTap) {
+    final isValid = _controller.text.isNotEmpty;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: SizedBox(
+        width: double.infinity,
+        child: TextButton(
+          onPressed: onTap,
+          style: TextButton.styleFrom(
+              backgroundColor: isValid ? ColorStyles.primary : ColorStyles.gray100,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24,
+                vertical: 16,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              )
+          ),
+          child: Text(
+            "변경사항 저장",
+            style: TextStyles.titleMedium.copyWith(
+              color: isValid ? Colors.white : ColorStyles.gray500,
+            ),
+          ),
+        ),
       ),
     );
   }

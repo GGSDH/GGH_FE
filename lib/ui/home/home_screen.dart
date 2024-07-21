@@ -34,9 +34,9 @@ class HomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SvgPicture.asset(
-                'assets/icons/ic_app_title.svg',
-                width: 57,
-                height: 24
+              'assets/icons/ic_app_title.svg',
+              width: 57,
+              height: 24
             ),
             Row(
               children: [

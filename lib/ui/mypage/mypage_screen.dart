@@ -21,11 +21,14 @@ class MyPageScreen extends StatelessWidget {
             },
           ),
           _buildSettingsSection(
+            onTapLocInfoTerms: () {
+              context.push('/mypage/policy/privacy?title=위치정보 이용약관&url=${Constants.LOCATION_INFO_TERMS_URL}');
+            },
             onTapPrivacyPolicy: () {
-              context.push('/mypage/policy/privacy?title=개인정보처리방침&url=${Constants.PRIVACY_POLICY_URL}');
+              context.push('/mypage/policy/privacy?title=개인정보 처리방침&url=${Constants.PRIVACY_POLICY_URL}');
             },
             onTapTermsOfUse: () {
-              context.push('/mypage/policy/privacy?title=이용약관&url=${Constants.TERMS_OF_USE_URL}');
+              context.push('/mypage/policy/privacy?title=서비스 이용약관&url=${Constants.TERMS_OF_USE_URL}');
             },
             onTapLogOut: () {
               _showLogoutDialog(context);
@@ -66,7 +69,7 @@ class MyPageScreen extends StatelessWidget {
                         onPressed: () {
                           context.pop();
                         },
-                        style: ElevatedButton.styleFrom(
+                        style: TextButton.styleFrom(
                           backgroundColor: ColorStyles.gray100,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
@@ -90,7 +93,7 @@ class MyPageScreen extends StatelessWidget {
                         onPressed: () {
                           context.pop();
                         },
-                        style: ElevatedButton.styleFrom(
+                        style: TextButton.styleFrom(
                           backgroundColor: ColorStyles.primary,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
@@ -158,7 +161,7 @@ class MyPageScreen extends StatelessWidget {
                         onPressed: () {
                           context.pop();
                         },
-                        style: ElevatedButton.styleFrom(
+                        style: TextButton.styleFrom(
                           backgroundColor: ColorStyles.gray100,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
@@ -182,7 +185,7 @@ class MyPageScreen extends StatelessWidget {
                         onPressed: () {
                           context.pop();
                         },
-                        style: ElevatedButton.styleFrom(
+                        style: TextButton.styleFrom(
                           backgroundColor: ColorStyles.primary,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
@@ -208,6 +211,7 @@ class MyPageScreen extends StatelessWidget {
   }
 
   Widget _buildSettingsSection({
+    required VoidCallback onTapLocInfoTerms,
     required VoidCallback onTapTermsOfUse,
     required VoidCallback onTapPrivacyPolicy,
     required VoidCallback onTapLogOut,
@@ -220,13 +224,18 @@ class MyPageScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
+          const Text(
             "설정",
             style: TextStyles.titleLarge,
           ),
           _buildMenuItem(
+            "assets/icons/ic_gps.svg",
+            "위치정보 이용약관",
+            onTapLocInfoTerms
+          ),
+          _buildMenuItem(
             "assets/icons/ic_terms_of_use.svg",
-            "이용약관",
+            "서비스 이용약관",
             onTapTermsOfUse
           ),
           _buildMenuItem(

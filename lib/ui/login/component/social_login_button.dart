@@ -23,9 +23,9 @@ class SocialLoginButton extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: SizedBox(
         width: double.infinity,
-        child: ElevatedButton(
+        child: TextButton(
           onPressed: onClick,
-          style: ElevatedButton.styleFrom(
+          style: TextButton.styleFrom(
             backgroundColor: _getButtonColor(),
             padding: const EdgeInsets.symmetric(
               horizontal: 24, vertical: 16
