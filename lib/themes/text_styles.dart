@@ -79,7 +79,7 @@ class TextStyles {
     color: Colors.black,
     fontSize: 13,
     height: 1.23, // Adjusted from 16/13 ≈ 1.23
-    fontWeight: FontWeight.w400,
+    fontWeight: FontWeight.w600,
   );
 
   static const TextStyle bodyLarge = TextStyle(
