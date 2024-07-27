@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
 import 'package:gyeonggi_express/ui/component/appbutton.dart';
-import 'package:gyeonggi_express/ui/component/header_with_text.dart';
+import 'package:gyeonggi_express/ui/component/app_action_bar.dart';
 import 'package:gyeonggi_express/ui/signup/component/select_grid.dart';
 import 'package:go_router/go_router.dart';
-import 'package:gyeonggi_express/ui/signup/signup_steps.dart';
+import 'package:gyeonggi_express/ui/signup/onboarding_steps.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -74,9 +74,10 @@ class _SignupScreenState extends State<SignupScreen> {
       child: SafeArea(
         child: Column(
           children: [
-            HeaderWithText(
+            AppActionBar(
               rightText: '${_currentStep + 1}/${signupSteps.length}',
               onBackPressed: _previousStep,
+              menuItems: const [],
             ),
             Expanded(
               child: Column(

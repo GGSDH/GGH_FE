@@ -9,8 +9,9 @@ import 'package:gyeonggi_express/ui/mypage/mypage_screen.dart';
 import 'package:gyeonggi_express/ui/mypage/mypage_setting_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_screen.dart';
-import 'package:gyeonggi_express/ui/signup/signup_screen.dart';
+import 'package:gyeonggi_express/ui/signup/onboarding_screen.dart';
 import 'package:gyeonggi_express/ui/splash/splash_screen.dart';
+import 'package:gyeonggi_express/ui/station/station_detail_screen.dart';
 
 enum Routes {
   splash,
@@ -18,6 +19,8 @@ enum Routes {
   signup,
 
   home,
+
+  stations,
 
   recommend,
 
@@ -93,6 +96,10 @@ enum Routes {
               builder: (context, state) => const MyPageScreen())
         ]),
 
+    GoRoute(
+        path: '/stations',
+        name: Routes.stations.name,
+        builder: (context, state) => const StationDetailScreen()),
     GoRoute(
         path: '/mypage/setting',
         name: Routes.mypage_setting.name,
