@@ -1,43 +1,73 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../constants.dart';
+import '../../data/models/login_provider.dart';
+import '../../data/repository/auth_repository.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
+import 'mypage_bloc.dart';
 
 class MyPageScreen extends StatelessWidget {
   const MyPageScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Column(
-        children: [
-          _buildAppBar(),
-          _buildProfileSection(
-            onTapSetting: () {
-              context.push('/mypage/setting');
-            },
-          ),
-          _buildSettingsSection(
-            onTapLocInfoTerms: () {
-              context.push('/mypage/policy/privacy?title=위치정보 이용약관&url=${Constants.LOCATION_INFO_TERMS_URL}');
-            },
-            onTapPrivacyPolicy: () {
-              context.push('/mypage/policy/privacy?title=개인정보 처리방침&url=${Constants.PRIVACY_POLICY_URL}');
-            },
-            onTapTermsOfUse: () {
-              context.push('/mypage/policy/privacy?title=서비스 이용약관&url=${Constants.TERMS_OF_USE_URL}');
-            },
-            onTapLogOut: () {
-              _showLogoutDialog(context);
-            },
-            onTapWithdrawal: () {
-              _showWithdrawalDialog(context);
+    return BlocProvider(
+      create: (context) => MyPageBloc(
+        authRepository: GetIt.instance<AuthRepository>(),
+      ),
+      child: BlocSideEffectListener<MyPageBloc, MyPageSideEffect>(
+        listener: (context, sideEffect) {
+          if (sideEffect is MyPageNavigateToSetting) {
+            context.push('/mypage/setting');
+          } else if (sideEffect is MyPageShowError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(sideEffect.message),
+              ),
+            );
+          }
+        },
+        child: BlocBuilder<MyPageBloc, MyPageState>(
+          builder: (context, state) {
+            if (state.isLoading) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            } else {
+              return SafeArea(
+                child: MyPageContent(
+                  onTapSetting: () {
+                    context.read<MyPageBloc>().add(MyPageSettingButtonClicked());
+                  },
+                  onTapLocInfoTerms: () {
+                    context.push('/mypage/policy/privacy?title=위치정보 이용약관&url=${Constants.LOCATION_INFO_TERMS_URL}');
+                  },
+                  onTapPrivacyPolicy: () {
+                    context.push('/mypage/policy/privacy?title=개인정보 처리방침&url=${Constants.PRIVACY_POLICY_URL}');
+                  },
+                  onTapTermsOfUse: () {
+                    context.push('/mypage/policy/privacy?title=서비스 이용약관&url=${Constants.TERMS_OF_USE_URL}');
+                  },
+                  onTapLogOut: () {
+                    _showLogoutDialog(context);
+                  },
+                  onTapWithdrawal: () {
+                    _showWithdrawalDialog(context);
+                  },
+                  nickname: state.nickname,
+                  email: state.email,
+                  loginProvider: state.loginProvider,
+                ),
+              );
             }
-          ),
-        ],
+          }
+        ),
       ),
     );
   }
@@ -138,16 +168,16 @@ class MyPageScreen extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                "정말로 경기선을 탈퇴하시겠습니까?",
-                style: TextStyles.titleLarge.copyWith(
-                  color: ColorStyles.gray800
-                )
+                  "정말로 경기선을 탈퇴하시겠습니까?",
+                  style: TextStyles.titleLarge.copyWith(
+                      color: ColorStyles.gray800
+                  )
               ),
               const SizedBox(height: 8),
               Text(
                 "지금 탈퇴하시면,\n모든 데이터가 삭제되어 복구될 수 없어요",
                 style: TextStyles.bodyMedium.copyWith(
-                  color: ColorStyles.gray600
+                    color: ColorStyles.gray600
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -209,6 +239,55 @@ class MyPageScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+
+class MyPageContent extends StatelessWidget {
+  final VoidCallback onTapSetting;
+  final VoidCallback onTapLocInfoTerms;
+  final VoidCallback onTapPrivacyPolicy;
+  final VoidCallback onTapTermsOfUse;
+  final VoidCallback onTapLogOut;
+  final VoidCallback onTapWithdrawal;
+
+  final String nickname;
+  final String email;
+  final LoginProvider loginProvider;
+
+  const MyPageContent({
+    super.key,
+    required this.onTapSetting,
+    required this.onTapLocInfoTerms,
+    required this.onTapPrivacyPolicy,
+    required this.onTapTermsOfUse,
+    required this.onTapLogOut,
+    required this.onTapWithdrawal,
+    required this.nickname,
+    required this.email,
+    required this.loginProvider,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        _buildAppBar(),
+        _buildProfileSection(
+          onTapSetting: onTapSetting,
+          loginProvider: loginProvider,
+          nickname: nickname,
+          email: email,
+        ),
+        _buildSettingsSection(
+          onTapLocInfoTerms: onTapLocInfoTerms,
+          onTapPrivacyPolicy: onTapPrivacyPolicy,
+          onTapTermsOfUse: onTapTermsOfUse,
+          onTapLogOut: onTapLogOut,
+          onTapWithdrawal: onTapWithdrawal,
+        ),
+      ],
+    );
+  }
 
   Widget _buildSettingsSection({
     required VoidCallback onTapLocInfoTerms,
@@ -231,17 +310,17 @@ class MyPageScreen extends StatelessWidget {
           _buildMenuItem(
             "assets/icons/ic_gps.svg",
             "위치정보 이용약관",
-            onTapLocInfoTerms
+            onTapLocInfoTerms,
           ),
           _buildMenuItem(
             "assets/icons/ic_terms_of_use.svg",
             "서비스 이용약관",
-            onTapTermsOfUse
+            onTapTermsOfUse,
           ),
           _buildMenuItem(
             "assets/icons/ic_privacy_policy.svg",
             "개인정보 처리방침",
-            onTapPrivacyPolicy
+            onTapPrivacyPolicy,
           ),
           _buildMenuItem(
             "assets/icons/ic_logout.svg",
@@ -271,7 +350,7 @@ class MyPageScreen extends StatelessWidget {
             Text(
               menuText,
               style: TextStyles.bodyLarge.copyWith(
-                color: ColorStyles.gray900
+                color: ColorStyles.gray900,
               ),
             ),
             const Spacer(),
@@ -300,7 +379,7 @@ class MyPageScreen extends StatelessWidget {
           Text(
             '버전 정보',
             style: TextStyles.bodyLarge.copyWith(
-              color: ColorStyles.gray900
+              color: ColorStyles.gray900,
             ),
           ),
           const Spacer(),
@@ -344,21 +423,21 @@ class MyPageScreen extends StatelessWidget {
           Text(
             "마이",
             style: TextStyles.headlineXSmall.copyWith(
-              color: ColorStyles.gray900
+              color: ColorStyles.gray900,
             ),
           ),
           Row(
             children: [
               _buildIconButton(
                 "assets/icons/ic_heart_white.svg",
-                () {
+                    () {
                   // Handle heart icon tap
                 },
               ),
               const SizedBox(width: 14),
               _buildIconButton(
                 "assets/icons/ic_search_white.svg",
-                () {
+                    () {
                   // Handle search icon tap
                 },
               ),
@@ -369,7 +448,12 @@ class MyPageScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileSection({required Function() onTapSetting}) {
+  Widget _buildProfileSection({
+    required Function() onTapSetting,
+    required LoginProvider loginProvider,
+    required String nickname,
+    required String email,
+  }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       alignment: Alignment.topLeft,
@@ -394,7 +478,9 @@ class MyPageScreen extends StatelessWidget {
                 right: 0,
                 bottom: 0,
                 child: SvgPicture.asset(
-                  "assets/icons/ic_profile_kakao.svg",
+                  loginProvider == LoginProvider.kakao
+                    ? "assets/icons/ic_profile_kakao.svg"
+                    : "assets/icons/ic_profile_google.svg",
                   width: 18,
                   height: 18,
                 ),
@@ -408,14 +494,14 @@ class MyPageScreen extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'yena009',
+                  nickname,
                   style: TextStyles.titleLarge.copyWith(
-                    color: ColorStyles.gray900
+                    color: ColorStyles.gray900,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'yena009@naver.com',
+                  email,
                   style: TextStyles.bodyMedium.copyWith(
                     color: ColorStyles.gray400,
                   ),

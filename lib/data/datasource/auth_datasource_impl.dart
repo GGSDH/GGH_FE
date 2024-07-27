@@ -7,6 +7,7 @@ import 'package:gyeonggi_express/data/models/response/social_login_response.dart
 
 import '../models/api_result.dart';
 import '../models/request/onboarding_request.dart';
+import '../models/response/profile_response.dart';
 import 'auth_datasource.dart';
 
 class AuthDataSourceImpl implements AuthDataSource {
@@ -56,6 +57,14 @@ class AuthDataSourceImpl implements AuthDataSource {
         data: onboardingRequest.toJson(),
       ),
       (data) => null
+    );
+  }
+
+  @override
+  Future<ApiResult<ProfileResponse>> getProfileInfo() async {
+    return _dio.makeRequest<ProfileResponse>(
+      () => _dio.get('v1/member/'),
+      (data) => ProfileResponse.fromJson(data as Map<String, dynamic>)
     );
   }
 }

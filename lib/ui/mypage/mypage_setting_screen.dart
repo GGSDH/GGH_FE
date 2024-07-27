@@ -120,7 +120,7 @@ class _MyPageSettingScreenState extends State<MyPageSettingScreen> {
                 ),
                 const SizedBox(width: 10),
                 Text(
-                  "카카오로 가입한 계정이에요.",
+                  "카카오로 가입한 계정이예요.",
                   style: TextStyles.bodySmall.copyWith(
                     color: ColorStyles.gray500,
                   ),

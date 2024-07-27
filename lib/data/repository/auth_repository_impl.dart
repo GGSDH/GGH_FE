@@ -5,6 +5,7 @@ import 'package:gyeonggi_express/data/models/response/social_login_response.dart
 
 import '../models/api_result.dart';
 import '../models/response/onboarding_response.dart';
+import '../models/response/profile_response.dart';
 import 'auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
@@ -30,4 +31,7 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<ApiResult<Response?>> setOnboardingInfo({
     required List<String> themeIds,
   }) => _authDataSource.setOnboardingInfo(themeIds: themeIds);
+
+  @override
+  Future<ApiResult<ProfileResponse>> getProfileInfo() => _authDataSource.getProfileInfo();
 }

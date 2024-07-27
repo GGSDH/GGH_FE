@@ -1,5 +1,10 @@
+import 'package:json_annotation/json_annotation.dart';
+
 enum LoginProvider {
-  kakao, apple
+  @JsonValue("KAKAO")
+  kakao,
+  @JsonValue("APPLE")
+  apple
 }
 
 extension LoginProviderExtension on LoginProvider {
