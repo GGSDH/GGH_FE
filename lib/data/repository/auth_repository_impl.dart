@@ -25,4 +25,9 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<ApiResult<List<OnboardingTheme>>> getOnboardingThemes() => _authDataSource.getOnboardingThemes();
+
+  @override
+  Future<ApiResult<Response?>> setOnboardingInfo({
+    required List<String> themeIds,
+  }) => _authDataSource.setOnboardingInfo(themeIds: themeIds);
 }

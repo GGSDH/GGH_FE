@@ -25,7 +25,7 @@ class OnboardingScreen extends StatelessWidget {
       child: BlocSideEffectListener<OnboardingBloc, OnboardingSideEffect>(
         listener: (context, sideEffect) {
           if (sideEffect is OnboardingComplete) {
-            GoRouter.of(context).go('/home');
+            GoRouter.of(context).go('/onboarding/complete');
           } else if (sideEffect is OnboardingShowError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -66,72 +66,69 @@ class OnboardingScreenContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      child: SafeArea(
-        child: Column(
-          children: [
-            AppActionBar(
-              rightText: "",
-              onBackPressed: () { GoRouter.of(context).pop(); },
-              menuItems: const [],
-            ),
-            Expanded(
-              child: Column(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.all(20.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(
-                          "어떤 여행 테마를 선호하시나요?",
-                          style: TextStyles.headlineXSmall,
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                            "여행 테마를 선택해 주세요",
-                            style: TextStyles.bodyLarge
-                        ),
-                      ],
+    return Column(
+      children: [
+        AppActionBar(
+          rightText: "",
+          onBackPressed: () { GoRouter.of(context).pop(); },
+          menuItems: const [],
+        ),
+        Expanded(
+          child: Column(
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      "어떤 여행 테마를 선호하시나요?",
+                      style: TextStyles.headlineXSmall,
                     ),
-                  ),
-                  Expanded(
-                    child: SelectableGrid(
-                      items: themes.map(
-                        (theme) => SelectableGridItemData(id: theme.name, emoji: theme.icon, title: theme.title)
-                      ).toList(),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 14),
-                      onSelectionChanged: (String themeId) {
-                        BlocProvider.of<OnboardingBloc>(context).add(OnboardingSelectTheme(themeId));
-                      },
-                      selectedIds: selectedThemes,
-                      maxSelection: themes.length,
+                    SizedBox(height: 4),
+                    Text(
+                      "여행 테마를 선택해 주세요",
+                      style: TextStyles.bodyLarge
                     ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(14),
-              child: SizedBox(
-                width: double.infinity,
-                child: AppButton(
-                  text: "다음",
-                  onPressed: () { },
-                  isEnabled: selectedThemes.isNotEmpty,
-                  onIllegalPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('선택을 완료해 주세요')),
-                    );
-                  },
+                  ],
                 ),
               ),
-            ),
-          ],
+              Expanded(
+                child: SelectableGrid(
+                  items: themes.map(
+                    (theme) => SelectableGridItemData(id: theme.name, emoji: theme.icon, title: theme.title)
+                  ).toList(),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 20, vertical: 14),
+                  onSelectionChanged: (String themeId) {
+                    BlocProvider.of<OnboardingBloc>(context).add(OnboardingSelectTheme(themeId));
+                  },
+                  selectedIds: selectedThemes,
+                  maxSelection: themes.length,
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
+        Padding(
+          padding: const EdgeInsets.all(14),
+          child: SizedBox(
+            width: double.infinity,
+            child: AppButton(
+              text: "다음",
+              onPressed: () {
+                BlocProvider.of<OnboardingBloc>(context).add(OnboardingNextButtonClicked(selectedThemes: selectedThemes));
+              },
+              isEnabled: selectedThemes.isNotEmpty,
+              onIllegalPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('여행 테마를 선택해 주세요')),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:gyeonggi_express/data/models/login_provider.dart';
 import 'package:gyeonggi_express/data/models/response/onboarding_response.dart';
 import 'package:gyeonggi_express/data/models/response/social_login_response.dart';
@@ -12,4 +13,8 @@ abstract class AuthRepository {
   });
 
   Future<ApiResult<List<OnboardingTheme>>> getOnboardingThemes();
+
+  Future<ApiResult<Response?>> setOnboardingInfo({
+    required List<String> themeIds,
+  });
 }

@@ -1,14 +1,12 @@
-import 'dart:math';
-
 import 'package:dio/dio.dart';
 import 'package:gyeonggi_express/data/ext/dio_extensions.dart';
 import 'package:gyeonggi_express/data/models/login_provider.dart';
 import 'package:gyeonggi_express/data/models/request/social_login_request.dart';
 import 'package:gyeonggi_express/data/models/response/onboarding_response.dart';
 import 'package:gyeonggi_express/data/models/response/social_login_response.dart';
-import 'package:gyeonggi_express/ui/onboarding/onboarding_bloc.dart';
 
 import '../models/api_result.dart';
+import '../models/request/onboarding_request.dart';
 import 'auth_datasource.dart';
 
 class AuthDataSourceImpl implements AuthDataSource {
@@ -39,10 +37,25 @@ class AuthDataSourceImpl implements AuthDataSource {
   @override
   Future<ApiResult<List<OnboardingTheme>>> getOnboardingThemes() async {
     return _dio.makeRequest<List<OnboardingTheme>>(
-            () => _dio.get('v1/trip/onboarding/themes'),
-            (data) =>
-            (data as List).map((e) =>
-                OnboardingTheme.fromJson(e as Map<String, dynamic>)).toList()
+      () => _dio.get('v1/trip/onboarding/themes'),
+      (data) =>
+      (data as List).map((e) =>
+          OnboardingTheme.fromJson(e as Map<String, dynamic>)).toList()
+    );
+  }
+
+  @override
+  Future<ApiResult<Response?>> setOnboardingInfo({
+    required List<String> themeIds,
+  }) async {
+    final onboardingRequest = OnboardingRequest(themeIds: themeIds);
+
+    return _dio.makeRequest<Response?>(
+      () => _dio.post(
+        'v1/trip/onboarding',
+        data: onboardingRequest.toJson(),
+      ),
+      (data) => null
     );
   }
 }

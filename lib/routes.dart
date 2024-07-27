@@ -7,6 +7,7 @@ import 'package:gyeonggi_express/ui/login/login_screen.dart';
 import 'package:gyeonggi_express/ui/mypage/mypage_policy_screen.dart';
 import 'package:gyeonggi_express/ui/mypage/mypage_screen.dart';
 import 'package:gyeonggi_express/ui/mypage/mypage_setting_screen.dart';
+import 'package:gyeonggi_express/ui/onboarding/onboarding_complete_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_screen.dart';
 import 'package:gyeonggi_express/ui/onboarding/onboarding_screen.dart';
@@ -17,6 +18,7 @@ enum Routes {
   splash,
   login,
   onboarding,
+  onboarding_complete,
 
   home,
 
@@ -47,16 +49,22 @@ enum Routes {
             backgroundColor: Colors.white, body: SafeArea(child: child)),
         routes: [
           GoRoute(
-              path: '/login',
-              name: Routes.login.name,
-              builder: (context, state) => const LoginScreen()
+            path: '/login',
+            name: Routes.login.name,
+            builder: (context, state) => const LoginScreen()
           ),
           GoRoute(
-              path: "/onboarding",
-              name: Routes.onboarding.name,
-              builder: (context, state) => const OnboardingScreen()
+            path: "/onboarding",
+            name: Routes.onboarding.name,
+            builder: (context, state) => const OnboardingScreen()
+          ),
+          GoRoute(
+            path: '/onboarding/complete',
+            name: Routes.onboarding_complete.name,
+            builder: (context, state) => const OnboardingCompleteScreen(),
           )
-        ]),
+        ]
+    ),
 
     // 탭 루트 화면들
     ShellRoute(

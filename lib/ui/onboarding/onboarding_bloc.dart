@@ -45,9 +45,9 @@ final class OnboardingSelectTheme extends OnboardingEvent {
   OnboardingSelectTheme(this.themeId);
 }
 final class OnboardingNextButtonClicked extends OnboardingEvent {
-  OnboardingNextButtonClicked({ required this.selections });
+  OnboardingNextButtonClicked({ required this.selectedThemes });
 
-  final List<String> selections;
+  final List<String> selectedThemes;
 }
 
 sealed class OnboardingSideEffect { }
@@ -76,7 +76,25 @@ class OnboardingBloc extends SideEffectBloc<OnboardingEvent, OnboardingState, On
     OnboardingNextButtonClicked event,
     Emitter<OnboardingState> emit
   ) async {
-    // Your existing logic for handling the next button click
+    if (event.selectedThemes.isEmpty) {
+      produceSideEffect(OnboardingShowError('여행 테마를 선택해 주세요'));
+      return;
+    }
+
+    try {
+      final response = await _authRepository.setOnboardingInfo(themeIds: event.selectedThemes);
+
+      response.when(
+        success: (data) {
+          produceSideEffect(OnboardingComplete());
+        },
+        apiError: (errorMessage, errorCode) {
+          produceSideEffect(OnboardingShowError(errorMessage));
+        }
+      );
+    } catch (error) {
+      produceSideEffect(OnboardingShowError(error.toString()));
+    }
   }
 
   Future<void> _onInitialize(
