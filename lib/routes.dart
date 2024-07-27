@@ -49,11 +49,13 @@ enum Routes {
           GoRoute(
               path: '/login',
               name: Routes.login.name,
-              builder: (context, state) => const LoginScreen()),
+              builder: (context, state) => const LoginScreen()
+          ),
           GoRoute(
               path: "/signup",
               name: Routes.signup.name,
-              builder: (context, state) => const SignupScreen())
+              builder: (context, state) => const SignupScreen()
+          )
         ]),
 
       // 탭 루트 화면들

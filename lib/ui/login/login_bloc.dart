@@ -1,28 +1,42 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:gyeonggi_express/data/models/login_provider.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:side_effect_bloc/side_effect_bloc.dart';
 
+import '../../constants.dart';
+import '../../data/models/user_role.dart';
 import '../../data/repository/auth_repository.dart';
 
 sealed class LoginState { }
 final class LoginInitial extends LoginState { }
 final class LoginLoading extends LoginState { }
 final class LoginSuccess extends LoginState { }
-final class LoginFailure extends LoginState {
-  final String error;
-
-  LoginFailure(this.error);
-}
+final class LoginFailure extends LoginState { }
 
 sealed class LoginEvent { }
 final class LoginButtonClicked extends LoginEvent { }
 
+sealed class LoginSideEffect { }
+final class LoginNavigateToHome extends LoginSideEffect { }
+final class LoginNavigateToSignUp extends LoginSideEffect { }
+final class LoginShowError extends LoginSideEffect {
+  final String message;
 
-class LoginBloc extends Bloc<LoginEvent, LoginState> {
+  LoginShowError(this.message);
+}
+
+
+class LoginBloc extends SideEffectBloc<LoginEvent, LoginState, LoginSideEffect> {
   final AuthRepository _authRepository;
+  final FlutterSecureStorage _storage;
 
   LoginBloc({
-    required AuthRepository authRepository
-  }) : _authRepository = authRepository, super(LoginInitial()) {
+    required AuthRepository authRepository,
+    required FlutterSecureStorage secureStorage,
+  }) : _authRepository = authRepository,
+        _storage = secureStorage,
+        super(LoginInitial()) {
     on<LoginButtonClicked>(_onLoginButtonClicked);
   }
 
@@ -37,19 +51,31 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       final response = await _authRepository.socialLogin(
         accessToken: token.accessToken,
         refreshToken: token.refreshToken ?? "",
-        provider: 'KAKAO',
+        provider: LoginProvider.kakao,
       );
 
-      response.when(
-        success: (data) {
-          emit(LoginSuccess());
+      await response.when(
+        success: (data) async {
+          await _storage.write(
+            key: Constants.ACCESS_TOKEN_KEY,
+            value: data.token.accessToken,
+          ).whenComplete(() {
+            if (data.role == UserRole.roleUser) {
+              produceSideEffect(LoginNavigateToHome());
+            } else {
+              produceSideEffect(LoginNavigateToSignUp());
+            }
+            emit(LoginSuccess());
+          });
         },
         apiError: (errorMessage, errorCode) {
-          emit(LoginFailure(errorMessage));
-        },
+          produceSideEffect(LoginShowError(errorMessage));
+          emit(LoginFailure());
+        }
       );
     } catch (error) {
-      emit(LoginFailure(error.toString()));
+      produceSideEffect(LoginShowError(error.toString()));
+      emit(LoginFailure());
     }
   }
 

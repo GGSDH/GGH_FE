@@ -47,6 +47,8 @@ dependencies:
   json_annotation: ^4.9.0
   json_serializable: ^6.8.0
   webview_flutter: ^4.8.0
+  side_effect_bloc: ^1.0.0
+  flutter_secure_storage: ^4.2.1
 
 
 dev_dependencies:
