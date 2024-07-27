@@ -25,17 +25,12 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin {
   late PageController _pageViewController;
   late TabController _tabController;
-  late LoginBloc _loginBloc;
 
   @override
   void initState() {
     super.initState();
     _pageViewController = PageController();
     _tabController = TabController(length: 3, vsync: this);
-    _loginBloc = LoginBloc(
-      authRepository: GetIt.instance.get<AuthRepository>(),
-      secureStorage: GetIt.instance.get<FlutterSecureStorage>()
-    );
   }
 
   @override
@@ -43,7 +38,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     super.dispose();
     _pageViewController.dispose();
     _tabController.dispose();
-    _loginBloc.close();
   }
 
   final List<StatelessWidget> pages = List.generate(3, (index) => PageContent(pageIndex: index));
@@ -51,15 +45,18 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => _loginBloc,
+      create: (context) => LoginBloc(
+        authRepository: GetIt.instance<AuthRepository>(),
+        secureStorage: GetIt.instance<FlutterSecureStorage>(),
+      ),
       child: MultiBlocListener(
         listeners: [
           BlocSideEffectListener<LoginBloc, LoginSideEffect>(
             listener: (context, sideEffect) {
               if (sideEffect is LoginNavigateToHome) {
                 GoRouter.of(context).go('/home');
-              } else if (sideEffect is LoginNavigateToSignUp) {
-                GoRouter.of(context).go('/signup');
+              } else if (sideEffect is LoginNavigateToOnboarding) {
+                GoRouter.of(context).push('/onboarding');
               } else if (sideEffect is LoginShowError) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -84,7 +81,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
         child: LoginScreenContent(
           pageViewController: _pageViewController,
           pages: pages,
-          loginBloc: _loginBloc,
         ),
       ),
     );
@@ -94,14 +90,12 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
 class LoginScreenContent extends StatelessWidget {
   final PageController pageViewController;
   final List<StatelessWidget> pages;
-  final LoginBloc loginBloc;
 
   const LoginScreenContent({
-    Key? key,
+    super.key,
     required this.pageViewController,
     required this.pages,
-    required this.loginBloc,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +127,7 @@ class LoginScreenContent extends StatelessWidget {
             SocialLoginButton(
               loginType: SocialLoginType.KAKAO,
               onClick: () {
-                loginBloc.add(LoginButtonClicked());
+                BlocProvider.of<LoginBloc>(context).add(LoginButtonClicked());
               },
             ),
             const SizedBox(height: 14),

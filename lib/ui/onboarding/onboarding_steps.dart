@@ -1,4 +1,4 @@
-import 'package:gyeonggi_express/ui/signup/component/select_grid.dart';
+import 'component/select_grid.dart';
 
 final List<Map<String, dynamic>> signupSteps = [
   {

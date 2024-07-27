@@ -106,6 +106,7 @@ class SelectableGridItemData {
   final String emoji;
   final String title;
 
-  SelectableGridItemData(
-      {required this.id, required this.emoji, required this.title});
+  SelectableGridItemData({
+    required this.id, required this.emoji, required this.title
+  });
 }

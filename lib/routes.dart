@@ -9,14 +9,14 @@ import 'package:gyeonggi_express/ui/mypage/mypage_screen.dart';
 import 'package:gyeonggi_express/ui/mypage/mypage_setting_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_screen.dart';
-import 'package:gyeonggi_express/ui/signup/onboarding_screen.dart';
+import 'package:gyeonggi_express/ui/onboarding/onboarding_screen.dart';
 import 'package:gyeonggi_express/ui/splash/splash_screen.dart';
 import 'package:gyeonggi_express/ui/station/station_detail_screen.dart';
 
 enum Routes {
   splash,
   login,
-  signup,
+  onboarding,
 
   home,
 
@@ -32,7 +32,7 @@ enum Routes {
   mypage_privacy_policy;
 
   static final GoRouter config =
-      GoRouter(initialLocation: '/signup', observers: [
+      GoRouter(initialLocation: '/', observers: [
     RouterObserver()
   ], routes: [
     GoRoute(
@@ -52,9 +52,9 @@ enum Routes {
               builder: (context, state) => const LoginScreen()
           ),
           GoRoute(
-              path: "/signup",
-              name: Routes.signup.name,
-              builder: (context, state) => const SignupScreen()
+              path: "/onboarding",
+              name: Routes.onboarding.name,
+              builder: (context, state) => const OnboardingScreen()
           )
         ]),
 

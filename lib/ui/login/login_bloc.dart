@@ -19,13 +19,12 @@ final class LoginButtonClicked extends LoginEvent { }
 
 sealed class LoginSideEffect { }
 final class LoginNavigateToHome extends LoginSideEffect { }
-final class LoginNavigateToSignUp extends LoginSideEffect { }
+final class LoginNavigateToOnboarding extends LoginSideEffect { }
 final class LoginShowError extends LoginSideEffect {
   final String message;
 
   LoginShowError(this.message);
 }
-
 
 class LoginBloc extends SideEffectBloc<LoginEvent, LoginState, LoginSideEffect> {
   final AuthRepository _authRepository;
@@ -63,7 +62,7 @@ class LoginBloc extends SideEffectBloc<LoginEvent, LoginState, LoginSideEffect> 
             if (data.role == UserRole.roleUser) {
               produceSideEffect(LoginNavigateToHome());
             } else {
-              produceSideEffect(LoginNavigateToSignUp());
+              produceSideEffect(LoginNavigateToOnboarding());
             }
             emit(LoginSuccess());
           });
