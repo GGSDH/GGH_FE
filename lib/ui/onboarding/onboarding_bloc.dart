@@ -4,7 +4,7 @@ import 'package:side_effect_bloc/side_effect_bloc.dart';
 import '../../data/models/response/onboarding_response.dart';
 import '../../data/repository/auth_repository.dart';
 
-class OnboardingState {
+final class OnboardingState {
   final bool isLoading;
   final List<OnboardingTheme> themes;
   final List<String> selectedThemes;
@@ -108,7 +108,6 @@ class OnboardingBloc extends SideEffectBloc<OnboardingEvent, OnboardingState, On
 
       response.when(
         success: (data) {
-          state.copyWith(isLoading: false, themes: data);
           emit(state.copyWith(isLoading: false, themes: data));
         },
         apiError: (errorMessage, errorCode) {

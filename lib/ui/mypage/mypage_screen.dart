@@ -55,7 +55,7 @@ class MyPageScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
+              const Text(
                 "로그아웃 하시겠습니까?",
                 style: TextStyles.titleLarge,
               ),

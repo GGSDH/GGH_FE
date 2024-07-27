@@ -68,11 +68,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
           ),
           BlocListener<LoginBloc, LoginState>(
             listener: (context, state) {
-              if (state is LoginSuccess) {
-                log("Login Success");
-              } else if (state is LoginFailure) {
-                log("Login Failure");
-              } else {
+              if (state.isLoading) {
                 log("Login Loading");
               }
             },

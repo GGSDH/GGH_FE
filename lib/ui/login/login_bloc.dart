@@ -8,11 +8,19 @@ import '../../constants.dart';
 import '../../data/models/user_role.dart';
 import '../../data/repository/auth_repository.dart';
 
-sealed class LoginState { }
-final class LoginInitial extends LoginState { }
-final class LoginLoading extends LoginState { }
-final class LoginSuccess extends LoginState { }
-final class LoginFailure extends LoginState { }
+final class LoginState {
+  final bool isLoading;
+
+  LoginState({required this.isLoading});
+
+  factory LoginState.initial() {
+    return LoginState(isLoading: false);
+  }
+
+  LoginState copyWith({bool? isLoading}) {
+    return LoginState(isLoading: isLoading ?? this.isLoading);
+  }
+}
 
 sealed class LoginEvent { }
 final class LoginButtonClicked extends LoginEvent { }
@@ -35,7 +43,7 @@ class LoginBloc extends SideEffectBloc<LoginEvent, LoginState, LoginSideEffect> 
     required FlutterSecureStorage secureStorage,
   }) : _authRepository = authRepository,
         _storage = secureStorage,
-        super(LoginInitial()) {
+        super(LoginState.initial()) {
     on<LoginButtonClicked>(_onLoginButtonClicked);
   }
 
@@ -43,7 +51,7 @@ class LoginBloc extends SideEffectBloc<LoginEvent, LoginState, LoginSideEffect> 
     LoginButtonClicked event,
     Emitter<LoginState> emit
   ) async {
-    emit(LoginLoading());
+    emit(state.copyWith(isLoading: true));
 
     try {
       OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
@@ -55,6 +63,7 @@ class LoginBloc extends SideEffectBloc<LoginEvent, LoginState, LoginSideEffect> 
 
       await response.when(
         success: (data) async {
+          emit(state.copyWith(isLoading: false));
           await _storage.write(
             key: Constants.ACCESS_TOKEN_KEY,
             value: data.token.accessToken,
@@ -64,17 +73,16 @@ class LoginBloc extends SideEffectBloc<LoginEvent, LoginState, LoginSideEffect> 
             } else {
               produceSideEffect(LoginNavigateToOnboarding());
             }
-            emit(LoginSuccess());
           });
         },
         apiError: (errorMessage, errorCode) {
+          emit(state.copyWith(isLoading: false));
           produceSideEffect(LoginShowError(errorMessage));
-          emit(LoginFailure());
         }
       );
     } catch (error) {
+      emit(state.copyWith(isLoading: false));
       produceSideEffect(LoginShowError(error.toString()));
-      emit(LoginFailure());
     }
   }
 
