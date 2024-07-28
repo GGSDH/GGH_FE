@@ -34,7 +34,7 @@ enum Routes {
   mypage_privacy_policy;
 
   static final GoRouter config =
-      GoRouter(initialLocation: '/', observers: [
+      GoRouter(initialLocation: '/stations', observers: [
     RouterObserver()
   ], routes: [
     GoRoute(
@@ -49,22 +49,19 @@ enum Routes {
             backgroundColor: Colors.white, body: SafeArea(child: child)),
         routes: [
           GoRoute(
-            path: '/login',
-            name: Routes.login.name,
-            builder: (context, state) => const LoginScreen()
-          ),
+              path: '/login',
+              name: Routes.login.name,
+              builder: (context, state) => const LoginScreen()),
           GoRoute(
-            path: "/onboarding",
-            name: Routes.onboarding.name,
-            builder: (context, state) => const OnboardingScreen()
-          ),
+              path: "/onboarding",
+              name: Routes.onboarding.name,
+              builder: (context, state) => const OnboardingScreen()),
           GoRoute(
             path: '/onboarding/complete',
             name: Routes.onboarding_complete.name,
             builder: (context, state) => const OnboardingCompleteScreen(),
           )
-        ]
-    ),
+        ]),
 
     // 탭 루트 화면들
     ShellRoute(
