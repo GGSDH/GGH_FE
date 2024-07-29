@@ -43,10 +43,30 @@ final class MyPageState {
 
 sealed class MyPageEvent { }
 final class MyPageInitialize extends MyPageEvent { }
-final class MyPageSettingButtonClicked extends MyPageEvent { }
+final class MyPageSettingButtonClicked extends MyPageEvent {
+  final String email;
+  final String nickname;
+  final LoginProvider loginType;
+
+  MyPageSettingButtonClicked({
+    required this.email,
+    required this.nickname,
+    required this.loginType,
+  });
+}
 
 sealed class MyPageSideEffect { }
-final class MyPageNavigateToSetting extends MyPageSideEffect { }
+final class MyPageNavigateToSetting extends MyPageSideEffect {
+  final String email;
+  final String nickname;
+  final LoginProvider loginType;
+
+  MyPageNavigateToSetting({
+    required this.email,
+    required this.nickname,
+    required this.loginType,
+  });
+}
 final class MyPageShowError extends MyPageSideEffect {
   final String message;
 
@@ -101,6 +121,12 @@ class MyPageBloc extends SideEffectBloc<MyPageEvent, MyPageState, MyPageSideEffe
     MyPageSettingButtonClicked event,
     Emitter<MyPageState> emit
   ) {
-    produceSideEffect(MyPageNavigateToSetting());
+    produceSideEffect(
+      MyPageNavigateToSetting(
+        email: event.email,
+        nickname: event.nickname,
+        loginType: event.loginType,
+      )
+    );
   }
 }

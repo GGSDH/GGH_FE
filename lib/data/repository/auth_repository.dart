@@ -20,4 +20,8 @@ abstract class AuthRepository {
   });
 
   Future<ApiResult<ProfileResponse>> getProfileInfo();
+
+  Future<ApiResult<ProfileResponse>> updateNickname({
+    required String nickname
+  });
 }

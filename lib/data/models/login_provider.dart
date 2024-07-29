@@ -4,7 +4,18 @@ enum LoginProvider {
   @JsonValue("KAKAO")
   kakao,
   @JsonValue("APPLE")
-  apple
+  apple;
+
+  static LoginProvider fromJson(String value) {
+    switch (value) {
+      case 'KAKAO':
+        return LoginProvider.kakao;
+      case 'APPLE':
+        return LoginProvider.apple;
+      default:
+        throw ArgumentError('Unknown LoginProvider: $value');
+    }
+  }
 }
 
 extension LoginProviderExtension on LoginProvider {

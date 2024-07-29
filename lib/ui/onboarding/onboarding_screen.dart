@@ -13,34 +13,42 @@ import 'component/select_grid.dart';
 import 'onboarding_bloc.dart';
 
 class OnboardingScreen extends StatelessWidget {
+
   const OnboardingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-        create: (context) => OnboardingBloc(
-              authRepository: GetIt.instance.get<AuthRepository>(),
-            ),
-        child: BlocSideEffectListener<OnboardingBloc, OnboardingSideEffect>(
-            listener: (context, sideEffect) {
+      create: (context) => OnboardingBloc(
+        authRepository: GetIt.instance.get<AuthRepository>(),
+      ),
+      child: BlocSideEffectListener<OnboardingBloc, OnboardingSideEffect>(
+        listener: (context, sideEffect) {
           if (sideEffect is OnboardingComplete) {
             GoRouter.of(context).go('/onboarding/complete');
           } else if (sideEffect is OnboardingShowError) {
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(sideEffect.message)));
-          }
-        }, child: BlocBuilder<OnboardingBloc, OnboardingState>(
-                builder: (context, state) {
-          if (state.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else {
-            return OnboardingScreenContent(
-              selectedThemes: state.selectedThemes,
-              themes: state.themes,
-              onboardingBloc: context.read<OnboardingBloc>(),
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(sideEffect.message)
+              )
             );
           }
-        })));
+        },
+        child: BlocBuilder<OnboardingBloc, OnboardingState>(
+          builder: (context, state) {
+            if (state.isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            } else {
+              return OnboardingScreenContent(
+                selectedThemes: state.selectedThemes,
+                themes: state.themes,
+                onboardingBloc: context.read<OnboardingBloc>(),
+              );
+            }
+          }
+        )
+      )
+    );
   }
 }
 
@@ -49,11 +57,12 @@ class OnboardingScreenContent extends StatelessWidget {
   final List<OnboardingTheme> themes;
   final OnboardingBloc onboardingBloc;
 
-  const OnboardingScreenContent(
-      {super.key,
-      required this.selectedThemes,
-      required this.themes,
-      required this.onboardingBloc});
+  const OnboardingScreenContent({
+    super.key,
+    required this.selectedThemes,
+    required this.themes,
+    required this.onboardingBloc
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -61,9 +70,7 @@ class OnboardingScreenContent extends StatelessWidget {
       children: [
         AppActionBar(
           rightText: "",
-          onBackPressed: () {
-            GoRouter.of(context).pop();
-          },
+          onBackPressed: () { GoRouter.of(context).pop(); },
           menuItems: const [],
         ),
         Expanded(
@@ -79,23 +86,23 @@ class OnboardingScreenContent extends StatelessWidget {
                       style: TextStyles.headlineXSmall,
                     ),
                     SizedBox(height: 4),
-                    Text("여행 테마를 선택해 주세요", style: TextStyles.bodyLarge),
+                    Text(
+                      "여행 테마를 선택해 주세요",
+                      style: TextStyles.bodyLarge
+                    ),
                   ],
                 ),
               ),
               Expanded(
                 child: SelectableGrid(
-                  items: themes
-                      .map((theme) => SelectableGridItemData(
-                          id: theme.name,
-                          emoji: theme.icon,
-                          title: theme.title))
-                      .toList(),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  items: themes.map(
+                    (theme) => SelectableGridItemData(id: theme.name, emoji: theme.icon, title: theme.title)
+                  ).toList(),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20, vertical: 14
+                  ),
                   onSelectionChanged: (String themeId) {
-                    BlocProvider.of<OnboardingBloc>(context)
-                        .add(OnboardingSelectTheme(themeId));
+                    BlocProvider.of<OnboardingBloc>(context).add(OnboardingSelectTheme(themeId));
                   },
                   selectedIds: selectedThemes,
                   maxSelection: themes.length,
@@ -111,9 +118,7 @@ class OnboardingScreenContent extends StatelessWidget {
             child: AppButton(
               text: "다음",
               onPressed: () {
-                BlocProvider.of<OnboardingBloc>(context).add(
-                    OnboardingNextButtonClicked(
-                        selectedThemes: selectedThemes));
+                BlocProvider.of<OnboardingBloc>(context).add(OnboardingNextButtonClicked(selectedThemes: selectedThemes));
               },
               isEnabled: selectedThemes.isNotEmpty,
               onIllegalPressed: () {
