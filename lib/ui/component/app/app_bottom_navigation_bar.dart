@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../themes/color_styles.dart';
-import '../../themes/text_styles.dart';
+import '../../../themes/color_styles.dart';
+import '../../../themes/text_styles.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {
   final int currentIndex;
@@ -15,7 +15,8 @@ class CustomBottomNavigationBar extends StatefulWidget {
   });
 
   @override
-  _CustomBottomNavigationBarState createState() => _CustomBottomNavigationBarState();
+  _CustomBottomNavigationBarState createState() =>
+      _CustomBottomNavigationBarState();
 }
 
 class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
@@ -34,7 +35,11 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
     widget.onTap(index);
   }
 
-  Widget _buildNavItem({required int index, required String selectedIconPath, required String unselectedIconPath, required String label}) {
+  Widget _buildNavItem(
+      {required int index,
+      required String selectedIconPath,
+      required String unselectedIconPath,
+      required String label}) {
     final isSelected = _currentIndex == index;
     return Expanded(
       child: GestureDetector(
@@ -99,13 +104,15 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
                 _buildNavItem(
                   index: 1,
                   selectedIconPath: 'assets/icons/ic_recommend_selected.svg',
-                  unselectedIconPath: 'assets/icons/ic_recommend_unselected.svg',
+                  unselectedIconPath:
+                      'assets/icons/ic_recommend_unselected.svg',
                   label: 'AI추천',
                 ),
                 _buildNavItem(
                   index: 2,
                   selectedIconPath: 'assets/icons/ic_photo_book_selected.svg',
-                  unselectedIconPath: 'assets/icons/ic_photo_book_unselected.svg',
+                  unselectedIconPath:
+                      'assets/icons/ic_photo_book_unselected.svg',
                   label: '포토북',
                 ),
                 _buildNavItem(

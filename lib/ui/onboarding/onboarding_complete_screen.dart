@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:gyeonggi_express/ui/component/app_button.dart';
+import 'package:gyeonggi_express/ui/component/app/app_button.dart';
 
 import '../../themes/text_styles.dart';
 
