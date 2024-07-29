@@ -22,4 +22,8 @@ abstract class AuthDataSource {
 
   Future<ApiResult<ProfileResponse>> getProfileInfo();
 
+  Future<ApiResult<ProfileResponse>> updateNickname({
+    required String nickname
+  });
+
 }

@@ -4,7 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
 import 'package:gyeonggi_express/ui/component/app_action_bar.dart';
-import 'package:gyeonggi_express/ui/component/appbutton.dart';
+import 'package:gyeonggi_express/ui/component/app_button.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../data/models/response/onboarding_response.dart';
@@ -99,7 +99,8 @@ class OnboardingScreenContent extends StatelessWidget {
                     (theme) => SelectableGridItemData(id: theme.name, emoji: theme.icon, title: theme.title)
                   ).toList(),
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 14),
+                    horizontal: 20, vertical: 14
+                  ),
                   onSelectionChanged: (String themeId) {
                     BlocProvider.of<OnboardingBloc>(context).add(OnboardingSelectTheme(themeId));
                   },

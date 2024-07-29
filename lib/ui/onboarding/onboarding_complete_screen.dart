@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../themes/text_styles.dart';
-import '../component/appbutton.dart';
+import '../component/app_button.dart';
 
 class OnboardingCompleteScreen extends StatelessWidget {
 

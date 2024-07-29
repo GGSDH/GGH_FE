@@ -1,13 +1,3 @@
-import 'dart:convert';
-
-import 'package:dio/dio.dart';
-
-import '../models/api_result.dart';
-import '../models/response/base_response.dart';
-import '../models/response/error_response.dart';
-
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 
 import '../models/api_result.dart';
@@ -16,9 +6,9 @@ import '../models/response/error_response.dart';
 
 extension DioExtensions on Dio {
   Future<ApiResult<T>> makeRequest<T>(
-      Future<Response> Function() request,
-      T Function(Object? json) fromJsonT,
-      ) async {
+    Future<Response> Function() request,
+    T Function(Object? json) fromJsonT,
+  ) async {
     try {
       final response = await request();
 

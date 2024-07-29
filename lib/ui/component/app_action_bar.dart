@@ -9,11 +9,12 @@ class AppActionBar extends StatelessWidget {
 
   final List<ActionBarMenuItem> menuItems;
 
-  const AppActionBar(
-      {super.key,
-      required this.rightText,
-      required this.onBackPressed,
-      required this.menuItems});
+  const AppActionBar({
+    super.key,
+    required this.rightText,
+    required this.onBackPressed,
+    required this.menuItems
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,13 +28,14 @@ class AppActionBar extends StatelessWidget {
             SizedBox(
               width: 24,
               child: IconButton(
-                  icon: SvgPicture.asset(
-                    "assets/icons/ic_arrow_back.svg",
-                    width: 24,
-                    height: 24,
-                  ),
-                  onPressed: onBackPressed,
-                  padding: EdgeInsets.zero),
+                icon: SvgPicture.asset(
+                  "assets/icons/ic_arrow_back.svg",
+                  width: 24,
+                  height: 24,
+                ),
+                onPressed: onBackPressed,
+                padding: EdgeInsets.zero
+              ),
             ),
             Row(
               children: [
@@ -51,9 +53,10 @@ class AppActionBar extends StatelessWidget {
                     child: SizedBox(
                       width: 24,
                       child: IconButton(
-                          icon: item.icon,
-                          onPressed: item.onPressed,
-                          padding: EdgeInsets.zero),
+                        icon: item.icon,
+                        onPressed: item.onPressed,
+                        padding: EdgeInsets.zero
+                      ),
                     ),
                   ),
                 ),

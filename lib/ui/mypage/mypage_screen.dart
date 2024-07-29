@@ -24,7 +24,7 @@ class MyPageScreen extends StatelessWidget {
       child: BlocSideEffectListener<MyPageBloc, MyPageSideEffect>(
         listener: (context, sideEffect) {
           if (sideEffect is MyPageNavigateToSetting) {
-            context.push('/mypage/setting');
+            context.push('/mypage/setting?nickname=${sideEffect.nickname}&email=${sideEffect.email}&loginType=${sideEffect.loginType.name}');
           } else if (sideEffect is MyPageShowError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -43,7 +43,13 @@ class MyPageScreen extends StatelessWidget {
               return SafeArea(
                 child: MyPageContent(
                   onTapSetting: () {
-                    context.read<MyPageBloc>().add(MyPageSettingButtonClicked());
+                    context.read<MyPageBloc>().add(
+                      MyPageSettingButtonClicked(
+                        email: state.email,
+                        nickname: state.nickname,
+                        loginType: state.loginProvider,
+                      )
+                    );
                   },
                   onTapLocInfoTerms: () {
                     context.push('/mypage/policy/privacy?title=위치정보 이용약관&url=${Constants.LOCATION_INFO_TERMS_URL}');
