@@ -104,7 +104,7 @@ enum Routes {
           GoRoute(
             path: '/photobook',
             name: Routes.photobook.name,
-            builder: (context, state) => const PhotobookScreen()),
+            builder: (context, state) => PhotobookScreen()),
           GoRoute(
             path: '/mypage',
             name: Routes.mypage.name,
