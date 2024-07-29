@@ -107,7 +107,7 @@ class MyPageSettingBloc extends SideEffectBloc<MyPageSettingEvent, MyPageSetting
 
     try {
       final response = await _authRepository.updateNickname(
-          nickname: state.nickname
+        nickname: event.nickname
       );
 
       response.when(

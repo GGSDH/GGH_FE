@@ -24,7 +24,12 @@ class MyPageScreen extends StatelessWidget {
       child: BlocSideEffectListener<MyPageBloc, MyPageSideEffect>(
         listener: (context, sideEffect) {
           if (sideEffect is MyPageNavigateToSetting) {
-            context.push('/mypage/setting?nickname=${sideEffect.nickname}&email=${sideEffect.email}&loginType=${sideEffect.loginType.name}');
+            context.push(
+              '/mypage/setting?nickname=${sideEffect.nickname}&email=${sideEffect.email}&loginType=${sideEffect.loginType.name}',
+            ).then((_) {
+              // Pop해서 돌아왔을 때 이벤트 호출
+              context.read<MyPageBloc>().add(MyPageInitialize());
+            });
           } else if (sideEffect is MyPageShowError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
