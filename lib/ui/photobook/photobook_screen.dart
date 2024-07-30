@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../themes/color_styles.dart';
 
@@ -13,21 +15,40 @@ class PhotobookScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: DefaultTabController(
-        length: 2,
-        child: Column(
-          children: [
-            const _TabBarSection(),
-            Expanded(
-              child: TabBarView(
-                children: [
-                  _NaverMapSection(mapControllerCompleter: _mapControllerCompleter),
-                  _NaverMapSection(mapControllerCompleter: _mapControllerCompleter),
-                ],
-              ),
+      child: Stack(
+        children: [
+          DefaultTabController(
+            length: 2,
+            child: Column(
+              children: [
+                const _TabBarSection(),
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      _NaverMapSection(mapControllerCompleter: _mapControllerCompleter),
+                      _NaverMapSection(mapControllerCompleter: _mapControllerCompleter),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          Positioned(
+            bottom: 20,
+            right: 10,
+            child: GestureDetector(
+              onTap: () {
+                GoRouter.of(context).push("/add-photobook");
+              },
+              child: SvgPicture.asset(
+                "assets/icons/ic_add_photo.svg",
+                width: 52,
+                height: 52,
+                fit: BoxFit.fill,
+              ),
+            )
+          ),
+        ]
       ),
     );
   }

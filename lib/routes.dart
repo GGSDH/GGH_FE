@@ -8,6 +8,7 @@ import 'package:gyeonggi_express/ui/mypage/mypage_policy_screen.dart';
 import 'package:gyeonggi_express/ui/mypage/mypage_screen.dart';
 import 'package:gyeonggi_express/ui/mypage/mypage_setting_screen.dart';
 import 'package:gyeonggi_express/ui/onboarding/onboarding_complete_screen.dart';
+import 'package:gyeonggi_express/ui/photobook/add/add_photobook_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_screen.dart';
 import 'package:gyeonggi_express/ui/onboarding/onboarding_screen.dart';
@@ -28,6 +29,11 @@ enum Routes {
 
   recommend,
   photobook,
+
+  add_photobook,
+  add_photobook_select_duration,
+  add_photobook_select_theme,
+  add_photobook_loading,
 
   mypage,
   mypage_setting,
@@ -114,10 +120,17 @@ enum Routes {
       ),
 
       GoRoute(
+        path: '/add-photobook',
+        name: Routes.add_photobook.name,
+        builder: (context, state) => const AddPhotobookScreen()
+      ),
+
+      GoRoute(
         path: '/stations',
         name: Routes.stations.name,
         builder: (context, state) => const StationDetailScreen()
       ),
+
       GoRoute(
         path: '/mypage/setting',
         name: Routes.mypage_setting.name,
@@ -135,7 +148,6 @@ enum Routes {
           url: state.uri.queryParameters['url'] ?? "",
         ),
       ),
-
       GoRoute(
         path: '/mypage/policy/privacy',
         name: Routes.mypage_privacy_policy.name,
