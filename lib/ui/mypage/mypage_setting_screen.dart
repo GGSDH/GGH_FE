@@ -9,6 +9,7 @@ import 'package:side_effect_bloc/side_effect_bloc.dart';
 import '../../data/repository/auth_repository.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
+import '../component/app/app_text_field.dart';
 import 'mypage_setting_bloc.dart';
 
 class MyPageSettingScreen extends StatefulWidget {
@@ -202,33 +203,12 @@ class MyPageSettingScreenContent extends StatelessWidget {
               ],
             ),
           ),
-          TextField(
-            enabled: false,
-            decoration: InputDecoration(
-              contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16, vertical: 12),
-              hintText: email,
-              hintStyle: TextStyles.bodyLarge.copyWith(
-                color: ColorStyles.gray500,
-              ),
-              border: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                // Adding borderRadius to round the edges
-                borderSide: BorderSide(
-                  color: ColorStyles.gray50,
-                  width: 1,
-                ),
-              ),
-              focusedBorder: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                // Adding borderRadius to round the edges
-                borderSide: BorderSide(
-                  color: ColorStyles.gray50,
-                  width: 1,
-                ),
-              ),
+          AppTextField(
+            hintText: email,
+            hintStyle: TextStyles.bodyLarge.copyWith(
+              color: ColorStyles.gray500,
             ),
-          ),
+          )
         ],
       ),
     );
@@ -247,56 +227,18 @@ class MyPageSettingScreenContent extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          TextField(
-            decoration: InputDecoration(
-              contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16, vertical: 12),
-              hintText: "닉네임을 입력해주세요",
-              hintStyle: TextStyles.bodyLarge.copyWith(
-                color: ColorStyles.gray500,
-              ),
-              border: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                // Adding borderRadius to round the edges
-                borderSide: BorderSide(
-                  color: ColorStyles.gray200,
-                  width: 1,
-                ),
-              ),
-              focusedBorder: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                // Adding borderRadius to round the edges
-                borderSide: BorderSide(
-                  color: ColorStyles.gray900,
-                  width: 1,
-                ),
-              ),
-              enabledBorder: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                // Adding borderRadius to round the edges
-                borderSide: BorderSide(
-                  color: ColorStyles.gray200,
-                  width: 1,
-                ),
-              ),
-              suffixIcon: nicknameController.text.isNotEmpty
-                  ? IconButton(
-                onPressed: () {
-                  nicknameController.clear();
-                },
-                icon: SvgPicture.asset(
-                  "assets/icons/ic_clear.svg",
-                  width: 20,
-                  height: 20,
-                ),
-              )
-                  : null,
-            ),
-            style: TextStyles.bodyLarge.copyWith(
-              color: ColorStyles.gray900,
-            ),
+
+          AppTextField(
             controller: nicknameController,
-          ),
+            hintText: "닉네임을 입력해주세요",
+            hintStyle: TextStyles.bodyLarge.copyWith(
+              color: ColorStyles.gray500,
+            ),
+            suffixIconAsset: "assets/icons/ic_clear.svg",
+            onSuffixIconPressed: () {
+              nicknameController.clear();
+            },
+          )
         ],
       ),
     );
