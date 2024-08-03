@@ -117,7 +117,7 @@ enum Routes {
     GoRoute(
         path: '/stations',
         name: Routes.stations.name,
-        builder: (context, state) => const StationDetailScreen()),
+        builder: (context, state) => StationDetailScreen()),
 
     GoRoute(
         path: '/mypage/setting',
