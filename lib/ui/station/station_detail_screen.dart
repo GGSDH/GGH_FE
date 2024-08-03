@@ -35,50 +35,114 @@ class _StationDetailScreenState extends State<StationDetailScreen> {
     return Material(
         color: Colors.white,
         child: SafeArea(
-            child: SingleChildScrollView(
-          child: Column(
-            children: [
-              AppActionBar(rightText: "", onBackPressed: () => {}, menuItems: [
-                ActionBarMenuItem(
-                    icon: SvgPicture.asset(
-                      "assets/icons/ic_map.svg",
-                      width: 24,
-                      height: 24,
-                    ),
-                    onPressed: () => print("map clicked")),
-                ActionBarMenuItem(
-                    icon: SvgPicture.asset(
-                      "assets/icons/ic_heart.svg",
-                      width: 24,
-                      height: 24,
-                    ),
-                    onPressed: () => print("like clicked")),
-              ]),
-              _imageViewer(),
-              _stationHeader(),
-              const Divider(
-                color: ColorStyles.gray100,
-                thickness: 1,
-              ),
-              _stationSummary(),
-              const Divider(
-                color: ColorStyles.gray100,
-                thickness: 1,
-              ),
-              _laneIncludingStation(),
-              const Divider(
-                color: ColorStyles.gray100,
-                thickness: 1,
-              ),
-              _nearbyRecommendations(),
-              const Divider(
-                color: ColorStyles.gray100,
-                thickness: 1,
-              ),
-              _buildBlogReviews(),
-            ],
+            child: Scaffold(
+          backgroundColor: Colors.white,
+          bottomNavigationBar: _bottomNavigationBar(),
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                AppActionBar(
+                    rightText: "",
+                    onBackPressed: () => {},
+                    menuItems: [
+                      ActionBarMenuItem(
+                          icon: SvgPicture.asset(
+                            "assets/icons/ic_map.svg",
+                            width: 24,
+                            height: 24,
+                          ),
+                          onPressed: () => print("map clicked")),
+                      ActionBarMenuItem(
+                          icon: SvgPicture.asset(
+                            "assets/icons/ic_heart.svg",
+                            width: 24,
+                            height: 24,
+                          ),
+                          onPressed: () => print("like clicked")),
+                    ]),
+                _imageViewer(),
+                _stationHeader(),
+                const Divider(
+                  color: ColorStyles.gray100,
+                  thickness: 1,
+                ),
+                _stationSummary(),
+                const Divider(
+                  color: ColorStyles.gray100,
+                  thickness: 1,
+                ),
+                _laneIncludingStation(),
+                const Divider(
+                  color: ColorStyles.gray100,
+                  thickness: 1,
+                ),
+                _nearbyRecommendations(),
+                const Divider(
+                  color: ColorStyles.gray100,
+                  thickness: 1,
+                ),
+                _buildBlogReviews(),
+              ],
+            ),
           ),
         )));
+  }
+
+  Widget _bottomNavigationBar() {
+    return Container(
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            children: [
+              _buildNavigationItem(
+                  SvgPicture.asset(
+                    "assets/icons/ic_marker_01.svg",
+                    width: 24,
+                    height: 24,
+                  ),
+                  "1"),
+              _buildNavigationItem(
+                  SvgPicture.asset(
+                    "assets/icons/ic_heart.svg",
+                    width: 24,
+                    height: 24,
+                  ),
+                  "2"),
+              _buildNavigationItem(
+                  SvgPicture.asset(
+                    "assets/icons/ic_message_circle_2.svg",
+                    width: 24,
+                    height: 24,
+                  ),
+                  "3"),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavigationItem(Widget icon, String text) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(0, 14, 0, 9),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            icon,
+            const SizedBox(height: 4),
+            Text(
+              text,
+              style: TextStyles.bodyXSmall.copyWith(
+                color: ColorStyles.gray500,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _laneIncludingStation() {
@@ -402,6 +466,9 @@ class _StationDetailScreenState extends State<StationDetailScreen> {
               ),
             ),
           ),
+        ),
+        const SizedBox(
+          height: 34,
         )
       ],
     );
