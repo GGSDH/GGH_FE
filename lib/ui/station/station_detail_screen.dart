@@ -10,105 +10,214 @@ import 'package:gyeonggi_express/ui/component/lane/lane_list_item.dart';
 import 'package:gyeonggi_express/ui/component/restaurant/restaurant_list_item.dart';
 
 class StationDetailScreen extends StatefulWidget {
-  static const images = [
-    "https://picsum.photos/800/300",
-    "https://picsum.photos/800/300",
-    "https://picsum.photos/800/300",
-    "https://picsum.photos/800/300"
-  ];
+  final exampleData = StationDetailScreenData(
+    images: [
+      "https://picsum.photos/800/300",
+      "https://picsum.photos/800/300",
+      "https://picsum.photos/800/300",
+      "https://picsum.photos/800/300"
+    ],
+    location: "서울역",
+    title: "서울역",
+    subtitle: "서울의 중심, 역사와 문화의 중심지",
+    phoneNumber: "02-1234-5678",
+    placeType: PlaceType.spot,
+    spotSummary: SpotSummary(
+      summaryImageUrl: "https://picsum.photos/800/300",
+      title: "서울역 개요",
+      description: "서울역은 대한민국 수도 서울의 중심부에 위치한 철도역이자 역사문화공간입니다.",
+    ),
+    lanes: [
+      Lane(
+        category: "힐링",
+        title: "서울 도심 속 힐링 여행",
+        description: "서울역에서 시작하는 도심 속 힐링 여행",
+        period: "1박 2일",
+        likeCount: 10,
+        isLiked: true,
+      ),
+      Lane(
+        category: "맛집 탐방",
+        title: "서울역 주변 맛집 탐방",
+        description: "서울역 주변 숨은 맛집을 찾아가는 여행",
+        period: "당일치기",
+        likeCount: 25,
+        isLiked: false,
+      ),
+    ],
+    nearbyRestaurants: [
+      Restaurant(
+        name: "한식 식당",
+        rating: 4.5,
+        location: "서울역",
+        category: "한식",
+        isLiked: true,
+      ),
+      Restaurant(
+        name: "중식 식당",
+        rating: 4.2,
+        location: "서울역",
+        category: "중식",
+        isLiked: false,
+      ),
+      Restaurant(
+        name: "일식 식당",
+        rating: 4.8,
+        location: "서울역",
+        category: "일식",
+        isLiked: true,
+      ),
+    ],
+    blogItems: [
+      BlogItem(
+        title: "서울역 맛집 탐방기",
+        date: "2023.05.01",
+        imageUrl: "https://picsum.photos/200/200",
+        articleUrl: "https://example.com/blog/1",
+      ),
+      BlogItem(
+        title: "서울역에서 하루 보내기",
+        date: "2023.04.15",
+        imageUrl: "https://picsum.photos/200/200",
+        articleUrl: "https://example.com/blog/2",
+      ),
+    ],
+  );
 
-  static const summaryImage = "https://picsum.photos/800/300";
-
-  const StationDetailScreen({super.key});
+  StationDetailScreen({super.key});
 
   @override
-  State<StatefulWidget> createState() {
-    return _StationDetailScreenState();
-  }
+  State<StationDetailScreen> createState() => _StationDetailScreenState();
 }
 
 class _StationDetailScreenState extends State<StationDetailScreen> {
+  late final StationDetailScreenData data;
   int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    data = widget.exampleData;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Material(
         color: Colors.white,
         child: SafeArea(
-            child: SingleChildScrollView(
-          child: Column(
-            children: [
-              AppActionBar(rightText: "", onBackPressed: () => {}, menuItems: [
-                ActionBarMenuItem(
-                    icon: SvgPicture.asset(
-                      "assets/icons/ic_map.svg",
-                      width: 24,
-                      height: 24,
-                    ),
-                    onPressed: () => print("map clicked")),
-                ActionBarMenuItem(
-                    icon: SvgPicture.asset(
-                      "assets/icons/ic_heart.svg",
-                      width: 24,
-                      height: 24,
-                    ),
-                    onPressed: () => print("like clicked")),
-              ]),
-              _imageViewer(),
-              _stationHeader(),
-              const Divider(
-                color: ColorStyles.gray100,
-                thickness: 1,
-              ),
-              _stationSummary(),
-              const Divider(
-                color: ColorStyles.gray100,
-                thickness: 1,
-              ),
-              _laneIncludingStation(),
-              const Divider(
-                color: ColorStyles.gray100,
-                thickness: 1,
-              ),
-              _nearbyRecommendations(),
-              const Divider(
-                color: ColorStyles.gray100,
-                thickness: 1,
-              ),
-              _buildBlogReviews(),
-            ],
+            child: Scaffold(
+          backgroundColor: Colors.white,
+          bottomNavigationBar: _bottomNavigationBar(),
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                AppActionBar(
+                    rightText: "",
+                    onBackPressed: () => {},
+                    menuItems: [
+                      ActionBarMenuItem(
+                          icon: SvgPicture.asset(
+                            "assets/icons/ic_map.svg",
+                            width: 24,
+                            height: 24,
+                          ),
+                          onPressed: () => print("map clicked")),
+                      ActionBarMenuItem(
+                          icon: SvgPicture.asset(
+                            "assets/icons/ic_heart.svg",
+                            width: 24,
+                            height: 24,
+                          ),
+                          onPressed: () => print("like clicked")),
+                    ]),
+                _imageViewer(),
+                _stationHeader(),
+                const Divider(
+                  color: ColorStyles.gray100,
+                  thickness: 1,
+                ),
+                data.placeType == PlaceType.spot
+                    ? _stationSpotSummary()
+                    : _stationRestaurantSummary(),
+                const Divider(
+                  color: ColorStyles.gray100,
+                  thickness: 1,
+                ),
+                _laneIncludingStation(),
+                const Divider(
+                  color: ColorStyles.gray100,
+                  thickness: 1,
+                ),
+                _nearbyRecommendations(),
+                const Divider(
+                  color: ColorStyles.gray100,
+                  thickness: 1,
+                ),
+                _buildBlogReviews(),
+              ],
+            ),
           ),
         )));
   }
 
-  Widget _laneIncludingStation() {
-    final lanes = [
-      {
-        'category': '힐링',
-        'title': '이게낭만이지선',
-        'description': '낭만 가득한 힐링 맛집 가득 여행',
-        'period': '4박 5일',
-        'likeCount': 3,
-        'isLiked': true
-      },
-      {
-        'category': '힐링',
-        'title': '이게낭만이지선',
-        'description': '낭만 가득한 힐링 맛집 가득 여행',
-        'period': '4박 5일',
-        'likeCount': 3,
-        'isLiked': false
-      },
-      {
-        'category': '힐링',
-        'title': '이게낭만이지선',
-        'description': '낭만 가득한 힐링 맛집 가득 여행',
-        'period': '4박 5일',
-        'likeCount': 3,
-        'isLiked': false
-      }
-    ];
+  Widget _bottomNavigationBar() {
+    return Container(
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            children: [
+              _buildNavigationItem(
+                  SvgPicture.asset(
+                    "assets/icons/ic_marker_01.svg",
+                    width: 24,
+                    height: 24,
+                  ),
+                  "1"),
+              _buildNavigationItem(
+                  SvgPicture.asset(
+                    "assets/icons/ic_heart.svg",
+                    width: 24,
+                    height: 24,
+                  ),
+                  "2"),
+              _buildNavigationItem(
+                  SvgPicture.asset(
+                    "assets/icons/ic_message_circle_2.svg",
+                    width: 24,
+                    height: 24,
+                  ),
+                  "3"),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
+  Widget _buildNavigationItem(Widget icon, String text) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(0, 14, 0, 9),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            icon,
+            const SizedBox(height: 4),
+            Text(
+              text,
+              style: TextStyles.bodyXSmall.copyWith(
+                color: ColorStyles.gray500,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _laneIncludingStation() {
     return Column(
       children: [
         Padding(
@@ -132,23 +241,22 @@ class _StationDetailScreenState extends State<StationDetailScreen> {
                 )
               ]),
         ),
-        ...lanes.map(
-          (lane) {
-            return LaneListItem(
-              category: lane['category'] as String,
-              title: lane['title'] as String,
-              description: lane['description'] as String,
-              period: lane['period'] as String,
-              likeCount: lane['likeCount'] as int,
-              isLiked: lane['isLiked'] as bool,
-            );
-          },
-        )
+        ...data.lanes.map(
+          (lane) => LaneListItem(
+            category: lane.category,
+            title: lane.title,
+            description: lane.description,
+            period: lane.period,
+            likeCount: lane.likeCount,
+            isLiked: lane.isLiked,
+          ),
+        ),
       ],
     );
   }
 
-  Widget _stationSummary() {
+  Widget _stationSpotSummary() {
+    final spotSummary = data.spotSummary!;
     return SizedBox(
       width: double.infinity,
       child: Padding(
@@ -156,25 +264,80 @@ class _StationDetailScreenState extends State<StationDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("Station Summary", style: TextStyles.titleLarge),
+            Text(spotSummary.title, style: TextStyles.titleLarge),
             const SizedBox(
               height: 8,
             ),
             Text(
-              "Station Summary Description",
+              spotSummary.description,
               style: TextStyles.bodyLarge.copyWith(color: ColorStyles.gray600),
             ),
             const SizedBox(
               height: 24,
             ),
             Image.network(
-              StationDetailScreen.summaryImage,
+              spotSummary.summaryImageUrl,
               fit: BoxFit.cover,
               height: 295,
               width: double.infinity,
             )
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _stationRestaurantSummary() {
+    final restaurantSummary = data.restaurantSummary!;
+    return SizedBox(
+      width: double.infinity,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(0, 16, 0, 20),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Text("Restaurant Menu", style: TextStyles.titleLarge),
+          ),
+          ...restaurantSummary.menus.map(
+            (menu) => _restaurantMenuItem(
+              menu.imageUrl,
+              menu.title,
+              menu.description,
+            ),
+          ),
+        ]),
+      ),
+    );
+  }
+
+  Widget _restaurantMenuItem(
+      String imageUrl, String title, String description) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Image.network(
+            imageUrl,
+            fit: BoxFit.cover,
+            height: 200,
+            width: double.infinity,
+          ),
+          const SizedBox(
+            height: 8,
+          ),
+          Text(
+            title,
+            style: TextStyles.titleLarge.copyWith(color: ColorStyles.gray900),
+          ),
+          const SizedBox(
+            height: 8,
+          ),
+          Text(
+            description,
+            style: TextStyles.bodyLarge.copyWith(color: ColorStyles.gray600),
+          ),
+        ],
       ),
     );
   }
@@ -197,7 +360,7 @@ class _StationDetailScreenState extends State<StationDetailScreen> {
               ),
               const SizedBox(width: 4),
               Text(
-                "서울역",
+                data.location,
                 style: TextStyles.bodyMedium.copyWith(
                     fontWeight: FontWeight.w400, color: ColorStyles.primary),
               ),
@@ -206,41 +369,47 @@ class _StationDetailScreenState extends State<StationDetailScreen> {
           const SizedBox(
             height: 8,
           ),
-          const Text("Station Name", style: TextStyles.title2ExtraLarge),
+          Text(data.title, style: TextStyles.title2ExtraLarge),
           const SizedBox(
             height: 4,
           ),
-          Text("Station Name",
+          Text(data.subtitle,
               style: TextStyles.bodyLarge.copyWith(color: ColorStyles.gray600)),
+          if (data.phoneNumber != null) ...[
+            const SizedBox(
+              height: 8,
+            ),
+            Container(
+              color: ColorStyles.gray50,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 15),
+                child: Row(
+                  children: [
+                    Text(
+                      "전화",
+                      style: TextStyles.titleSmall.copyWith(
+                          color: ColorStyles.gray800,
+                          fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      data.phoneNumber!,
+                      style: TextStyles.titleSmall.copyWith(
+                          color: ColorStyles.gray600,
+                          fontWeight: FontWeight.w400),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
   }
 
   Widget _nearbyRecommendations() {
-    final restaurants = [
-      {
-        'name': '감나무식당',
-        'rating': 4.5,
-        'location': '수원',
-        'category': '한식',
-        'isLiked': true
-      },
-      {
-        'name': '감나무식당',
-        'rating': 4.5,
-        'location': '수원',
-        'category': '한식',
-        'isLiked': false
-      },
-      {
-        'name': '감나무식당',
-        'rating': 4.5,
-        'location': '수원',
-        'category': '한식',
-        'isLiked': true
-      }
-    ];
     return Column(
       children: [
         Padding(
@@ -269,26 +438,26 @@ class _StationDetailScreenState extends State<StationDetailScreen> {
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
-              children: [
-                ...restaurants.asMap().entries.map(
-                  (entry) {
-                    final index = entry.key;
-                    final restaurant = entry.value;
-                    return Padding(
+              children: data.nearbyRestaurants
+                  .asMap()
+                  .entries
+                  .map(
+                    (entry) => Padding(
                       padding: EdgeInsets.only(
-                        right: index != restaurants.length - 1 ? 14 : 0,
+                        right: entry.key != data.nearbyRestaurants.length - 1
+                            ? 14
+                            : 0,
                       ),
                       child: RestaurantListItem(
-                        name: restaurant['name'] as String,
-                        rating: restaurant['rating'] as double,
-                        location: restaurant['location'] as String,
-                        category: restaurant['category'] as String,
-                        isLiked: restaurant['isLiked'] as bool,
+                        name: entry.value.name,
+                        rating: entry.value.rating,
+                        location: entry.value.location,
+                        category: entry.value.category,
+                        isLiked: entry.value.isLiked,
                       ),
-                    );
-                  },
-                ),
-              ],
+                    ),
+                  )
+                  .toList(),
             ),
           ),
         )
@@ -307,10 +476,10 @@ class _StationDetailScreenState extends State<StationDetailScreen> {
                       _currentPage = value;
                     })
                   },
-              itemCount: StationDetailScreen.images.length,
+              itemCount: data.images.length,
               itemBuilder: (context, index) {
                 return Image.network(
-                  StationDetailScreen.images[index],
+                  data.images[index],
                   fit: BoxFit.cover,
                   height: 295,
                   width: double.infinity,
@@ -326,7 +495,7 @@ class _StationDetailScreenState extends State<StationDetailScreen> {
                 borderRadius: BorderRadius.circular(100),
               ),
               child: Text(
-                "${_currentPage + 1}/${StationDetailScreen.images.length}",
+                "${_currentPage + 1}/${data.images.length}",
                 style: TextStyles.titleXSmall.copyWith(
                     fontWeight: FontWeight.w600, color: ColorStyles.grayWhite),
               ),
@@ -338,26 +507,6 @@ class _StationDetailScreenState extends State<StationDetailScreen> {
   }
 
   Widget _buildBlogReviews() {
-    final blogItems = [
-      {
-        "title": "블로그 제목",
-        "date": "2021.08.01",
-        "imageUrl": "https://picsum.photos/200/200",
-        "articleUrl": "https://www.naver.com"
-      },
-      {
-        "title": "블로그 제목",
-        "date": "2021.08.01",
-        "imageUrl": "https://picsum.photos/200/200",
-        "articleUrl": "https://www.naver.com"
-      },
-      {
-        "title": "블로그 제목",
-        "date": "2021.08.01",
-        "imageUrl": "https://picsum.photos/200/200",
-        "articleUrl": "https://www.naver.com"
-      }
-    ];
     return Column(
       children: [
         Padding(
@@ -386,24 +535,133 @@ class _StationDetailScreenState extends State<StationDetailScreen> {
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
-              children: List.generate(
-                blogItems.length,
-                (index) => Padding(
-                  padding: EdgeInsets.only(
-                    right: index != blogItems.length - 1 ? 14 : 0,
-                  ),
-                  child: BlogListItem(
-                    title: blogItems[index]['title'] as String,
-                    date: blogItems[index]['date'] as String,
-                    imageUrl: blogItems[index]['imageUrl'] as String,
-                    articleUrl: blogItems[index]['articleUrl'] as String,
-                  ),
-                ),
-              ),
+              children: data.blogItems.map(
+                (blogItem) {
+                  final index = data.blogItems.indexOf(blogItem);
+                  return Padding(
+                    padding: EdgeInsets.only(
+                      right: index != data.blogItems.length - 1 ? 14 : 0,
+                    ),
+                    child: BlogListItem(
+                      title: blogItem.title,
+                      date: blogItem.date,
+                      imageUrl: blogItem.imageUrl,
+                      articleUrl: blogItem.articleUrl,
+                    ),
+                  );
+                },
+              ).toList(),
             ),
           ),
+        ),
+        const SizedBox(
+          height: 34,
         )
       ],
     );
   }
+}
+
+enum PlaceType {
+  spot,
+  restaurant,
+}
+
+class StationDetailScreenData {
+  final List<String> images;
+  final String location;
+  final String title;
+  final String subtitle;
+  final String? phoneNumber;
+  final PlaceType placeType;
+  final RestaurantSummary? restaurantSummary;
+  final SpotSummary? spotSummary;
+  final List<Lane> lanes;
+  final List<Restaurant> nearbyRestaurants;
+  final List<BlogItem> blogItems;
+  StationDetailScreenData({
+    required this.images,
+    required this.location,
+    required this.title,
+    required this.subtitle,
+    this.phoneNumber,
+    required this.placeType,
+    this.restaurantSummary,
+    this.spotSummary,
+    required this.lanes,
+    required this.nearbyRestaurants,
+    required this.blogItems,
+  });
+}
+
+class RestaurantSummary {
+  final List<RestaurantMenu> menus;
+  RestaurantSummary({required this.menus});
+}
+
+class RestaurantMenu {
+  final String imageUrl;
+  final String title;
+  final String description;
+  RestaurantMenu({
+    required this.imageUrl,
+    required this.title,
+    required this.description,
+  });
+}
+
+class SpotSummary {
+  final String summaryImageUrl;
+  final String title;
+  final String description;
+  SpotSummary({
+    required this.summaryImageUrl,
+    required this.title,
+    required this.description,
+  });
+}
+
+class Lane {
+  final String category;
+  final String title;
+  final String description;
+  final String period;
+  final int likeCount;
+  final bool isLiked;
+  Lane({
+    required this.category,
+    required this.title,
+    required this.description,
+    required this.period,
+    required this.likeCount,
+    required this.isLiked,
+  });
+}
+
+class Restaurant {
+  final String name;
+  final double rating;
+  final String location;
+  final String category;
+  final bool isLiked;
+  Restaurant({
+    required this.name,
+    required this.rating,
+    required this.location,
+    required this.category,
+    required this.isLiked,
+  });
+}
+
+class BlogItem {
+  final String title;
+  final String date;
+  final String imageUrl;
+  final String articleUrl;
+  BlogItem({
+    required this.title,
+    required this.date,
+    required this.imageUrl,
+    required this.articleUrl,
+  });
 }
