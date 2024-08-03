@@ -66,7 +66,14 @@ class _StationDetailScreenState extends State<StationDetailScreen> {
                   color: ColorStyles.gray100,
                   thickness: 1,
                 ),
-                _stationSummary(),
+                _stationSpotSummary(),
+                _stationRestaurantSummary([
+                  {
+                    'imageUrl': 'https://picsum.photos/200/200',
+                    'title': '메뉴 이름',
+                    'description': '메뉴 설명'
+                  }
+                ]),
                 const Divider(
                   color: ColorStyles.gray100,
                   thickness: 1,
@@ -212,7 +219,7 @@ class _StationDetailScreenState extends State<StationDetailScreen> {
     );
   }
 
-  Widget _stationSummary() {
+  Widget _stationSpotSummary() {
     return SizedBox(
       width: double.infinity,
       child: Padding(
@@ -239,6 +246,56 @@ class _StationDetailScreenState extends State<StationDetailScreen> {
             )
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _stationRestaurantSummary(List<Map<String, String>> menus) {
+    return SizedBox(
+      width: double.infinity,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(0, 16, 0, 20),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Text("Restaurant Menu", style: TextStyles.titleLarge),
+          ),
+          menus
+              .map((menu) => _restaurantMenuItem(
+                  menu['imageUrl'], menu['title'], menu['description']))
+              .toList()[0],
+        ]),
+      ),
+    );
+  }
+
+  Widget _restaurantMenuItem(imageUrl, title, description) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Image.network(
+            imageUrl,
+            fit: BoxFit.cover,
+            height: 200,
+            width: double.infinity,
+          ),
+          const SizedBox(
+            height: 8,
+          ),
+          Text(
+            title,
+            style: TextStyles.titleLarge.copyWith(color: ColorStyles.gray900),
+          ),
+          const SizedBox(
+            height: 8,
+          ),
+          Text(
+            description,
+            style: TextStyles.bodyLarge.copyWith(color: ColorStyles.gray600),
+          ),
+        ],
       ),
     );
   }
@@ -276,6 +333,32 @@ class _StationDetailScreenState extends State<StationDetailScreen> {
           ),
           Text("Station Name",
               style: TextStyles.bodyLarge.copyWith(color: ColorStyles.gray600)),
+          const SizedBox(
+            height: 8,
+          ),
+          Container(
+            color: ColorStyles.gray50,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 15),
+              child: Row(
+                children: [
+                  Text(
+                    "전화",
+                    style: TextStyles.titleSmall.copyWith(
+                        color: ColorStyles.gray800,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    "02-1234-5678",
+                    style: TextStyles.titleSmall.copyWith(
+                        color: ColorStyles.gray600,
+                        fontWeight: FontWeight.w400),
+                  ),
+                ],
+              ),
+            ),
+          )
         ],
       ),
     );
