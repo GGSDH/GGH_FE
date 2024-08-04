@@ -57,12 +57,18 @@ class _AddPhotobookSelectPeriodScreenState extends State<AddPhotobookSelectPerio
   void initState() {
     super.initState();
     titleController = TextEditingController();
+    titleController.addListener(_onTextChanged);
   }
 
   @override
   void dispose() {
     titleController.dispose();
+    titleController.removeListener(_onTextChanged);
     super.dispose();
+  }
+
+  void _onTextChanged() {
+    setState(() {});  // Rebuild to update the suffix icon
   }
 
   @override
@@ -186,7 +192,7 @@ class _AddPhotobookSelectPeriodScreenState extends State<AddPhotobookSelectPerio
               child: AppButton(
                 text: "다음",
                 onPressed: () {
-                  GoRouter.of(context).push("/add-photobook-date-selection");
+                  GoRouter.of(context).push("/photobook/add/theme");
                 },
                 isEnabled: startDate != null && endDate != null && titleController.text.isNotEmpty,
                 onIllegalPressed: () {},

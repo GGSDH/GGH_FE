@@ -38,7 +38,7 @@ class PhotobookScreen extends StatelessWidget {
             right: 10,
             child: GestureDetector(
               onTap: () {
-                GoRouter.of(context).push("/add-photobook");
+                GoRouter.of(context).push("/photobook/add");
               },
               child: SvgPicture.asset(
                 "assets/icons/ic_add_photo.svg",

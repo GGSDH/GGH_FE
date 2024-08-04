@@ -308,6 +308,9 @@ class Day extends StatelessWidget {
         day.isAfter(startDate!.subtract(const Duration(hours: 6))) &&
         day.isBefore(endDate!.add(const Duration(hours: 6)));
 
+    bool isToday = day.year == DateTime.now().year &&
+        day.month == DateTime.now().month &&
+        day.day == DateTime.now().day;
     bool isStartDay = startDate != null &&
         startDate!.year == day.year &&
         startDate!.month == day.month &&
@@ -326,7 +329,7 @@ class Day extends StatelessWidget {
 
     final textColor = isStartDay || isEndDay
         ? ColorStyles.gray50
-        : isSelected
+        : isToday
         ? ColorStyles.primary
         : ColorStyles.gray700;
 

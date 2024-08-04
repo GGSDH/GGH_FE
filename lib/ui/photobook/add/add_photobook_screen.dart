@@ -55,7 +55,7 @@ class AddPhotobookScreen extends StatelessWidget {
               child: AppButton(
                 text: "포토북 만들기",
                 onPressed: () {
-                  GoRouter.of(context).push("/add-photobook/select-period");
+                  GoRouter.of(context).push("/photobook/add/select-period");
                 },
                 isEnabled: true,
                 onIllegalPressed: () {},

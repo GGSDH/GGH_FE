@@ -4,22 +4,22 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../themes/color_styles.dart';
 import '../../../themes/text_styles.dart';
 
-class CustomBottomNavigationBar extends StatefulWidget {
+class AppBottomNavigationBar extends StatefulWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
 
-  const CustomBottomNavigationBar({
+  const AppBottomNavigationBar({
     super.key,
     required this.currentIndex,
     required this.onTap,
   });
 
   @override
-  _CustomBottomNavigationBarState createState() =>
-      _CustomBottomNavigationBarState();
+  _AppBottomNavigationBarState createState() =>
+      _AppBottomNavigationBarState();
 }
 
-class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
+class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
   int _currentIndex = 0;
 
   @override

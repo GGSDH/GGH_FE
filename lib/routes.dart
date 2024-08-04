@@ -8,11 +8,11 @@ import 'package:gyeonggi_express/ui/mypage/mypage_policy_screen.dart';
 import 'package:gyeonggi_express/ui/mypage/mypage_screen.dart';
 import 'package:gyeonggi_express/ui/mypage/mypage_setting_screen.dart';
 import 'package:gyeonggi_express/ui/onboarding/onboarding_complete_screen.dart';
+import 'package:gyeonggi_express/ui/onboarding/onboarding_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/add/add_photobook_date_selection_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/add/add_photobook_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_screen.dart';
-import 'package:gyeonggi_express/ui/onboarding/onboarding_screen.dart';
 import 'package:gyeonggi_express/ui/splash/splash_screen.dart';
 import 'package:gyeonggi_express/ui/station/station_detail_screen.dart';
 
@@ -41,9 +41,13 @@ enum Routes {
   mypage_service_policy,
   mypage_privacy_policy;
 
+  static final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>();
+
   static final GoRouter config = GoRouter(
     initialLocation: '/',
     observers: [RouterObserver()],
+    navigatorKey: _rootNavigatorKey,
     routes: [
       GoRoute(
         path: '/',
@@ -51,7 +55,6 @@ enum Routes {
         builder: (context, state) => const SplashScreen()
       ),
 
-      // 여기에 회원가입/로그인 플로우 넣을 예정
       ShellRoute(
         observers: [RouterObserver()],
         builder: (context, state, child) => Scaffold(
@@ -59,14 +62,14 @@ enum Routes {
         ),
         routes: [
           GoRoute(
-            path: '/login',
-            name: Routes.login.name,
-            builder: (context, state) => const LoginScreen()
+              path: '/login',
+              name: Routes.login.name,
+              builder: (context, state) => const LoginScreen()
           ),
           GoRoute(
-            path: "/onboarding",
-            name: Routes.onboarding.name,
-            builder: (context, state) => const OnboardingScreen()
+              path: "/onboarding",
+              name: Routes.onboarding.name,
+              builder: (context, state) => const OnboardingScreen()
           ),
           GoRoute(
             path: '/onboarding/complete',
@@ -76,90 +79,114 @@ enum Routes {
         ]
       ),
 
-      ShellRoute(
-        observers: [RouterObserver()],
+      StatefulShellRoute.indexedStack(
         builder: (context, state, child) => Scaffold(
           backgroundColor: Colors.white,
           body: child,
-          bottomNavigationBar: CustomBottomNavigationBar(
-            currentIndex: 0,
+          bottomNavigationBar: AppBottomNavigationBar(
+            currentIndex: child.currentIndex,
             onTap: (index) {
-              if (index == 0) {
-                context.go('/home');
-              } else if (index == 1) {
-                context.go('/recommend');
-              } else if (index == 2) {
-                context.go('/photobook');
-              } else if (index == 3) {
-                context.go('/mypage');
-              }
-            },
+              child.goBranch(index);
+            }
           ),
         ),
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/home',
+                name: Routes.home.name,
+                builder: (context, state) => const HomeScreen(),
+                routes: [
 
-        routes: [
-          GoRoute(
-            path: '/home',
-            name: Routes.home.name,
-            builder: (context, state) => const HomeScreen()
+                ]
+              ),
+            ]
           ),
-          GoRoute(
-            path: '/recommend',
-            name: Routes.recommend.name,
-            builder: (context, state) => const RecommendScreen()
+
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/recommend',
+                name: Routes.recommend.name,
+                builder: (context, state) => const RecommendScreen(),
+                routes: [
+
+                ]
+              ),
+            ],
           ),
-          GoRoute(
-            path: '/photobook',
-            name: Routes.photobook.name,
-            builder: (context, state) => PhotobookScreen()),
-          GoRoute(
-            path: '/mypage',
-            name: Routes.mypage.name,
-            builder: (context, state) => const MyPageScreen()
-          )
+
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/photobook',
+                name: Routes.photobook.name,
+                builder: (context, state) => PhotobookScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'add',
+                    name: Routes.add_photobook.name,
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) => const AddPhotobookScreen()
+                  ),
+                  GoRoute(
+                    path: 'add/select-period',
+                    name: Routes.add_photobook_select_period.name,
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) => const AddPhotobookSelectPeriodScreen()
+                  ),
+                ]
+              ),
+            ],
+          ),
+
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/mypage',
+                name: Routes.mypage.name,
+                builder: (context, state) => const MyPageScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'setting',
+                    name: Routes.mypage_setting.name,
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) => MyPageSettingScreen(
+                      nickname: state.uri.queryParameters['nickname'] ?? "",
+                      email: state.uri.queryParameters['email'] ?? "",
+                      loginType: LoginProvider.fromJson(state.uri.queryParameters['loginType'] ?? ""),
+                    )
+                  ),
+                  GoRoute(
+                    path: 'policy/service',
+                    name: Routes.mypage_service_policy.name,
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) => MyPagePolicyScreen(
+                      title: state.uri.queryParameters['title'] ?? "",
+                      url: state.uri.queryParameters['url'] ?? "",
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'policy/privacy',
+                    name: Routes.mypage_privacy_policy.name,
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) => MyPagePolicyScreen(
+                      title: state.uri.queryParameters['title'] ?? "",
+                      url: state.uri.queryParameters['url'] ?? "",
+                    ),
+                  ),
+                ]
+              ),
+            ],
+          ),
         ]
-      ),
-
-      GoRoute(
-        path: '/add-photobook',
-        name: Routes.add_photobook.name,
-        builder: (context, state) => const AddPhotobookScreen()
-      ),
-      GoRoute(
-        path: '/add-photobook/select-period',
-        name: Routes.add_photobook_select_period.name,
-        builder: (context, state) => const AddPhotobookSelectPeriodScreen()
       ),
 
       GoRoute(
         path: '/stations',
         name: Routes.stations.name,
-        builder: (context, state) => StationDetailScreen()),
-
-      GoRoute(
-        path: '/mypage/setting',
-        name: Routes.mypage_setting.name,
-        builder: (context, state) => MyPageSettingScreen(
-          nickname: state.uri.queryParameters['nickname'] ?? "",
-          email: state.uri.queryParameters['email'] ?? "",
-          loginType: LoginProvider.fromJson(state.uri.queryParameters['loginType'] ?? ""),
-        )
-      ),
-      GoRoute(
-        path: '/mypage/policy/service',
-        name: Routes.mypage_service_policy.name,
-        builder: (context, state) => MyPagePolicyScreen(
-          title: state.uri.queryParameters['title'] ?? "",
-          url: state.uri.queryParameters['url'] ?? "",
-        ),
-      ),
-      GoRoute(
-        path: '/mypage/policy/privacy',
-        name: Routes.mypage_privacy_policy.name,
-        builder: (context, state) => MyPagePolicyScreen(
-          title: state.uri.queryParameters['title'] ?? "",
-          url: state.uri.queryParameters['url'] ?? "",
-        ),
+        builder: (context, state) => StationDetailScreen()
       ),
     ]
   );
