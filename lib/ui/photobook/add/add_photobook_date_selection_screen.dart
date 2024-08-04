@@ -7,6 +7,7 @@ import '../../../themes/text_styles.dart';
 import '../../component/app/app_action_bar.dart';
 import '../../component/app/app_button.dart';
 import '../../component/app/app_text_field.dart';
+import '../../component/range_picker.dart';
 
 class AddPhotobookSelectPeriodScreen extends StatefulWidget {
   const AddPhotobookSelectPeriodScreen({super.key});
@@ -97,7 +98,12 @@ class _AddPhotobookSelectPeriodScreenState extends State<AddPhotobookSelectPerio
 
                       GestureDetector(
                         onTap: () {
-
+                          showModalBottomSheet<DateTime>(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return RangePicker();
+                            }
+                          );
                         },
                         child: SvgPicture.asset(
                           "assets/icons/ic_calendar.svg",
