@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gyeonggi_express/ui/component/app/app_button.dart';
 import 'package:intl/intl.dart';
 
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
 
 class RangePicker extends StatefulWidget {
-  const RangePicker({super.key});
+  const RangePicker({
+    super.key,
+    required this.onConfirmed
+  });
+
+  final void Function(DateTime startDate, DateTime endDate) onConfirmed;
 
   @override
   _RangePickerState createState() => _RangePickerState();
@@ -14,35 +20,37 @@ class RangePicker extends StatefulWidget {
 
 class _RangePickerState extends State<RangePicker> {
   late DateTime now;
-  late DateTime? startDate;
-  late DateTime? endDate;
+  DateTime? startDate;
+  DateTime? endDate;
 
   @override
   void initState() {
     super.initState();
     now = DateTime.now();
-    startDate = now;
-    endDate = now;
   }
 
-  void updateCurrentDate(DateTime date) {
+  void _updateCurrentDate(DateTime date) {
     setState(() {
       now = date;
     });
   }
 
+  void _onConfirm() {
+    if (startDate != null && endDate != null) {
+      widget.onConfirmed(startDate!, endDate!);
+    }
+  }
+
   void _onDaySelected(DateTime day) {
     setState(() {
-      if (startDate!.isBefore(endDate!)) {
+      if (startDate == null || (endDate != null && day.isBefore(startDate!))) {
         startDate = day;
-        endDate = day;
-      } else if (day.isBefore(startDate!)) {
-        startDate = day;
-      } else if (day.isAfter(endDate!)) {
+        endDate = null;
+      } else if (endDate == null || day.isAfter(endDate!)) {
         endDate = day;
       } else {
         startDate = day;
-        endDate = day;
+        endDate = null;
       }
     });
   }
@@ -53,12 +61,13 @@ class _RangePickerState extends State<RangePicker> {
 
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
         child: Column(
           children: [
+            TitleHeader(onClose: () => Navigator.pop(context)),
             YearMonthHeader(
               currentDate: now,
-              onDateSelected: updateCurrentDate,
+              onDateSelected: _updateCurrentDate,
             ),
             const SizedBox(height: 20),
             const WeekHeader(),
@@ -68,6 +77,12 @@ class _RangePickerState extends State<RangePicker> {
               startDate: startDate,
               endDate: endDate,
             )),
+            const SizedBox(height: 30),
+            AppButton(
+              text: '다음',
+              onPressed: _onConfirm,
+              isEnabled: startDate != null && endDate != null,
+            )
           ],
         ),
       ),
@@ -99,6 +114,41 @@ class _RangePickerState extends State<RangePicker> {
     }
 
     return weeks;
+  }
+}
+
+class TitleHeader extends StatelessWidget {
+  final void Function() onClose;
+
+  const TitleHeader({
+    super.key,
+    required this.onClose
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 20, 0, 30),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            '기간 선택',
+            style: TextStyles.headlineXSmall.copyWith(
+              color: ColorStyles.gray900
+            ),
+          ),
+          GestureDetector(
+            onTap: onClose,
+            child: SvgPicture.asset(
+              'assets/icons/ic_close_24px.svg',
+              width: 24,
+              height: 24
+            )
+          )
+        ]
+      ),
+    );
   }
 }
 
