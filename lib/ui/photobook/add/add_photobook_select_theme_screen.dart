@@ -25,7 +25,7 @@ class AddPhotobookSelectThemeScreen extends StatelessWidget {
       child: BlocSideEffectListener<AddPhotobookSelectThemeBloc, AddPhotobookSelectThemeSideEffect>(
         listener: (context, sideEffect) {
           if (sideEffect is AddPhotobookSelectThemeComplete) {
-            GoRouter.of(context).go('/photobook/add/complete');
+            GoRouter.of(context).go('/photobook/add/loading');
           } else if (sideEffect is AddPhotobookSelectThemeShowError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
