@@ -9,8 +9,9 @@ import 'package:gyeonggi_express/ui/mypage/mypage_screen.dart';
 import 'package:gyeonggi_express/ui/mypage/mypage_setting_screen.dart';
 import 'package:gyeonggi_express/ui/onboarding/onboarding_complete_screen.dart';
 import 'package:gyeonggi_express/ui/onboarding/onboarding_screen.dart';
-import 'package:gyeonggi_express/ui/photobook/add/add_photobook_date_selection_screen.dart';
+import 'package:gyeonggi_express/ui/photobook/add/add_photobook_select_period_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/add/add_photobook_screen.dart';
+import 'package:gyeonggi_express/ui/photobook/add/add_photobook_select_theme_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_screen.dart';
 import 'package:gyeonggi_express/ui/splash/splash_screen.dart';
@@ -135,6 +136,12 @@ enum Routes {
                     name: Routes.add_photobook_select_period.name,
                     parentNavigatorKey: _rootNavigatorKey,
                     builder: (context, state) => const AddPhotobookSelectPeriodScreen()
+                  ),
+                  GoRoute(
+                    path: 'add/select-theme',
+                    name: Routes.add_photobook_select_theme.name,
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) => const AddPhotobookSelectThemeScreen()
                   ),
                 ]
               ),

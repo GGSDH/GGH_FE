@@ -192,7 +192,7 @@ class _AddPhotobookSelectPeriodScreenState extends State<AddPhotobookSelectPerio
               child: AppButton(
                 text: "다음",
                 onPressed: () {
-                  GoRouter.of(context).push("/photobook/add/theme");
+                  GoRouter.of(context).push("/photobook/add/select-theme");
                 },
                 isEnabled: startDate != null && endDate != null && titleController.text.isNotEmpty,
                 onIllegalPressed: () {},
