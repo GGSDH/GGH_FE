@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/router_observer.dart';
 import 'package:gyeonggi_express/ui/component/app/app_bottom_navigation_bar.dart';
 import 'package:gyeonggi_express/ui/home/home_screen.dart';
+import 'package:gyeonggi_express/ui/lane/lane_detail_screen.dart';
 import 'package:gyeonggi_express/ui/login/login_screen.dart';
 import 'package:gyeonggi_express/ui/mypage/mypage_policy_screen.dart';
 import 'package:gyeonggi_express/ui/mypage/mypage_screen.dart';
@@ -29,6 +30,7 @@ enum Routes {
   home,
 
   stations,
+  lanes,
 
   recommend,
   photobook,
@@ -43,165 +45,150 @@ enum Routes {
   mypage_service_policy,
   mypage_privacy_policy;
 
-  static final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
-  static final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> _rootNavigatorKey =
+      GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> _shellNavigatorKey =
+      GlobalKey<NavigatorState>();
 
   static final GoRouter config = GoRouter(
-    initialLocation: '/',
-    observers: [RouterObserver()],
-    navigatorKey: _rootNavigatorKey,
-    routes: [
-      GoRoute(
-        path: '/',
-        name: Routes.splash.name,
-        builder: (context, state) => const SplashScreen()
-      ),
-
-      ShellRoute(
-        observers: [RouterObserver()],
-        builder: (context, state, child) => Scaffold(
-          backgroundColor: Colors.white, body: SafeArea(child: child)
-        ),
-        routes: [
-          GoRoute(
-              path: '/login',
-              name: Routes.login.name,
-              builder: (context, state) => const LoginScreen()
-          ),
-          GoRoute(
-              path: "/onboarding",
-              name: Routes.onboarding.name,
-              builder: (context, state) => const OnboardingScreen()
-          ),
-          GoRoute(
-            path: '/onboarding/complete',
-            name: Routes.onboarding_complete.name,
-            builder: (context, state) => const OnboardingCompleteScreen(),
-          )
-        ]
-      ),
-
-      StatefulShellRoute.indexedStack(
-        builder: (context, state, child) => Scaffold(
-          backgroundColor: Colors.white,
-          body: child,
-          bottomNavigationBar: AppBottomNavigationBar(
-            currentIndex: child.currentIndex,
-            onTap: (index) {
-              child.goBranch(index);
-            }
-          ),
-        ),
-        branches: [
-          StatefulShellBranch(
+      initialLocation: '/lanes',
+      observers: [RouterObserver()],
+      navigatorKey: _rootNavigatorKey,
+      routes: [
+        GoRoute(
+            path: '/',
+            name: Routes.splash.name,
+            builder: (context, state) => const SplashScreen()),
+        ShellRoute(
+            observers: [RouterObserver()],
+            builder: (context, state, child) => Scaffold(
+                backgroundColor: Colors.white, body: SafeArea(child: child)),
             routes: [
               GoRoute(
-                path: '/home',
-                name: Routes.home.name,
-                builder: (context, state) => const HomeScreen(),
-                routes: [
-
-                ]
-              ),
-            ]
-          ),
-
-          StatefulShellBranch(
-            routes: [
+                  path: '/login',
+                  name: Routes.login.name,
+                  builder: (context, state) => const LoginScreen()),
               GoRoute(
-                path: '/recommend',
-                name: Routes.recommend.name,
-                builder: (context, state) => const RecommendScreen(),
-                routes: [
-
-                ]
-              ),
-            ],
-          ),
-
-          StatefulShellBranch(
-            routes: [
+                  path: "/onboarding",
+                  name: Routes.onboarding.name,
+                  builder: (context, state) => const OnboardingScreen()),
               GoRoute(
-                path: '/photobook',
-                name: Routes.photobook.name,
-                builder: (context, state) => PhotobookScreen(),
+                path: '/onboarding/complete',
+                name: Routes.onboarding_complete.name,
+                builder: (context, state) => const OnboardingCompleteScreen(),
+              )
+            ]),
+        StatefulShellRoute.indexedStack(
+            builder: (context, state, child) => Scaffold(
+                  backgroundColor: Colors.white,
+                  body: child,
+                  bottomNavigationBar: AppBottomNavigationBar(
+                      currentIndex: child.currentIndex,
+                      onTap: (index) {
+                        child.goBranch(index);
+                      }),
+                ),
+            branches: [
+              StatefulShellBranch(routes: [
+                GoRoute(
+                    path: '/home',
+                    name: Routes.home.name,
+                    builder: (context, state) => const HomeScreen(),
+                    routes: const []),
+              ]),
+              StatefulShellBranch(
                 routes: [
                   GoRoute(
-                    path: 'add',
-                    name: Routes.add_photobook.name,
-                    parentNavigatorKey: _rootNavigatorKey,
-                    builder: (context, state) => const AddPhotobookScreen()
-                  ),
-                  GoRoute(
-                    path: 'add/select-period',
-                    name: Routes.add_photobook_select_period.name,
-                    parentNavigatorKey: _rootNavigatorKey,
-                    builder: (context, state) => const AddPhotobookSelectPeriodScreen()
-                  ),
-                  GoRoute(
-                    path: 'add/select-theme',
-                    name: Routes.add_photobook_select_theme.name,
-                    parentNavigatorKey: _rootNavigatorKey,
-                    builder: (context, state) => const AddPhotobookSelectThemeScreen()
-                  ),
-                  GoRoute(
-                      path: 'add/loading',
-                      name: Routes.add_photobook_loading.name,
-                      parentNavigatorKey: _rootNavigatorKey,
-                      builder: (context, state) => const AddPhotobookLoadingScreen()
-                  ),
-                ]
+                      path: '/recommend',
+                      name: Routes.recommend.name,
+                      builder: (context, state) => const RecommendScreen(),
+                      routes: const []),
+                ],
               ),
-            ],
-          ),
-
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: '/mypage',
-                name: Routes.mypage.name,
-                builder: (context, state) => const MyPageScreen(),
+              StatefulShellBranch(
                 routes: [
                   GoRoute(
-                    path: 'setting',
-                    name: Routes.mypage_setting.name,
-                    parentNavigatorKey: _rootNavigatorKey,
-                    builder: (context, state) => MyPageSettingScreen(
-                      nickname: state.uri.queryParameters['nickname'] ?? "",
-                      email: state.uri.queryParameters['email'] ?? "",
-                      loginType: LoginProvider.fromJson(state.uri.queryParameters['loginType'] ?? ""),
-                    )
-                  ),
-                  GoRoute(
-                    path: 'policy/service',
-                    name: Routes.mypage_service_policy.name,
-                    parentNavigatorKey: _rootNavigatorKey,
-                    builder: (context, state) => MyPagePolicyScreen(
-                      title: state.uri.queryParameters['title'] ?? "",
-                      url: state.uri.queryParameters['url'] ?? "",
-                    ),
-                  ),
-                  GoRoute(
-                    path: 'policy/privacy',
-                    name: Routes.mypage_privacy_policy.name,
-                    parentNavigatorKey: _rootNavigatorKey,
-                    builder: (context, state) => MyPagePolicyScreen(
-                      title: state.uri.queryParameters['title'] ?? "",
-                      url: state.uri.queryParameters['url'] ?? "",
-                    ),
-                  ),
-                ]
+                      path: '/photobook',
+                      name: Routes.photobook.name,
+                      builder: (context, state) => PhotobookScreen(),
+                      routes: [
+                        GoRoute(
+                            path: 'add',
+                            name: Routes.add_photobook.name,
+                            parentNavigatorKey: _rootNavigatorKey,
+                            builder: (context, state) =>
+                                const AddPhotobookScreen()),
+                        GoRoute(
+                            path: 'add/select-period',
+                            name: Routes.add_photobook_select_period.name,
+                            parentNavigatorKey: _rootNavigatorKey,
+                            builder: (context, state) =>
+                                const AddPhotobookSelectPeriodScreen()),
+                        GoRoute(
+                            path: 'add/select-theme',
+                            name: Routes.add_photobook_select_theme.name,
+                            parentNavigatorKey: _rootNavigatorKey,
+                            builder: (context, state) =>
+                                const AddPhotobookSelectThemeScreen()),
+                        GoRoute(
+                            path: 'add/loading',
+                            name: Routes.add_photobook_loading.name,
+                            parentNavigatorKey: _rootNavigatorKey,
+                            builder: (context, state) =>
+                                const AddPhotobookLoadingScreen()),
+                      ]),
+                ],
               ),
-            ],
-          ),
-        ]
-      ),
-
-      GoRoute(
-        path: '/stations',
-        name: Routes.stations.name,
-        builder: (context, state) => StationDetailScreen()
-      ),
-    ]
-  );
+              StatefulShellBranch(
+                routes: [
+                  GoRoute(
+                      path: '/mypage',
+                      name: Routes.mypage.name,
+                      builder: (context, state) => const MyPageScreen(),
+                      routes: [
+                        GoRoute(
+                            path: 'setting',
+                            name: Routes.mypage_setting.name,
+                            parentNavigatorKey: _rootNavigatorKey,
+                            builder: (context, state) => MyPageSettingScreen(
+                                  nickname:
+                                      state.uri.queryParameters['nickname'] ??
+                                          "",
+                                  email:
+                                      state.uri.queryParameters['email'] ?? "",
+                                  loginType: LoginProvider.fromJson(
+                                      state.uri.queryParameters['loginType'] ??
+                                          ""),
+                                )),
+                        GoRoute(
+                          path: 'policy/service',
+                          name: Routes.mypage_service_policy.name,
+                          parentNavigatorKey: _rootNavigatorKey,
+                          builder: (context, state) => MyPagePolicyScreen(
+                            title: state.uri.queryParameters['title'] ?? "",
+                            url: state.uri.queryParameters['url'] ?? "",
+                          ),
+                        ),
+                        GoRoute(
+                          path: 'policy/privacy',
+                          name: Routes.mypage_privacy_policy.name,
+                          parentNavigatorKey: _rootNavigatorKey,
+                          builder: (context, state) => MyPagePolicyScreen(
+                            title: state.uri.queryParameters['title'] ?? "",
+                            url: state.uri.queryParameters['url'] ?? "",
+                          ),
+                        ),
+                      ]),
+                ],
+              ),
+            ]),
+        GoRoute(
+            path: '/stations',
+            name: Routes.stations.name,
+            builder: (context, state) => StationDetailScreen()),
+        GoRoute(
+            path: '/lanes',
+            name: Routes.lanes.name,
+            builder: (context, state) => LaneDetailScreen())
+      ]);
 }
