@@ -4,13 +4,78 @@ import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../../themes/color_styles.dart';
+import '../../themes/text_styles.dart';
+import '../component/photobook/photobook_list_item.dart';
 
-class PhotobookScreen extends StatelessWidget {
-  PhotobookScreen({super.key});
+class PhotobookScreen extends StatefulWidget {
+  const PhotobookScreen({super.key});
 
+  @override
+  _PhotobookScreenState createState() => _PhotobookScreenState();
+}
+
+class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware {
   final Completer<NaverMapController> _mapControllerCompleter = Completer<NaverMapController>();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showBottomSheet();
+    });
+  }
+
+  void _showBottomSheet() {
+    final photobooks = List<Map<String, String>>.generate(10, (index) => {
+        'category': '힐링',
+        'title': '이게낭만이지선',
+        'period': '24. 05. 12 ~ 24. 05. 21',
+      }
+    );
+
+    showBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => Navigator.of(context).pop(),
+          child: DraggableScrollableSheet(
+            initialChildSize: 0.5,
+            minChildSize: 0.3,
+            maxChildSize: 0.8,
+            builder: (BuildContext context, ScrollController scrollController) {
+              return Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                ),
+                padding: const EdgeInsets.only(top: 10),
+                child: ListView.builder(
+                  controller: scrollController,
+                  itemCount: photobooks.length,
+                  itemBuilder: (context, index) {
+                    final photobook = photobooks[index];
+                    return PhotobookListItem(
+                      category: photobook['category']!,
+                      title: photobook['title']!,
+                      period: photobook['period']!,
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +113,34 @@ class PhotobookScreen extends StatelessWidget {
               ),
             )
           ),
+
+          Positioned(
+            bottom: 20,
+            left: 0,
+            right: 0,
+            child: Container(
+              alignment: Alignment.center,
+              child: GestureDetector(
+                onTap: () {
+                  _showBottomSheet();
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: ColorStyles.primary,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Text(
+                    "목록 열기",
+                    style: TextStyles.titleSmall.copyWith(
+                      color: ColorStyles.grayWhite,
+                    ),
+                  ),
+                )
+              ),
+            )
+          ),
+
         ]
       ),
     );
