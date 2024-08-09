@@ -47,11 +47,9 @@ enum Routes {
 
   static final GlobalKey<NavigatorState> _rootNavigatorKey =
       GlobalKey<NavigatorState>();
-  static final GlobalKey<NavigatorState> _shellNavigatorKey =
-      GlobalKey<NavigatorState>();
 
   static final GoRouter config = GoRouter(
-      initialLocation: '/lanes',
+      initialLocation: '/',
       observers: [RouterObserver()],
       navigatorKey: _rootNavigatorKey,
       routes: [

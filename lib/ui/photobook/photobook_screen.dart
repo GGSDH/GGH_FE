@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
@@ -80,69 +79,32 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Stack(
-        children: [
-          DefaultTabController(
-            length: 2,
-            child: Column(
+    return DefaultTabController(
+      length: 2,
+      child: SafeArea(
+        child: Stack(
+          children: [
+            Column(
               children: [
                 const _TabBarSection(),
                 Expanded(
                   child: TabBarView(
                     children: [
-                      _NaverMapSection(mapControllerCompleter: _mapControllerCompleter),
-                      _NaverMapSection(mapControllerCompleter: _mapControllerCompleter),
+                      _PhotobookSection(
+                        mapControllerCompleter: _mapControllerCompleter,
+                        onAddPhotobook: () {
+                          GoRouter.of(context).go('/photobook/add');
+                        },
+                        showPhotobookList: _showBottomSheet,
+                      ),
+                      _PhotoTicketSection(),
                     ],
                   ),
                 ),
               ],
             ),
-          ),
-          Positioned(
-            bottom: 20,
-            right: 10,
-            child: GestureDetector(
-              onTap: () {
-                GoRouter.of(context).push("/photobook/add");
-              },
-              child: SvgPicture.asset(
-                "assets/icons/ic_add_photo.svg",
-                width: 52,
-                height: 52,
-                fit: BoxFit.fill,
-              ),
-            )
-          ),
-
-          Positioned(
-            bottom: 20,
-            left: 0,
-            right: 0,
-            child: Container(
-              alignment: Alignment.center,
-              child: GestureDetector(
-                onTap: () {
-                  _showBottomSheet();
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: ColorStyles.primary,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Text(
-                    "목록 열기",
-                    style: TextStyles.titleSmall.copyWith(
-                      color: ColorStyles.grayWhite,
-                    ),
-                  ),
-                )
-              ),
-            )
-          ),
-
-        ]
+          ]
+        ),
       ),
     );
   }
@@ -153,8 +115,8 @@ class _TabBarSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const TabBar(
-      indicator: BoxDecoration(
+    return TabBar(
+      indicator: const BoxDecoration(
         border: Border(
           bottom: BorderSide(
             color: ColorStyles.gray900,
@@ -167,20 +129,16 @@ class _TabBarSection extends StatelessWidget {
         Tab(
           child: Text(
             "포토북",
-            style: TextStyle(
+            style: TextStyles.titleLarge.copyWith(
               color: ColorStyles.gray900,
-              fontWeight: FontWeight.w800,
-              fontSize: 18,
             ),
           ),
         ),
         Tab(
           child: Text(
             "포토티켓",
-            style: TextStyle(
+            style: TextStyles.titleLarge.copyWith(
               color: ColorStyles.gray900,
-              fontWeight: FontWeight.w800,
-              fontSize: 18,
             ),
           ),
         ),
@@ -189,22 +147,106 @@ class _TabBarSection extends StatelessWidget {
   }
 }
 
-class _NaverMapSection extends StatelessWidget {
-  const _NaverMapSection({super.key, required this.mapControllerCompleter});
+class _PhotobookSection extends StatelessWidget {
+  const _PhotobookSection({
+    super.key,
+    required this.mapControllerCompleter,
+    required this.onAddPhotobook,
+    required this.showPhotobookList,
+  });
 
   final Completer<NaverMapController> mapControllerCompleter;
+  final VoidCallback onAddPhotobook;
+  final VoidCallback showPhotobookList;
 
   @override
   Widget build(BuildContext context) {
-    return NaverMap(
-      options: const NaverMapViewOptions(
-        indoorEnable: true,
-        locationButtonEnable: false,
-        consumeSymbolTapEvents: false,
+    return Stack(
+      children: [
+        NaverMap(
+          options: const NaverMapViewOptions(
+            indoorEnable: true,
+            locationButtonEnable: false,
+            consumeSymbolTapEvents: false,
+          ),
+          onMapReady: (controller) {
+            mapControllerCompleter.complete(controller);
+          },
+        ),
+        Positioned(
+          bottom: 20,
+          right: 10,
+          child: GestureDetector(
+            onTap: onAddPhotobook,
+            child: SvgPicture.asset(
+              "assets/icons/ic_add_photo.svg",
+              width: 52,
+              height: 52,
+              fit: BoxFit.fill,
+            ),
+          ),
+        ),
+        Positioned(
+            bottom: 20,
+            left: 0,
+            right: 0,
+            child: Container(
+              alignment: Alignment.center,
+              child: GestureDetector(
+                onTap: showPhotobookList,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: ColorStyles.primary,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Text(
+                    "목록 열기",
+                    style: TextStyles.titleSmall.copyWith(
+                      color: ColorStyles.grayWhite,
+                    ),
+                  ),
+                ),
+              ),
+            )
+        ),
+      ]
+    );
+  }
+}
+
+class _PhotoTicketSection extends StatelessWidget {
+  _PhotoTicketSection({super.key});
+
+  final PageController _controller = PageController(viewportFraction: 0.8);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: SizedBox(
+        height: 300, // 높이 설정
+        child: PageView.builder(
+          controller: _controller,
+          itemCount: 5,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0), // 카드 간 간격 설정
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16.0),
+                  color: Colors.blue[(index + 1) * 100],
+                ),
+                child: Center(
+                  child: Text(
+                    'Page $index',
+                    style: const TextStyle(color: Colors.white, fontSize: 24),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
       ),
-      onMapReady: (controller) {
-        mapControllerCompleter.complete(controller);
-      },
     );
   }
 }
