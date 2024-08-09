@@ -51,7 +51,7 @@ enum Routes {
       GlobalKey<NavigatorState>();
 
   static final GoRouter config = GoRouter(
-      initialLocation: '/',
+      initialLocation: '/lanes',
       observers: [RouterObserver()],
       navigatorKey: _rootNavigatorKey,
       routes: [
