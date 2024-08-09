@@ -4,6 +4,7 @@ import 'package:gyeonggi_express/router_observer.dart';
 import 'package:gyeonggi_express/ui/categoryexplorer/category_explorer_screen.dart';
 import 'package:gyeonggi_express/ui/component/app/app_bottom_navigation_bar.dart';
 import 'package:gyeonggi_express/ui/home/home_screen.dart';
+import 'package:gyeonggi_express/ui/home/popular_destinations_screen.dart';
 import 'package:gyeonggi_express/ui/lane/lane_detail_screen.dart';
 import 'package:gyeonggi_express/ui/login/login_screen.dart';
 import 'package:gyeonggi_express/ui/mypage/mypage_policy_screen.dart';
@@ -27,22 +28,17 @@ enum Routes {
   login,
   onboarding,
   onboarding_complete,
-
   home,
-
+  popular_destinations,
   category_explorer,
-
   stations,
   lanes,
-
   recommend,
   photobook,
-
   add_photobook,
   add_photobook_select_period,
   add_photobook_select_theme,
   add_photobook_loading,
-
   mypage,
   mypage_setting,
   mypage_service_policy,
@@ -52,7 +48,7 @@ enum Routes {
       GlobalKey<NavigatorState>();
 
   static final GoRouter config = GoRouter(
-      initialLocation: '/categoryexplorer/전체',
+      initialLocation: '/home/popular-destinations',
       observers: [RouterObserver()],
       navigatorKey: _rootNavigatorKey,
       routes: [
@@ -81,22 +77,28 @@ enum Routes {
             ]),
         StatefulShellRoute.indexedStack(
             builder: (context, state, child) => Scaffold(
-              backgroundColor: Colors.white,
-              body: child,
-              bottomNavigationBar: AppBottomNavigationBar(
-                currentIndex: child.currentIndex,
-                onTap: (index) {
-                  child.goBranch(index);
-                }
-              ),
-            ),
+                  backgroundColor: Colors.white,
+                  body: child,
+                  bottomNavigationBar: AppBottomNavigationBar(
+                      currentIndex: child.currentIndex,
+                      onTap: (index) {
+                        child.goBranch(index);
+                      }),
+                ),
             branches: [
               StatefulShellBranch(routes: [
                 GoRoute(
                     path: '/home',
                     name: Routes.home.name,
                     builder: (context, state) => const HomeScreen(),
-                    routes: const []),
+                    routes: [
+                      GoRoute(
+                        path: 'popular-destinations',
+                        name: Routes.popular_destinations.name,
+                        builder: (context, state) =>
+                            PopularDestinationsScreen(),
+                      ),
+                    ]),
               ]),
               StatefulShellBranch(
                 routes: [
@@ -112,9 +114,8 @@ enum Routes {
                   GoRoute(
                       path: '/photobook',
                       name: Routes.photobook.name,
-                      builder: (context, state) => Scaffold(
-                        body: PhotobookScreen()
-                      ),
+                      builder: (context, state) =>
+                          Scaffold(body: PhotobookScreen()),
                       routes: [
                         GoRoute(
                             path: 'add',
