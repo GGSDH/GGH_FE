@@ -96,140 +96,159 @@ class LaneDetailScreen extends StatelessWidget {
   }
 
   Widget _buildBottomSheetLikeView() {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        border: Border(
-          top: BorderSide(
-            color: ColorStyles.gray200,
-            width: 1,
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+            border: Border(
+              top: BorderSide(color: ColorStyles.gray200, width: 1),
+              left: BorderSide(color: ColorStyles.gray200, width: 1),
+              right: BorderSide(color: ColorStyles.gray200, width: 1),
+            ),
           ),
-          left: BorderSide(
-            color: ColorStyles.gray200,
-            width: 1,
-          ),
-          right: BorderSide(
-            color: ColorStyles.gray200,
-            width: 1,
-          ),
-        ),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: EdgeInsets.all(20),
+          child: SingleChildScrollView(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text("Day1",
-                        style: TextStyles.titleMedium.copyWith(
-                            color: ColorStyles.gray900,
-                            fontWeight: FontWeight.w600)),
-                    const SizedBox(width: 4),
-                    SvgPicture.asset(
-                      "assets/icons/ic_chevron_right.svg",
-                      width: 24,
-                      height: 24,
-                    ),
-                  ],
-                ),
-                SizedBox(height: 14),
-                Row(
-                  children: [
-                    Container(
-                      width: 20,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Color(0xFFFBB12C),
-                          width: 1,
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              "Day1",
+                              style: TextStyles.titleMedium.copyWith(
+                                  color: ColorStyles.gray900,
+                                  fontWeight: FontWeight.w600
+                              ),
+                            ),
+                          ),
+                          SvgPicture.asset(
+                            "assets/icons/ic_chevron_right.svg",
+                            width: 24,
+                            height: 24,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [_placeDetailItemInBottomSheet(),_placeDetailItemInBottomSheet(),_placeDetailItemInBottomSheet()],
                         ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(
-                        height: 1,
-                        color: Color(0xFFFBB12C),
-                      ),
-                    ),
-                  ],
+                      )
+                    ],
+                  ),
                 ),
-                SizedBox(height: 14),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: Image.network(
-                        "https://picsum.photos/800/800",
-                        fit: BoxFit.cover,
-                        height: 80,
-                        width: 80,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 7),
-                      child: _placeDetailInMapView(),
-                    )
-                  ],
-                )
               ],
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  Column _placeDetailInMapView() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text("Place Name",
-            style: TextStyles.titleMedium.copyWith(
-                fontWeight: FontWeight.w600, color: ColorStyles.gray800)),
-        Row(
-          children: [
-            Text("Region",
-                style: TextStyles.bodyMedium.copyWith(
-                    color: ColorStyles.gray500, fontWeight: FontWeight.w400)),
-            SizedBox(width: 4),
-            Text("|",
-                style: TextStyles.bodyMedium.copyWith(
-                    color: ColorStyles.gray300, fontWeight: FontWeight.w400)),
-            SizedBox(width: 4),
-            Text("Category",
-                style: TextStyles.bodyMedium.copyWith(
-                    color: ColorStyles.gray500, fontWeight: FontWeight.w400)),
-          ],
-        ),
-        SizedBox(
-          height: 4,
-        ),
-        Row(
-          children: [
-            SvgPicture.asset(
-              "assets/icons/ic_heart_filled.svg",
-              width: 18,
-              height: 18,
-            ),
-            SizedBox(width: 2),
-            Text("000",
-                style: TextStyles.bodyXSmall.copyWith(
-                    color: ColorStyles.gray600, fontWeight: FontWeight.w400))
-          ],
-        )
-      ],
+  Widget _placeDetailItemInBottomSheet() {
+    return SizedBox(
+      width: 300,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 20,
+                height: 20,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: const Color(0xFFFBB12C),
+                    width: 1,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  height: 1,
+                  color: const Color(0xFFFBB12C),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: Image.network(
+                  "https://picsum.photos/800/800",
+                  fit: BoxFit.cover,
+                  height: 80,
+                  width: 80,
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Place Name",
+                        style: TextStyles.titleMedium.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: ColorStyles.gray800
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              "Region | Category",
+                              style: TextStyles.bodyMedium.copyWith(
+                                  color: ColorStyles.gray500,
+                                  fontWeight: FontWeight.w400
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 4),
+                      Row(
+                        children: [
+                          SvgPicture.asset(
+                            "assets/icons/ic_heart_filled.svg",
+                            width: 18,
+                            height: 18,
+                          ),
+                          SizedBox(width: 2),
+                          Text(
+                              "000",
+                              style: TextStyles.bodyXSmall.copyWith(
+                                  color: ColorStyles.gray600,
+                                  fontWeight: FontWeight.w400
+                              )
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              )
+            ],
+          )
+        ],
+      ),
     );
   }
 
