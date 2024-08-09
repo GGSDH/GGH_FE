@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/router_observer.dart';
+import 'package:gyeonggi_express/ui/categoryexplorer/category_explorer_screen.dart';
 import 'package:gyeonggi_express/ui/component/app/app_bottom_navigation_bar.dart';
 import 'package:gyeonggi_express/ui/home/home_screen.dart';
 import 'package:gyeonggi_express/ui/lane/lane_detail_screen.dart';
@@ -29,6 +30,8 @@ enum Routes {
 
   home,
 
+  category_explorer,
+
   stations,
   lanes,
 
@@ -49,7 +52,7 @@ enum Routes {
       GlobalKey<NavigatorState>();
 
   static final GoRouter config = GoRouter(
-      initialLocation: '/',
+      initialLocation: '/categoryexplorer/전체',
       observers: [RouterObserver()],
       navigatorKey: _rootNavigatorKey,
       routes: [
@@ -190,6 +193,13 @@ enum Routes {
         GoRoute(
             path: '/lanes',
             name: Routes.lanes.name,
-            builder: (context, state) => LaneDetailScreen())
+            builder: (context, state) => LaneDetailScreen()),
+        GoRoute(
+          path: '/categoryexplorer/:categoryName',
+          name: Routes.category_explorer.name,
+          builder: (context, state) => CategoryExplorerScreen(
+            categoryName: state.pathParameters['categoryName'] ?? '',
+          ),
+        ),
       ]);
 }
