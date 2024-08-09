@@ -51,7 +51,7 @@ enum Routes {
       GlobalKey<NavigatorState>();
 
   static final GoRouter config = GoRouter(
-      initialLocation: '/lanes',
+      initialLocation: '/',
       observers: [RouterObserver()],
       navigatorKey: _rootNavigatorKey,
       routes: [
@@ -80,14 +80,15 @@ enum Routes {
             ]),
         StatefulShellRoute.indexedStack(
             builder: (context, state, child) => Scaffold(
-                  backgroundColor: Colors.white,
-                  body: child,
-                  bottomNavigationBar: AppBottomNavigationBar(
-                      currentIndex: child.currentIndex,
-                      onTap: (index) {
-                        child.goBranch(index);
-                      }),
-                ),
+              backgroundColor: Colors.white,
+              body: child,
+              bottomNavigationBar: AppBottomNavigationBar(
+                currentIndex: child.currentIndex,
+                onTap: (index) {
+                  child.goBranch(index);
+                }
+              ),
+            ),
             branches: [
               StatefulShellBranch(routes: [
                 GoRoute(
@@ -110,7 +111,9 @@ enum Routes {
                   GoRoute(
                       path: '/photobook',
                       name: Routes.photobook.name,
-                      builder: (context, state) => PhotobookScreen(),
+                      builder: (context, state) => Scaffold(
+                        body: PhotobookScreen()
+                      ),
                       routes: [
                         GoRoute(
                             path: 'add',
