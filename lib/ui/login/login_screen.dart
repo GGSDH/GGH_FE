@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/ui/login/component/page_content.dart';
 import 'package:gyeonggi_express/ui/login/login_bloc.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../data/repository/auth_repository.dart';
@@ -127,10 +128,18 @@ class LoginScreenContent extends StatelessWidget {
               },
             ),
             const SizedBox(height: 14),
+
             SocialLoginButton(
               loginType: SocialLoginType.APPLE,
-              onClick: () {
-                log("Login with Google");
+              onClick: () async {
+                final credential = await SignInWithApple.getAppleIDCredential(
+                  scopes: [
+                    AppleIDAuthorizationScopes.email,
+                    AppleIDAuthorizationScopes.fullName
+                  ]
+                );
+
+                print(credential);
               },
             ),
             const SizedBox(height: 24),
