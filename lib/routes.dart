@@ -4,6 +4,7 @@ import 'package:gyeonggi_express/router_observer.dart';
 import 'package:gyeonggi_express/ui/categoryexplorer/category_explorer_screen.dart';
 import 'package:gyeonggi_express/ui/component/app/app_bottom_navigation_bar.dart';
 import 'package:gyeonggi_express/ui/home/home_screen.dart';
+import 'package:gyeonggi_express/ui/home/local_restaurants_screen.dart';
 import 'package:gyeonggi_express/ui/home/popular_destinations_screen.dart';
 import 'package:gyeonggi_express/ui/home/recommended_lane_screen.dart';
 import 'package:gyeonggi_express/ui/lane/lane_detail_screen.dart';
@@ -32,7 +33,10 @@ enum Routes {
   home,
   popular_destinations,
   recommended_lanes,
+  local_restaurants,
+
   category_explorer,
+
   stations,
   lanes,
   recommend,
@@ -50,7 +54,7 @@ enum Routes {
       GlobalKey<NavigatorState>();
 
   static final GoRouter config = GoRouter(
-      initialLocation: '/home/recommended-lanes',
+      initialLocation: '/home/local-restaurants',
       observers: [RouterObserver()],
       navigatorKey: _rootNavigatorKey,
       routes: [
@@ -105,6 +109,7 @@ enum Routes {
                         name: Routes.recommended_lanes.name,
                         builder: (context, state) => RecommendedLaneScreen(),
                       ),
+                      GoRoute(path: 'local-restaurants', builder: (context, state) => LocalRestaurantsScreen(), name: Routes.local_restaurants.name,)
                     ]),
               ]),
               StatefulShellBranch(

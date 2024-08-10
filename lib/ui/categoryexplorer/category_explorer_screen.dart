@@ -236,100 +236,104 @@ class CategoryItemList extends StatelessWidget {
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
-        return Container(
-          padding: const EdgeInsets.all(20),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 12),
-                    Text(
-                      item.title,
-                      style: TextStyles.titleLarge.copyWith(
-                        color: ColorStyles.gray900,
-                      ),
-                    ),
-                    Text(
-                      item.description,
-                      style: TextStyles.bodyLarge.copyWith(
-                        color: ColorStyles.gray800,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        SvgPicture.asset(
-                          item.isLiked
-                              ? "assets/icons/ic_heart_filled.svg"
-                              : "assets/icons/ic_heart.svg",
-                          width: 18,
-                          height: 18,
-                        ),
-                        SizedBox(width: 1),
-                        Text(
-                          item.likeCount.toString(),
-                          style: TextStyles.bodyXSmall.copyWith(
-                              color: ColorStyles.gray500,
-                              fontWeight: FontWeight.w400),
-                        ),
-                        SizedBox(width: 4),
-                        Text("|",
-                            style: TextStyles.bodyMedium.copyWith(
-                                color: ColorStyles.gray300,
-                                fontWeight: FontWeight.w400)),
-                        SizedBox(width: 4),
-                        Text(
-                          item.region,
-                          style: TextStyles.bodyMedium.copyWith(
-                              color: ColorStyles.gray500,
-                              fontWeight: FontWeight.w400),
-                        ),
-                        SizedBox(width: 4),
-                        Text("|",
-                            style: TextStyles.bodyMedium.copyWith(
-                                color: ColorStyles.gray300,
-                                fontWeight: FontWeight.w400)),
-                        SizedBox(width: 4),
-                        Text(
-                          item.type,
-                          style: TextStyles.bodyMedium.copyWith(
-                              color: ColorStyles.gray500,
-                              fontWeight: FontWeight.w400),
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child: Image.asset(
-                      item.imagePath,
-                      width: 104,
-                      height: 104,
-                    ),
+        return ExplorerListItem(item);
+      },
+    );
+  }
+
+  Container ExplorerListItem(CategoryItem item) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 12),
+                Text(
+                  item.title,
+                  style: TextStyles.titleLarge.copyWith(
+                    color: ColorStyles.gray900,
                   ),
-                  Positioned(
-                    right: 10,
-                    top: 10,
-                    child: SvgPicture.asset(
+                ),
+                Text(
+                  item.description,
+                  style: TextStyles.bodyLarge.copyWith(
+                    color: ColorStyles.gray800,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    SvgPicture.asset(
                       item.isLiked
                           ? "assets/icons/ic_heart_filled.svg"
-                          : "assets/icons/ic_heart_white.svg",
-                      width: 24,
-                      height: 24,
+                          : "assets/icons/ic_heart.svg",
+                      width: 18,
+                      height: 18,
                     ),
-                  ),
-                ],
+                    SizedBox(width: 1),
+                    Text(
+                      item.likeCount.toString(),
+                      style: TextStyles.bodyXSmall.copyWith(
+                          color: ColorStyles.gray500,
+                          fontWeight: FontWeight.w400),
+                    ),
+                    SizedBox(width: 4),
+                    Text("|",
+                        style: TextStyles.bodyMedium.copyWith(
+                            color: ColorStyles.gray300,
+                            fontWeight: FontWeight.w400)),
+                    SizedBox(width: 4),
+                    Text(
+                      item.region,
+                      style: TextStyles.bodyMedium.copyWith(
+                          color: ColorStyles.gray500,
+                          fontWeight: FontWeight.w400),
+                    ),
+                    SizedBox(width: 4),
+                    Text("|",
+                        style: TextStyles.bodyMedium.copyWith(
+                            color: ColorStyles.gray300,
+                            fontWeight: FontWeight.w400)),
+                    SizedBox(width: 4),
+                    Text(
+                      item.type,
+                      style: TextStyles.bodyMedium.copyWith(
+                          color: ColorStyles.gray500,
+                          fontWeight: FontWeight.w400),
+                    )
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: Image.asset(
+                  item.imagePath,
+                  width: 104,
+                  height: 104,
+                ),
+              ),
+              Positioned(
+                right: 10,
+                top: 10,
+                child: SvgPicture.asset(
+                  item.isLiked
+                      ? "assets/icons/ic_heart_filled.svg"
+                      : "assets/icons/ic_heart_white.svg",
+                  width: 24,
+                  height: 24,
+                ),
               ),
             ],
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 }
