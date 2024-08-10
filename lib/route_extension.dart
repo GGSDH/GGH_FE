@@ -37,9 +37,9 @@ extension RoutesExtension on Routes {
       case Routes.addPhotobook:
         return 'add';
       case Routes.addPhotobookSelectPeriod:
-        return 'add/select-period';
+        return 'select-period';
       case Routes.addPhotobookLoading:
-        return 'add/loading';
+        return 'loading';
 
       case Routes.myPage:
         return '/mypage';

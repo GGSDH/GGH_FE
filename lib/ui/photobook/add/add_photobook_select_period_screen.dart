@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/route_extension.dart';
 import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../../routes.dart';
 import '../../../themes/color_styles.dart';
@@ -71,6 +72,10 @@ class _AddPhotobookSelectPeriodScreenState extends State<AddPhotobookSelectPerio
 
   void _onTextChanged() {
     setState(() {});  // Rebuild to update the suffix icon
+  }
+
+  Future<void> requestPermissions() async {
+    await Permission.photos.request();
   }
 
   @override
@@ -193,8 +198,20 @@ class _AddPhotobookSelectPeriodScreenState extends State<AddPhotobookSelectPerio
               padding: const EdgeInsets.all(14),
               child: AppButton(
                 text: "다음",
-                onPressed: () {
-                  GoRouter.of(context).push("${Routes.photobook.path}/${Routes.addPhotobookLoading.path}");
+                onPressed: () async {
+                  final status = await Permission.photos.request();
+
+                  if (status.isPermanentlyDenied) {
+                    await openAppSettings();
+                  }
+                  else if (status.isGranted) {
+                    GoRouter.of(context).push(
+                        "${Routes.photobook.path}/${Routes.addPhotobook.path}/${Routes.addPhotobookLoading.path}?startDate=$startDate&endDate=$endDate&title=${titleController.text}"
+                    );
+                  }
+                  else {
+                    print("권한이 거부되었습니다.");
+                  }
                 },
                 isEnabled: startDate != null && endDate != null && titleController.text.isNotEmpty,
                 onIllegalPressed: () {},

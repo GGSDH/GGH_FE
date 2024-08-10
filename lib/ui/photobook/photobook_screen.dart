@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/route_extension.dart';
 
+import '../../constants.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
@@ -171,6 +172,7 @@ class _PhotobookSection extends StatelessWidget {
       children: [
         NaverMap(
           options: const NaverMapViewOptions(
+            initialCameraPosition: Constants.DEFAULT_CAMERA_POSITION,
             indoorEnable: true,
             locationButtonEnable: false,
             consumeSymbolTapEvents: false,
@@ -242,23 +244,26 @@ class _PhotoTicketSection extends StatelessWidget {
             fit: BoxFit.cover
           ),
         ),
-        Center(
-          child: AspectRatio(
-            aspectRatio: 1,
-            child: PageView.builder(
-              controller: _controller,
-              itemCount: 5,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: PhotoTicketItem(
-                    day: index + 1,
-                    date: "8월 ${index + 1}일",
-                    title: "너무 신나는 경기행 해커톤",
-                    location: "각자의 집",
-                  ),
-                );
-              },
+        Transform.translate(
+          offset: const Offset(0, -28),
+          child: Center(
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: PageView.builder(
+                controller: _controller,
+                itemCount: 5,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: PhotoTicketItem(
+                      day: index + 1,
+                      date: "8월 ${index + 1}일",
+                      title: "너무 신나는 경기행 해커톤",
+                      location: "각자의 집",
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ),

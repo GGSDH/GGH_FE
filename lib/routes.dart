@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/router_observer.dart';
@@ -53,7 +54,7 @@ enum Routes {
       GlobalKey<NavigatorState>();
 
   static final GoRouter config = GoRouter(
-      initialLocation: Routes.splash.path,
+      initialLocation: Routes.photobook.path,
       observers: [RouterObserver()],
       navigatorKey: _rootNavigatorKey,
       routes: [
@@ -137,22 +138,34 @@ enum Routes {
                             path: Routes.addPhotobook.path,
                             name: Routes.addPhotobook.name,
                             parentNavigatorKey: _rootNavigatorKey,
-                            builder: (context, state) =>
-                                const AddPhotobookScreen()),
-                        GoRoute(
-                          path: Routes.addPhotobookSelectPeriod.path,
-                          name: Routes.addPhotobookSelectPeriod.name,
-                          parentNavigatorKey: _rootNavigatorKey,
-                          builder: (context, state) =>
-                              AddPhotobookSelectPeriodScreen()
+                            builder: (context, state) => const AddPhotobookScreen(),
+                            routes: [
+                              GoRoute(
+                                path: Routes.addPhotobookSelectPeriod.path,
+                                name: Routes.addPhotobookSelectPeriod.name,
+                                parentNavigatorKey: _rootNavigatorKey,
+                                builder: (context, state) => const AddPhotobookSelectPeriodScreen()
+                              ),
+                              GoRoute(
+                                path: Routes.addPhotobookLoading.path,
+                                name: Routes.addPhotobookLoading.name,
+                                parentNavigatorKey: _rootNavigatorKey,
+                                builder: (context, state) {
+                                  final startDate = state.uri.queryParameters['startDate'] ?? '';
+                                  final endDate = state.uri.queryParameters['endDate'] ?? '';
+                                  final title = state.uri.queryParameters['title'] ?? '';
+
+                                  return AddPhotobookLoadingScreen(
+                                    startDate: startDate,
+                                    endDate: endDate,
+                                    title: title,
+                                  );
+                                }
+                              )
+                            ]
                         ),
-                        GoRoute(
-                            path: Routes.addPhotobookLoading.path,
-                            name: Routes.addPhotobookLoading.name,
-                            parentNavigatorKey: _rootNavigatorKey,
-                            builder: (context, state) =>
-                                const AddPhotobookLoadingScreen()),
-                      ]),
+                      ]
+                  ),
                 ],
               ),
               StatefulShellBranch(
