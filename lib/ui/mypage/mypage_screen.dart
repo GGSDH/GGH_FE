@@ -3,11 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:gyeonggi_express/route_extension.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../constants.dart';
 import '../../data/models/login_provider.dart';
 import '../../data/repository/auth_repository.dart';
+import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
 import 'mypage_bloc.dart';
@@ -24,8 +26,15 @@ class MyPageScreen extends StatelessWidget {
       child: BlocSideEffectListener<MyPageBloc, MyPageSideEffect>(
         listener: (context, sideEffect) {
           if (sideEffect is MyPageNavigateToSetting) {
-            context.push(
-              '/mypage/setting?nickname=${sideEffect.nickname}&email=${sideEffect.email}&loginType=${sideEffect.loginType.name}',
+            GoRouter.of(context).push(
+              Uri(
+                path: "${Routes.myPage.path}/${Routes.myPageSetting.path}",
+                queryParameters: {
+                  'nickname': sideEffect.nickname,
+                  'email': sideEffect.email,
+                  'loginType': sideEffect.loginType.name
+                },
+              ).toString()
             ).then((_) {
               // Pop해서 돌아왔을 때 이벤트 호출
               context.read<MyPageBloc>().add(MyPageInitialize());
@@ -57,13 +66,37 @@ class MyPageScreen extends StatelessWidget {
                     );
                   },
                   onTapLocInfoTerms: () {
-                    context.push('/mypage/policy/privacy?title=위치정보 이용약관&url=${Constants.LOCATION_INFO_TERMS_URL}');
+                    GoRouter.of(context).push(
+                      Uri(
+                        path: "${Routes.myPage.path}/${Routes.myPagePrivacyPolicy.path}",
+                        queryParameters: {
+                          'title': '위치정보 이용약관',
+                          'url': Constants.LOCATION_INFO_TERMS_URL
+                        }
+                      ).toString()
+                    );
                   },
                   onTapPrivacyPolicy: () {
-                    context.push('/mypage/policy/privacy?title=개인정보 처리방침&url=${Constants.PRIVACY_POLICY_URL}');
+                    GoRouter.of(context).push(
+                      Uri(
+                        path: "${Routes.myPage.path}/${Routes.myPagePrivacyPolicy.path}",
+                        queryParameters: {
+                          'title': '개인정보 처리방침',
+                          'url': Constants.PRIVACY_POLICY_URL
+                        }
+                      ).toString()
+                    );
                   },
                   onTapTermsOfUse: () {
-                    context.push('/mypage/policy/privacy?title=서비스 이용약관&url=${Constants.TERMS_OF_USE_URL}');
+                    GoRouter.of(context).push(
+                      Uri(
+                        path: "${Routes.myPage.path}/${Routes.myPageServicePolicy.path}",
+                        queryParameters: {
+                          'title': '서비스 이용약관',
+                          'url': Constants.TERMS_OF_USE_URL
+                        }
+                      ).toString()
+                    );
                   },
                   onTapLogOut: () {
                     _showLogoutDialog(context);
@@ -108,7 +141,7 @@ class MyPageScreen extends StatelessWidget {
                       width: double.infinity,
                       child: TextButton(
                         onPressed: () {
-                          context.pop();
+                          GoRouter.of(context).pop();
                         },
                         style: TextButton.styleFrom(
                           backgroundColor: ColorStyles.gray100,
@@ -132,7 +165,7 @@ class MyPageScreen extends StatelessWidget {
                       width: double.infinity,
                       child: TextButton(
                         onPressed: () {
-                          context.pop();
+                          GoRouter.of(context).pop();
                         },
                         style: TextButton.styleFrom(
                           backgroundColor: ColorStyles.primary,
@@ -200,7 +233,7 @@ class MyPageScreen extends StatelessWidget {
                       width: double.infinity,
                       child: TextButton(
                         onPressed: () {
-                          context.pop();
+                          GoRouter.of(context).pop();
                         },
                         style: TextButton.styleFrom(
                           backgroundColor: ColorStyles.gray100,
@@ -224,7 +257,7 @@ class MyPageScreen extends StatelessWidget {
                       width: double.infinity,
                       child: TextButton(
                         onPressed: () {
-                          context.pop();
+                          GoRouter.of(context).pop();
                         },
                         style: TextButton.styleFrom(
                           backgroundColor: ColorStyles.primary,

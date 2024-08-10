@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/ui/component/lane/lane_list_item.dart';
 import 'package:gyeonggi_express/ui/component/restaurant/restaurant_list_item.dart';
 
+import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
 
@@ -20,7 +22,12 @@ class HomeScreen extends StatelessWidget {
         _buildBanner(),
         _buildCategories(
           (category) {
-            GoRouter.of(context).push('/category-detail?name=$category');
+            GoRouter.of(context).push(
+              Uri(
+                path: Routes.categoryDetail.path,
+                queryParameters: { 'name': category },
+              ).toString()
+            );
           },
         ),
         _buildRecommendBody(),

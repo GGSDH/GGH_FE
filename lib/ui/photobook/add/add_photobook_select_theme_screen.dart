@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:gyeonggi_express/route_extension.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../../data/models/response/onboarding_response.dart';
 import '../../../data/repository/auth_repository.dart';
+import '../../../routes.dart';
 import '../../../themes/text_styles.dart';
 import '../../component/app/app_action_bar.dart';
 import '../../component/app/app_button.dart';
@@ -25,11 +27,11 @@ class AddPhotobookSelectThemeScreen extends StatelessWidget {
       child: BlocSideEffectListener<AddPhotobookSelectThemeBloc, AddPhotobookSelectThemeSideEffect>(
         listener: (context, sideEffect) {
           if (sideEffect is AddPhotobookSelectThemeComplete) {
-            GoRouter.of(context).go('/photobook/add/loading');
+            GoRouter.of(context).go("${Routes.photobook.path}/${Routes.addPhotobookLoading.path}");
           } else if (sideEffect is AddPhotobookSelectThemeShowError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                  content: Text(sideEffect.message)
+                content: Text(sideEffect.message)
               )
             );
           }

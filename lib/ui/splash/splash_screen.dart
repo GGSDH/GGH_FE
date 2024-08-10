@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:gyeonggi_express/route_extension.dart';
+
+import '../../routes.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -9,7 +12,7 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // 2초 후에 LoginScreen으로 이동
     Future.delayed(const Duration(seconds: 2), () {
-      context.go('/login');
+      GoRouter.of(context).go(Routes.login.path);
     });
 
     return Scaffold(

@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/ui/login/component/page_content.dart';
 import 'package:gyeonggi_express/ui/login/login_bloc.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
@@ -12,6 +13,7 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../data/repository/auth_repository.dart';
+import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
 import 'component/social_login_button.dart';
@@ -55,9 +57,9 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
           BlocSideEffectListener<LoginBloc, LoginSideEffect>(
             listener: (context, sideEffect) {
               if (sideEffect is LoginNavigateToHome) {
-                GoRouter.of(context).go('/home');
+                GoRouter.of(context).go(Routes.home.path);
               } else if (sideEffect is LoginNavigateToOnboarding) {
-                GoRouter.of(context).push('/onboarding');
+                GoRouter.of(context).push(Routes.onboarding.path);
               } else if (sideEffect is LoginShowError) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(

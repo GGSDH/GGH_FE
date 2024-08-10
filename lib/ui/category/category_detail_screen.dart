@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/ui/component/app/app_action_bar.dart';
 import 'package:gyeonggi_express/themes/color_styles.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
+
+import '../../routes.dart';
 
 class Category {
   final String name;
@@ -93,7 +96,7 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen>
           children: [
             AppActionBar(
               rightText: "",
-              onBackPressed: () => context.pop(),
+              onBackPressed: () => GoRouter.of(context).pop(),
               menuItems: [
                 ActionBarMenuItem(
                   icon: SvgPicture.asset(
@@ -177,7 +180,7 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen>
                             ),
                             ElevatedButton(
                               onPressed: () {
-                                GoRouter.of(context).push('/area-filter');
+                                GoRouter.of(context).push(Routes.areaFilter.path);
                               },
                               style: ElevatedButton.styleFrom(
                                 foregroundColor: Colors.black,

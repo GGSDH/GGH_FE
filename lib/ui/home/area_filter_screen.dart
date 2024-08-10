@@ -9,6 +9,7 @@ import '../component/app/app_action_bar.dart';
 class AreaFilterScreen extends StatefulWidget {
   const AreaFilterScreen({super.key});
 
+  @override
   AreaFilterScreenState createState() => AreaFilterScreenState();
 }
 

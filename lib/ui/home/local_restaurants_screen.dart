@@ -1,11 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
 import '../component/app/app_action_bar.dart';
-import '../component/restaurant/restaurant_list_item.dart';
 
 
 class RestaurantData {
@@ -29,7 +27,7 @@ class RestaurantData {
 }
 
 class LocalRestaurantsScreen extends StatelessWidget {
-  LocalRestaurantsScreen({Key? key}) : super(key: key);
+  LocalRestaurantsScreen({super.key});
 
   final List<RestaurantData> restaurants = [
     RestaurantData(
@@ -60,7 +58,7 @@ class LocalRestaurantsScreen extends StatelessWidget {
             AppActionBar(
               rightText: "",
               onBackPressed: () => Navigator.pop(context),
-              menuItems: [],
+              menuItems: const [],
               title: "지역 맛집",
             ),
             Padding(
@@ -74,7 +72,7 @@ class LocalRestaurantsScreen extends StatelessWidget {
                           style: TextStyles.bodyMedium.copyWith(
                               color: ColorStyles.gray700,
                               fontWeight: FontWeight.w400)),
-                      SizedBox(width: 4),
+                      const SizedBox(width: 4),
                       Text('${restaurants.length}개',
                           style: TextStyles.titleSmall.copyWith(
                             color: ColorStyles.gray900,
@@ -128,7 +126,7 @@ class LocalRestaurantsScreen extends StatelessWidget {
 class RestaurantItemList extends StatelessWidget {
   final List<RestaurantData> items;
 
-  const RestaurantItemList({Key? key, required this.items}) : super(key: key);
+  const RestaurantItemList({super.key, required this.items});
 
   @override
   Widget build(BuildContext context) {
@@ -150,7 +148,7 @@ class RestaurantItemList extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 Text(
                   item.title,
                   style: TextStyles.titleLarge.copyWith(
@@ -173,31 +171,31 @@ class RestaurantItemList extends StatelessWidget {
                       width: 18,
                       height: 18,
                     ),
-                    SizedBox(width: 1),
+                    const SizedBox(width: 1),
                     Text(
                       item.likeCount.toString(),
                       style: TextStyles.bodyXSmall.copyWith(
                           color: ColorStyles.gray500,
                           fontWeight: FontWeight.w400),
                     ),
-                    SizedBox(width: 4),
+                    const SizedBox(width: 4),
                     Text("|",
                         style: TextStyles.bodyMedium.copyWith(
                             color: ColorStyles.gray300,
                             fontWeight: FontWeight.w400)),
-                    SizedBox(width: 4),
+                    const SizedBox(width: 4),
                     Text(
                       item.region,
                       style: TextStyles.bodyMedium.copyWith(
                           color: ColorStyles.gray500,
                           fontWeight: FontWeight.w400),
                     ),
-                    SizedBox(width: 4),
+                    const SizedBox(width: 4),
                     Text("|",
                         style: TextStyles.bodyMedium.copyWith(
                             color: ColorStyles.gray300,
                             fontWeight: FontWeight.w400)),
-                    SizedBox(width: 4),
+                    const SizedBox(width: 4),
                     Text(
                       item.type,
                       style: TextStyles.bodyMedium.copyWith(

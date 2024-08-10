@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/ui/component/app/app_action_bar.dart';
 
+import '../../../routes.dart';
 import '../../../themes/color_styles.dart';
 import '../../component/app/app_button.dart';
 
@@ -55,7 +57,7 @@ class AddPhotobookScreen extends StatelessWidget {
               child: AppButton(
                 text: "포토북 만들기",
                 onPressed: () {
-                  GoRouter.of(context).push("/photobook/add/select-period");
+                  GoRouter.of(context).push("${Routes.photobook.path}/${Routes.addPhotobookSelectPeriod.path}");
                 },
                 isEnabled: true,
                 onIllegalPressed: () {},

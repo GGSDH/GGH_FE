@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/router_observer.dart';
 import 'package:gyeonggi_express/ui/category/category_detail_screen.dart';
 import 'package:gyeonggi_express/ui/component/app/app_bottom_navigation_bar.dart';
 import 'package:gyeonggi_express/ui/home/home_screen.dart';
+import 'package:gyeonggi_express/ui/home/local_restaurants_screen.dart';
 import 'package:gyeonggi_express/ui/home/popular_destinations_screen.dart';
 import 'package:gyeonggi_express/ui/home/recommended_lane_screen.dart';
 import 'package:gyeonggi_express/ui/home/area_filter_screen.dart';
@@ -15,9 +17,8 @@ import 'package:gyeonggi_express/ui/mypage/mypage_setting_screen.dart';
 import 'package:gyeonggi_express/ui/onboarding/onboarding_complete_screen.dart';
 import 'package:gyeonggi_express/ui/onboarding/onboarding_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/add/add_photobook_loading_screen.dart';
-import 'package:gyeonggi_express/ui/photobook/add/add_photobook_select_period_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/add/add_photobook_screen.dart';
-import 'package:gyeonggi_express/ui/photobook/add/add_photobook_select_theme_screen.dart';
+import 'package:gyeonggi_express/ui/photobook/add/add_photobook_select_period_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_screen.dart';
 import 'package:gyeonggi_express/ui/splash/splash_screen.dart';
@@ -29,35 +30,35 @@ enum Routes {
   splash,
   login,
   onboarding,
-  onboarding_complete,
+  onboardingComplete,
   home,
-  popular_destinations,
-  recommended_lanes,
-  category_detail,
-  area_filter,
+  popularDestinations,
+  recommendedLanes,
+  localRestaurants,
+  categoryDetail,
+  areaFilter,
   stations,
   lanes,
   recommend,
   photobook,
-  add_photobook,
-  add_photobook_select_period,
-  add_photobook_select_theme,
-  add_photobook_loading,
-  mypage,
-  mypage_setting,
-  mypage_service_policy,
-  mypage_privacy_policy;
+  addPhotobook,
+  addPhotobookSelectPeriod,
+  addPhotobookLoading,
+  myPage,
+  myPageSetting,
+  myPageServicePolicy,
+  myPagePrivacyPolicy;
 
   static final GlobalKey<NavigatorState> _rootNavigatorKey =
       GlobalKey<NavigatorState>();
 
   static final GoRouter config = GoRouter(
-      initialLocation: '/',
+      initialLocation: Routes.splash.path,
       observers: [RouterObserver()],
       navigatorKey: _rootNavigatorKey,
       routes: [
         GoRoute(
-            path: '/',
+            path: Routes.splash.path,
             name: Routes.splash.name,
             builder: (context, state) => const SplashScreen()),
         ShellRoute(
@@ -66,46 +67,51 @@ enum Routes {
                 backgroundColor: Colors.white, body: SafeArea(child: child)),
             routes: [
               GoRoute(
-                  path: '/login',
+                  path: Routes.login.path,
                   name: Routes.login.name,
                   builder: (context, state) => const LoginScreen()),
               GoRoute(
-                  path: "/onboarding",
+                  path: Routes.onboarding.path,
                   name: Routes.onboarding.name,
                   builder: (context, state) => const OnboardingScreen()),
               GoRoute(
-                path: '/onboarding/complete',
-                name: Routes.onboarding_complete.name,
+                path: Routes.onboardingComplete.path,
+                name: Routes.onboardingComplete.name,
                 builder: (context, state) => const OnboardingCompleteScreen(),
               )
             ]),
         StatefulShellRoute.indexedStack(
             builder: (context, state, child) => Scaffold(
-                  backgroundColor: Colors.white,
-                  body: child,
-                  bottomNavigationBar: AppBottomNavigationBar(
-                      currentIndex: child.currentIndex,
-                      onTap: (index) {
-                        child.goBranch(index);
-                      }),
-                ),
+              backgroundColor: Colors.white,
+              body: child,
+              bottomNavigationBar: AppBottomNavigationBar(
+                  currentIndex: child.currentIndex,
+                  onTap: (index) {
+                    child.goBranch(index);
+                  }),
+            ),
             branches: [
               StatefulShellBranch(routes: [
                 GoRoute(
-                    path: '/home',
+                    path: Routes.home.path,
                     name: Routes.home.name,
                     builder: (context, state) => const HomeScreen(),
                     routes: [
                       GoRoute(
-                        path: 'popular-destinations',
-                        name: Routes.popular_destinations.name,
+                        path: Routes.popularDestinations.path,
+                        name: Routes.popularDestinations.name,
                         builder: (context, state) =>
                             PopularDestinationsScreen(),
                       ),
                       GoRoute(
-                        path: 'recommended-lanes',
-                        name: Routes.recommended_lanes.name,
+                        path: Routes.recommendedLanes.path,
+                        name: Routes.recommendedLanes.name,
                         builder: (context, state) => RecommendedLaneScreen(),
+                      ),
+                      GoRoute(
+                        path: Routes.localRestaurants.path,
+                        name: Routes.localRestaurants.name,
+                        builder: (context, state) => LocalRestaurantsScreen()
                       )
                     ]
                 ),
@@ -113,7 +119,7 @@ enum Routes {
               StatefulShellBranch(
                 routes: [
                   GoRoute(
-                      path: '/recommend',
+                      path: Routes.recommend.path,
                       name: Routes.recommend.name,
                       builder: (context, state) => const RecommendScreen(),
                       routes: const []),
@@ -122,32 +128,27 @@ enum Routes {
               StatefulShellBranch(
                 routes: [
                   GoRoute(
-                      path: '/photobook',
+                      path: Routes.photobook.path,
                       name: Routes.photobook.name,
                       builder: (context, state) =>
                           const Scaffold(body: PhotobookScreen()),
                       routes: [
                         GoRoute(
-                            path: 'add',
-                            name: Routes.add_photobook.name,
+                            path: Routes.addPhotobook.path,
+                            name: Routes.addPhotobook.name,
                             parentNavigatorKey: _rootNavigatorKey,
                             builder: (context, state) =>
                                 const AddPhotobookScreen()),
                         GoRoute(
-                            path: 'add/select-period',
-                            name: Routes.add_photobook_select_period.name,
-                            parentNavigatorKey: _rootNavigatorKey,
-                            builder: (context, state) =>
-                                const AddPhotobookSelectPeriodScreen()),
+                          path: Routes.addPhotobookSelectPeriod.path,
+                          name: Routes.addPhotobookSelectPeriod.name,
+                          parentNavigatorKey: _rootNavigatorKey,
+                          builder: (context, state) =>
+                              AddPhotobookSelectPeriodScreen()
+                        ),
                         GoRoute(
-                            path: 'add/select-theme',
-                            name: Routes.add_photobook_select_theme.name,
-                            parentNavigatorKey: _rootNavigatorKey,
-                            builder: (context, state) =>
-                                const AddPhotobookSelectThemeScreen()),
-                        GoRoute(
-                            path: 'add/loading',
-                            name: Routes.add_photobook_loading.name,
+                            path: Routes.addPhotobookLoading.path,
+                            name: Routes.addPhotobookLoading.name,
                             parentNavigatorKey: _rootNavigatorKey,
                             builder: (context, state) =>
                                 const AddPhotobookLoadingScreen()),
@@ -157,13 +158,13 @@ enum Routes {
               StatefulShellBranch(
                 routes: [
                   GoRoute(
-                      path: '/mypage',
-                      name: Routes.mypage.name,
+                      path: Routes.myPage.path,
+                      name: Routes.myPage.name,
                       builder: (context, state) => const MyPageScreen(),
                       routes: [
                         GoRoute(
-                            path: 'setting',
-                            name: Routes.mypage_setting.name,
+                            path: Routes.myPageSetting.path,
+                            name: Routes.myPageSetting.name,
                             parentNavigatorKey: _rootNavigatorKey,
                             builder: (context, state) => MyPageSettingScreen(
                                   nickname:
@@ -176,8 +177,8 @@ enum Routes {
                                           ""),
                                 )),
                         GoRoute(
-                          path: 'policy/service',
-                          name: Routes.mypage_service_policy.name,
+                          path: Routes.myPageServicePolicy.path,
+                          name: Routes.myPageServicePolicy.name,
                           parentNavigatorKey: _rootNavigatorKey,
                           builder: (context, state) => MyPagePolicyScreen(
                             title: state.uri.queryParameters['title'] ?? "",
@@ -185,8 +186,8 @@ enum Routes {
                           ),
                         ),
                         GoRoute(
-                          path: 'policy/privacy',
-                          name: Routes.mypage_privacy_policy.name,
+                          path: Routes.myPagePrivacyPolicy.path,
+                          name: Routes.myPagePrivacyPolicy.name,
                           parentNavigatorKey: _rootNavigatorKey,
                           builder: (context, state) => MyPagePolicyScreen(
                             title: state.uri.queryParameters['title'] ?? "",
@@ -198,27 +199,28 @@ enum Routes {
               ),
             ]),
         GoRoute(
-            path: '/stations',
+            path: Routes.stations.path,
             name: Routes.stations.name,
             builder: (context, state) => StationDetailScreen()),
         GoRoute(
-            path: '/lanes',
+            path: Routes.lanes.path,
             name: Routes.lanes.name,
             builder: (context, state) => LaneDetailScreen()),
         GoRoute(
-          path: '/category-detail',
-          name: Routes.category_detail.name,
+          path: Routes.categoryDetail.path,
+          name: Routes.categoryDetail.name,
           builder: (context, state) {
             final name = state.uri.queryParameters['name'] ?? '';
             return CategoryDetailScreen(categoryName: name);
           },
         ),
         GoRoute(
-          path: '/area-filter',
-          name: Routes.area_filter.name,
+          path: Routes.areaFilter.path,
+          name: Routes.areaFilter.name,
           builder: (context, state) {
             return const AreaFilterScreen();
           }
         )
-      ]);
+      ]
+  );
 }

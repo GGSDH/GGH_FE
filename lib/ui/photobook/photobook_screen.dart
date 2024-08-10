@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:gyeonggi_express/route_extension.dart';
 
+import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
 import '../component/photobook/photobook_list_item.dart';
@@ -93,7 +95,7 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware {
                       _PhotobookSection(
                         mapControllerCompleter: _mapControllerCompleter,
                         onAddPhotobook: () {
-                          GoRouter.of(context).go('/photobook/add');
+                          GoRouter.of(context).go("${Routes.photobook.path}/${Routes.addPhotobook.path}");
                         },
                         showPhotobookList: _showBottomSheet,
                       ),

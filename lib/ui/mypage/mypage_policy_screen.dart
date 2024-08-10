@@ -40,7 +40,7 @@ class _MyPagePolicyScreenState extends State<MyPagePolicyScreen> {
           children: [
             _buildAppBar(
               onTapBack: () {
-                context.pop();
+                GoRouter.of(context).pop();
               },
             ),
             Expanded(
