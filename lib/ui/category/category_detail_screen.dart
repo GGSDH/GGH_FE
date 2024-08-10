@@ -32,17 +32,16 @@ class CategoryItem {
   });
 }
 
-class CategoryExplorerScreen extends StatefulWidget {
+class CategoryDetailScreen extends StatefulWidget {
   final String categoryName;
 
-  const CategoryExplorerScreen({Key? key, required this.categoryName})
-      : super(key: key);
+  const CategoryDetailScreen({super.key, required this.categoryName});
 
   @override
-  _CategoryExplorerScreenState createState() => _CategoryExplorerScreenState();
+  _CategoryDetailScreenState createState() => _CategoryDetailScreenState();
 }
 
-class _CategoryExplorerScreenState extends State<CategoryExplorerScreen>
+class _CategoryDetailScreenState extends State<CategoryDetailScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late List<Category> _categories;
@@ -108,7 +107,7 @@ class _CategoryExplorerScreenState extends State<CategoryExplorerScreen>
               title: widget.categoryName,
             ),
             Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
                     color: ColorStyles.gray200,
@@ -119,7 +118,7 @@ class _CategoryExplorerScreenState extends State<CategoryExplorerScreen>
               child: SizedBox(
                 width: MediaQuery.of(context).size.width,
                 child: TabBar(
-                  padding: EdgeInsets.only(left: 20),
+                  padding: const EdgeInsets.only(left: 20),
                   dividerHeight: 0,
                   dividerColor: Colors.transparent,
                   tabAlignment: TabAlignment.start,
@@ -141,7 +140,7 @@ class _CategoryExplorerScreenState extends State<CategoryExplorerScreen>
                             child: Text(category.name),
                           ))
                       .toList(),
-                  indicator: UnderlineTabIndicator(
+                  indicator: const UnderlineTabIndicator(
                     borderSide:
                         BorderSide(width: 1.0, color: ColorStyles.gray900),
                   ),
@@ -166,7 +165,7 @@ class _CategoryExplorerScreenState extends State<CategoryExplorerScreen>
                                     style: TextStyles.bodyMedium.copyWith(
                                         color: ColorStyles.gray700,
                                         fontWeight: FontWeight.w400)),
-                                SizedBox(
+                                const SizedBox(
                                   width: 4,
                                 ),
                                 Text('${category.items.length}개',
@@ -177,11 +176,13 @@ class _CategoryExplorerScreenState extends State<CategoryExplorerScreen>
                               ],
                             ),
                             ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                GoRouter.of(context).push('/area-filter');
+                              },
                               style: ElevatedButton.styleFrom(
                                 foregroundColor: Colors.black,
                                 backgroundColor: Colors.white,
-                                padding: EdgeInsets.fromLTRB(12, 8, 8, 8),
+                                padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                   side: BorderSide(
@@ -198,7 +199,7 @@ class _CategoryExplorerScreenState extends State<CategoryExplorerScreen>
                                         color: ColorStyles.gray900,
                                         fontWeight: FontWeight.w400),
                                   ),
-                                  SizedBox(width: 12),
+                                  const SizedBox(width: 12),
                                   SvgPicture.asset(
                                     "assets/icons/ic_chevron_right.svg",
                                     width: 20,
@@ -228,7 +229,7 @@ class _CategoryExplorerScreenState extends State<CategoryExplorerScreen>
 class CategoryItemList extends StatelessWidget {
   final List<CategoryItem> items;
 
-  const CategoryItemList({Key? key, required this.items}) : super(key: key);
+  const CategoryItemList({super.key, required this.items});
 
   @override
   Widget build(BuildContext context) {
@@ -244,7 +245,7 @@ class CategoryItemList extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     Text(
                       item.title,
                       style: TextStyles.titleLarge.copyWith(
@@ -267,31 +268,31 @@ class CategoryItemList extends StatelessWidget {
                           width: 18,
                           height: 18,
                         ),
-                        SizedBox(width: 1),
+                        const SizedBox(width: 1),
                         Text(
                           item.likeCount.toString(),
                           style: TextStyles.bodyXSmall.copyWith(
                               color: ColorStyles.gray500,
                               fontWeight: FontWeight.w400),
                         ),
-                        SizedBox(width: 4),
+                        const SizedBox(width: 4),
                         Text("|",
                             style: TextStyles.bodyMedium.copyWith(
                                 color: ColorStyles.gray300,
                                 fontWeight: FontWeight.w400)),
-                        SizedBox(width: 4),
+                        const SizedBox(width: 4),
                         Text(
                           item.region,
                           style: TextStyles.bodyMedium.copyWith(
                               color: ColorStyles.gray500,
                               fontWeight: FontWeight.w400),
                         ),
-                        SizedBox(width: 4),
+                        const SizedBox(width: 4),
                         Text("|",
                             style: TextStyles.bodyMedium.copyWith(
                                 color: ColorStyles.gray300,
                                 fontWeight: FontWeight.w400)),
-                        SizedBox(width: 4),
+                        const SizedBox(width: 4),
                         Text(
                           item.type,
                           style: TextStyles.bodyMedium.copyWith(

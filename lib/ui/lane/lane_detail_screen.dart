@@ -133,7 +133,7 @@ class LaneDetailScreen extends StatefulWidget {
     ],
   );
 
-  LaneDetailScreen({Key? key}) : super(key: key);
+  LaneDetailScreen({super.key});
 
   @override
   _LaneDetailScreenState createState() => _LaneDetailScreenState();
@@ -296,7 +296,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (BuildContext context) {
@@ -390,7 +390,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
             ),
           ),
         ),
-        SizedBox(height: 14),
+        const SizedBox(height: 14),
         Text(
           widget.laneData.name,
           style: TextStyles.title2ExtraLarge.copyWith(
@@ -411,16 +411,16 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
 
   Widget _laneDivider() {
     return Padding(
-      padding: EdgeInsets.only(left: 29.5),
+      padding: const EdgeInsets.only(left: 29.5),
       child: Row(
         children: [
           Container(
             width: 1,
             height: 14,
-            color: Color(0xFFFBB12C),
+            color: const Color(0xFFFBB12C),
           ),
-          SizedBox(width: 31),
-          Expanded(child: SizedBox(height: 14)),
+          const SizedBox(width: 31),
+          const Expanded(child: SizedBox(height: 14)),
         ],
       ),
     );
@@ -428,7 +428,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
 
   Widget _lanePlace(PlaceData place) {
     return Padding(
-      padding: EdgeInsets.only(left: 20),
+      padding: const EdgeInsets.only(left: 20),
       child: IntrinsicHeight(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -441,7 +441,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: Color(0xFFFBB12C),
+                      color: const Color(0xFFFBB12C),
                       width: 1,
                     ),
                   ),
@@ -449,12 +449,12 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                 Expanded(
                   child: Container(
                     width: 1,
-                    color: Color(0xFFFBB12C),
+                    color: const Color(0xFFFBB12C),
                   ),
                 ),
               ],
             ),
-            SizedBox(width: 20),
+            const SizedBox(width: 20),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -463,7 +463,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                       style: TextStyles.titleMedium.copyWith(
                           fontWeight: FontWeight.w600,
                           color: ColorStyles.gray800)),
-                  SizedBox(height: 2),
+                  const SizedBox(height: 2),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -474,12 +474,12 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                                 style: TextStyles.bodyMedium.copyWith(
                                     color: ColorStyles.gray500,
                                     fontWeight: FontWeight.w400)),
-                            SizedBox(width: 4),
+                            const SizedBox(width: 4),
                             Text("|",
                                 style: TextStyles.bodyMedium.copyWith(
                                     color: ColorStyles.gray300,
                                     fontWeight: FontWeight.w400)),
-                            SizedBox(width: 4),
+                            const SizedBox(width: 4),
                             Text(place.category,
                                 style: TextStyles.bodyMedium.copyWith(
                                     color: ColorStyles.gray500,
@@ -492,21 +492,21 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                         width: 18,
                         height: 18,
                       ),
-                      SizedBox(width: 2),
+                      const SizedBox(width: 2),
                       Text(place.likeCount.toString(),
                           style: TextStyles.bodyXSmall.copyWith(
                               color: ColorStyles.gray600,
                               fontWeight: FontWeight.w400)),
-                      SizedBox(width: 20),
+                      const SizedBox(width: 20),
                     ],
                   ),
-                  SizedBox(height: 14),
+                  const SizedBox(height: 14),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: place.imageUrls
                           .map((url) => Padding(
-                                padding: EdgeInsets.only(right: 10),
+                                padding: const EdgeInsets.only(right: 10),
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(20),
                                   child: Image.network(
@@ -520,7 +520,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                           .toList(),
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
@@ -595,7 +595,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Row(
                         children: [
                           SvgPicture.asset(
@@ -603,7 +603,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                             width: 18,
                             height: 18,
                           ),
-                          SizedBox(width: 2),
+                          const SizedBox(width: 2),
                           Text(place.likeCount.toString(),
                               style: TextStyles.bodyXSmall.copyWith(
                                   color: ColorStyles.gray600,
@@ -658,7 +658,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                                     if (day.places.last != place)
                                       _laneDivider(),
                                   ])
-                              .toList(),
+                              ,
                         ])
                     .toList(),
               ),

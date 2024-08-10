@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -27,6 +26,8 @@ class RecommendedLaneScreen extends StatelessWidget {
     ),
   ];
 
+  RecommendedLaneScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -37,7 +38,7 @@ class RecommendedLaneScreen extends StatelessWidget {
             AppActionBar(
               rightText: "",
               onBackPressed: () => Navigator.pop(context),
-              menuItems: [],
+              menuItems: const [],
               title: "좋아하실 만한 노선",
             ),
             Padding(
@@ -51,7 +52,7 @@ class RecommendedLaneScreen extends StatelessWidget {
                           style: TextStyles.bodyMedium.copyWith(
                               color: ColorStyles.gray700,
                               fontWeight: FontWeight.w400)),
-                      SizedBox(width: 4),
+                      const SizedBox(width: 4),
                       Text('${laneList.length}개',
                           style: TextStyles.titleSmall.copyWith(
                             color: ColorStyles.gray900,

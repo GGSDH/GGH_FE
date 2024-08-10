@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gyeonggi_express/themes/color_styles.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';

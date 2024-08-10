@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gyeonggi_express/themes/color_styles.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
 import 'package:gyeonggi_express/ui/component/app/app_action_bar.dart';
@@ -52,6 +51,8 @@ class PopularDestinationsScreen extends StatelessWidget {
     ),
   ];
 
+  PopularDestinationsScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -62,27 +63,27 @@ class PopularDestinationsScreen extends StatelessWidget {
             AppActionBar(
               rightText: "",
               onBackPressed: () => Navigator.pop(context),
-              menuItems: [],
+              menuItems: const [],
               title: "인기 여행지 순위",
             ),
             Expanded(
               child: ListView.builder(
-                padding: EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 itemCount: (destinations.length / 2).ceil(),
                 itemBuilder: (context, index) {
                   return Padding(
-                    padding: EdgeInsets.only(bottom: 20),
+                    padding: const EdgeInsets.only(bottom: 20),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
                           child: DestinationItem(destination: destinations[index * 2]),
                         ),
-                        SizedBox(width: 14),
+                        const SizedBox(width: 14),
                         Expanded(
                           child: index * 2 + 1 < destinations.length
                               ? DestinationItem(destination: destinations[index * 2 + 1])
-                              : SizedBox(),
+                              : const SizedBox(),
                         ),
                       ],
                     ),
@@ -100,7 +101,7 @@ class PopularDestinationsScreen extends StatelessWidget {
 class DestinationItem extends StatelessWidget {
   final PopularDestination destination;
 
-  const DestinationItem({Key? key, required this.destination}) : super(key: key);
+  const DestinationItem({super.key, required this.destination});
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +124,7 @@ class DestinationItem extends StatelessWidget {
               left: 0,
               child: Container(
                 padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: ColorStyles.gray800,
                   borderRadius: BorderRadius.only(topLeft: Radius.circular(8), bottomRight: Radius.circular(8)),
                 ),
@@ -135,12 +136,12 @@ class DestinationItem extends StatelessWidget {
             ),
           ],
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         Text(
             destination.name,
             style: TextStyles.titleMedium.copyWith(color: ColorStyles.gray900, fontWeight: FontWeight.w600)
         ),
-        SizedBox(height: 2),
+        const SizedBox(height: 2),
         Row(
           children: [
             Text(
@@ -149,12 +150,12 @@ class DestinationItem extends StatelessWidget {
                   color: ColorStyles.gray500,
                   fontWeight: FontWeight.w400),
             ),
-            SizedBox(width: 4),
+            const SizedBox(width: 4),
             Text("|",
                 style: TextStyles.bodyMedium.copyWith(
                     color: ColorStyles.gray300,
                     fontWeight: FontWeight.w400)),
-            SizedBox(width: 4),
+            const SizedBox(width: 4),
             Text(
               destination.category,
               style: TextStyles.bodyMedium.copyWith(

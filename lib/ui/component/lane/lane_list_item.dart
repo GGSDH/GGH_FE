@@ -84,10 +84,11 @@ class LaneListItem extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(4),
-                child: Image.asset(
-                  "assets/images/img_dummy_place.png",
+                child: Image.network(
+                  "http://tong.visitkorea.or.kr/cms/resource/48/2739048_image2_1.JPG",
                   width: 104,
                   height: 104,
+                  fit: BoxFit.cover,
                 ),
               ),
               Positioned(

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/router_observer.dart';
-import 'package:gyeonggi_express/ui/categoryexplorer/category_explorer_screen.dart';
+import 'package:gyeonggi_express/ui/category/category_detail_screen.dart';
 import 'package:gyeonggi_express/ui/component/app/app_bottom_navigation_bar.dart';
 import 'package:gyeonggi_express/ui/home/home_screen.dart';
 import 'package:gyeonggi_express/ui/home/popular_destinations_screen.dart';
 import 'package:gyeonggi_express/ui/home/recommended_lane_screen.dart';
+import 'package:gyeonggi_express/ui/home/area_filter_screen.dart';
 import 'package:gyeonggi_express/ui/lane/lane_detail_screen.dart';
 import 'package:gyeonggi_express/ui/login/login_screen.dart';
 import 'package:gyeonggi_express/ui/mypage/mypage_policy_screen.dart';
@@ -32,7 +33,8 @@ enum Routes {
   home,
   popular_destinations,
   recommended_lanes,
-  category_explorer,
+  category_detail,
+  area_filter,
   stations,
   lanes,
   recommend,
@@ -50,7 +52,7 @@ enum Routes {
       GlobalKey<NavigatorState>();
 
   static final GoRouter config = GoRouter(
-      initialLocation: '/home/recommended-lanes',
+      initialLocation: '/',
       observers: [RouterObserver()],
       navigatorKey: _rootNavigatorKey,
       routes: [
@@ -104,8 +106,9 @@ enum Routes {
                         path: 'recommended-lanes',
                         name: Routes.recommended_lanes.name,
                         builder: (context, state) => RecommendedLaneScreen(),
-                      ),
-                    ]),
+                      )
+                    ]
+                ),
               ]),
               StatefulShellBranch(
                 routes: [
@@ -122,7 +125,7 @@ enum Routes {
                       path: '/photobook',
                       name: Routes.photobook.name,
                       builder: (context, state) =>
-                          Scaffold(body: PhotobookScreen()),
+                          const Scaffold(body: PhotobookScreen()),
                       routes: [
                         GoRoute(
                             path: 'add',
@@ -203,11 +206,19 @@ enum Routes {
             name: Routes.lanes.name,
             builder: (context, state) => LaneDetailScreen()),
         GoRoute(
-          path: '/categoryexplorer/:categoryName',
-          name: Routes.category_explorer.name,
-          builder: (context, state) => CategoryExplorerScreen(
-            categoryName: state.pathParameters['categoryName'] ?? '',
-          ),
+          path: '/category-detail',
+          name: Routes.category_detail.name,
+          builder: (context, state) {
+            final name = state.uri.queryParameters['name'] ?? '';
+            return CategoryDetailScreen(categoryName: name);
+          },
         ),
+        GoRoute(
+          path: '/area-filter',
+          name: Routes.area_filter.name,
+          builder: (context, state) {
+            return const AreaFilterScreen();
+          }
+        )
       ]);
 }

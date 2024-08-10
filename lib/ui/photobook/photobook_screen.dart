@@ -111,7 +111,7 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware {
 }
 
 class _TabBarSection extends StatelessWidget {
-  const _TabBarSection({super.key});
+  const _TabBarSection();
 
   @override
   Widget build(BuildContext context) {
@@ -149,7 +149,6 @@ class _TabBarSection extends StatelessWidget {
 
 class _PhotobookSection extends StatelessWidget {
   const _PhotobookSection({
-    super.key,
     required this.mapControllerCompleter,
     required this.onAddPhotobook,
     required this.showPhotobookList,
@@ -168,10 +167,14 @@ class _PhotobookSection extends StatelessWidget {
             indoorEnable: true,
             locationButtonEnable: false,
             consumeSymbolTapEvents: false,
+            rotationGesturesEnable: true,
+            scrollGesturesEnable: true,
+            zoomGesturesEnable: true,
           ),
           onMapReady: (controller) {
             mapControllerCompleter.complete(controller);
           },
+          forceGesture: true,
         ),
         Positioned(
           bottom: 20,
@@ -216,7 +219,7 @@ class _PhotobookSection extends StatelessWidget {
 }
 
 class _PhotoTicketSection extends StatelessWidget {
-  _PhotoTicketSection({super.key});
+  _PhotoTicketSection();
 
   final PageController _controller = PageController(viewportFraction: 0.8);
 

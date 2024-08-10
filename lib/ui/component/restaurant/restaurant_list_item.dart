@@ -31,8 +31,8 @@ class RestaurantListItem extends StatelessWidget {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(4),
-                      child: Image.asset(
-                        "assets/images/img_dummy_place.png",
+                      child: Image.network(
+                        "http://tong.visitkorea.or.kr/cms/resource/48/2739048_image2_1.JPG",
                         width: 200,
                         height: 145,
                         fit: BoxFit.cover,

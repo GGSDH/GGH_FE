@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/ui/component/lane/lane_list_item.dart';
 import 'package:gyeonggi_express/ui/component/restaurant/restaurant_list_item.dart';
 
@@ -17,7 +18,11 @@ class HomeScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildBanner(),
-        _buildCategories(),
+        _buildCategories(
+          (category) {
+            GoRouter.of(context).push('/category-detail?name=$category');
+          },
+        ),
         _buildRecommendBody(),
         _buildRestaurantBody(),
         _buildPopularPlaceBody()
@@ -126,7 +131,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCategories() {
+  Widget _buildCategories(Function (String category) onTapCategory) {
     final categories = ['체험', '핫플', '관광', '지역특색', '문화', '맛집', '힐링'];
 
     return SizedBox(
@@ -137,7 +142,12 @@ class HomeScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
         children: [
           for (final category in categories) ...[
-            _buildCategoryItem("assets/icons/ic_category.svg", category, () {}),
+            _buildCategoryItem(
+                "assets/icons/ic_category.svg",
+                category,
+                () { onTapCategory(category);
+              }
+            ),
             const SizedBox(width: 8)
           ]
         ],
