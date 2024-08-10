@@ -5,6 +5,7 @@ import 'package:gyeonggi_express/ui/categoryexplorer/category_explorer_screen.da
 import 'package:gyeonggi_express/ui/component/app/app_bottom_navigation_bar.dart';
 import 'package:gyeonggi_express/ui/home/home_screen.dart';
 import 'package:gyeonggi_express/ui/home/popular_destinations_screen.dart';
+import 'package:gyeonggi_express/ui/home/recommended_lane_screen.dart';
 import 'package:gyeonggi_express/ui/lane/lane_detail_screen.dart';
 import 'package:gyeonggi_express/ui/login/login_screen.dart';
 import 'package:gyeonggi_express/ui/mypage/mypage_policy_screen.dart';
@@ -30,6 +31,7 @@ enum Routes {
   onboarding_complete,
   home,
   popular_destinations,
+  recommended_lanes,
   category_explorer,
   stations,
   lanes,
@@ -48,7 +50,7 @@ enum Routes {
       GlobalKey<NavigatorState>();
 
   static final GoRouter config = GoRouter(
-      initialLocation: '/home/popular-destinations',
+      initialLocation: '/home/recommended-lanes',
       observers: [RouterObserver()],
       navigatorKey: _rootNavigatorKey,
       routes: [
@@ -97,6 +99,11 @@ enum Routes {
                         name: Routes.popular_destinations.name,
                         builder: (context, state) =>
                             PopularDestinationsScreen(),
+                      ),
+                      GoRoute(
+                        path: 'recommended-lanes',
+                        name: Routes.recommended_lanes.name,
+                        builder: (context, state) => RecommendedLaneScreen(),
                       ),
                     ]),
               ]),
