@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -15,6 +16,7 @@ import '../../data/repository/trip_repository.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
+import '../component/app/app_image_plaeholder.dart';
 import 'home_bloc.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -358,9 +360,9 @@ class HomeScreen extends StatelessWidget {
                   for (final restaurant in localRestaurants) ...[
                     _buildRestaurantItem(
                       name: restaurant.name,
+                      image: restaurant.image,
                       likeCount: restaurant.likeCount,
                       location: restaurant.sigunguValue,
-                      category: "한식",
                       isLiked: restaurant.likedByMe,
                     ),
                     const SizedBox(width: 14),
@@ -372,17 +374,18 @@ class HomeScreen extends StatelessWidget {
         ));
   }
 
-  Widget _buildRestaurantItem(
-      {required String name,
-      required int likeCount,
-      required String location,
-      required String category,
-      required bool isLiked}) {
+  Widget _buildRestaurantItem({
+    required String name,
+    required String? image,
+    required int likeCount,
+    required String location,
+    required bool isLiked
+  }) {
     return RestaurantListItem(
       name: name,
+      image: image,
       likeCount: likeCount,
       location: location,
-      category: category,
       isLiked: isLiked,
     );
   }
@@ -435,6 +438,7 @@ class HomeScreen extends StatelessWidget {
                     _buildPopularPlaceItem(
                       rank: place.ranking,
                       name: place.name,
+                      image: place.image,
                       location: place.sigunguValue,
                       category: place.category,
                     ),
@@ -447,11 +451,13 @@ class HomeScreen extends StatelessWidget {
         ));
   }
 
-  Widget _buildPopularPlaceItem(
-      {required int rank,
-      required String name,
-      required String location,
-      required String category}) {
+  Widget _buildPopularPlaceItem({
+    required int rank,
+    required String name,
+    required String? image,
+    required String location,
+    required String category
+  }) {
     return Column(
       children: [
         Row(
@@ -463,8 +469,10 @@ class HomeScreen extends StatelessWidget {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(4),
-                      child: Image.asset(
-                        "assets/images/img_dummy_place.png",
+                      child: CachedNetworkImage(
+                        imageUrl: image ?? "",
+                        placeholder: (context, url) => const AppImagePlaceholder(width: 200, height: 145),
+                        errorWidget: (context, url, error) => const AppImagePlaceholder(width: 200, height: 145),
                         width: 145,
                         height: 145,
                         fit: BoxFit.cover,

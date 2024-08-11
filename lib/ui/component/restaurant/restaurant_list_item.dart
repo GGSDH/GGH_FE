@@ -1,21 +1,23 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gyeonggi_express/themes/color_styles.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
+import 'package:gyeonggi_express/ui/component/app/app_image_plaeholder.dart';
 
 class RestaurantListItem extends StatelessWidget {
   final String name;
+  final String? image;
   final int likeCount;
   final String location;
-  final String category;
   final bool isLiked;
 
   const RestaurantListItem(
       {super.key,
       required this.name,
+      this.image,
       required this.likeCount,
       required this.location,
-      required this.category,
       required this.isLiked});
 
   @override
@@ -31,8 +33,10 @@ class RestaurantListItem extends StatelessWidget {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(4),
-                      child: Image.network(
-                        "http://tong.visitkorea.or.kr/cms/resource/48/2739048_image2_1.JPG",
+                      child: CachedNetworkImage(
+                        imageUrl: image ?? "",
+                        placeholder: (context, url) => const AppImagePlaceholder(width: 200, height: 145),
+                        errorWidget: (context, url, error) => const AppImagePlaceholder(width: 200, height: 145),
                         width: 200,
                         height: 145,
                         fit: BoxFit.cover,
@@ -65,7 +69,7 @@ class RestaurantListItem extends StatelessWidget {
                         width: 18, height: 18),
                     const SizedBox(width: 2),
                     Text(
-                      "$likeCount | $location | $category",
+                      "$likeCount | $location",
                       style: TextStyles.bodyMedium.copyWith(
                         color: ColorStyles.gray500,
                       ),
