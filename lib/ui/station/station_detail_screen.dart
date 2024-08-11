@@ -448,10 +448,10 @@ class _StationDetailScreenState extends State<StationDetailScreen> {
                       ),
                       child: RestaurantListItem(
                         name: entry.value.name,
-                        rating: entry.value.rating,
                         location: entry.value.location,
                         category: entry.value.category,
                         isLiked: entry.value.isLiked,
+                        likeCount: entry.value.rating.toInt(),
                       ),
                     ),
                   )

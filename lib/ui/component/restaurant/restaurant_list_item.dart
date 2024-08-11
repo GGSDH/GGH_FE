@@ -5,7 +5,7 @@ import 'package:gyeonggi_express/themes/text_styles.dart';
 
 class RestaurantListItem extends StatelessWidget {
   final String name;
-  final double rating;
+  final int likeCount;
   final String location;
   final String category;
   final bool isLiked;
@@ -13,7 +13,7 @@ class RestaurantListItem extends StatelessWidget {
   const RestaurantListItem(
       {super.key,
       required this.name,
-      required this.rating,
+      required this.likeCount,
       required this.location,
       required this.category,
       required this.isLiked});
@@ -61,11 +61,11 @@ class RestaurantListItem extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    SvgPicture.asset("assets/icons/ic_star.svg",
+                    SvgPicture.asset("assets/icons/ic_heart_filled.svg",
                         width: 18, height: 18),
                     const SizedBox(width: 2),
                     Text(
-                      "$rating | $location | $category",
+                      "$likeCount | $location | $category",
                       style: TextStyles.bodyMedium.copyWith(
                         color: ColorStyles.gray500,
                       ),

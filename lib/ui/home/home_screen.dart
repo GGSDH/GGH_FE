@@ -1,40 +1,77 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:gyeonggi_express/data/models/response/popular_destination_response.dart';
 import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/ui/component/lane/lane_list_item.dart';
 import 'package:gyeonggi_express/ui/component/restaurant/restaurant_list_item.dart';
+import 'package:side_effect_bloc/side_effect_bloc.dart';
 
+import '../../data/models/response/lane_response.dart';
+import '../../data/models/response/local_restaurant_response.dart';
+import '../../data/repository/trip_repository.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
+import 'home_bloc.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-        child: Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildBanner(),
-        _buildCategories(
-          (category) {
-            GoRouter.of(context).push(
-              Uri(
-                path: Routes.categoryDetail.path,
-                queryParameters: { 'name': category },
-              ).toString()
+    return BlocProvider(
+      create: (context) => HomeBloc(
+        tripRepository: GetIt.instance<TripRepository>(),
+      )..add(
+        HomeInitialize(),
+      ),
+      child: BlocSideEffectListener<HomeBloc, HomeSideEffect>(
+        listener: (context, sideEffect) {
+          if (sideEffect is HomeShowError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(sideEffect.message),
+              ),
             );
-          },
+          }
+        },
+        child: BlocBuilder<HomeBloc, HomeState>(
+          builder: (context, state) {
+            if (state.isLoading) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            } else {
+              return SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildBanner(),
+                    _buildCategories(
+                          (category) {
+                        GoRouter.of(context).push(
+                            Uri(
+                              path: Routes.categoryDetail.path,
+                              queryParameters: { 'name': category },
+                            ).toString()
+                        );
+                      },
+                    ),
+                    _buildRecommendBody(lanes: state.lanes),
+                    _buildRestaurantBody(localRestaurants: state.localRestaurants),
+                    _buildPopularPlaceBody(popularDestinations: state.popularDestinations)
+                  ],
+                ),
+              );
+            }
+          }
         ),
-        _buildRecommendBody(),
-        _buildRestaurantBody(),
-        _buildPopularPlaceBody()
-      ],
-    ));
+      ),
+    );
   }
 
   Widget _buildAppBar() {
@@ -191,34 +228,9 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRecommendBody() {
-    final recommendations = [
-      {
-        'category': '힐링',
-        'title': '이게낭만이지선',
-        'description': '낭만 가득한 힐링 맛집 가득 여행',
-        'period': '4박 5일',
-        'likeCount': 3,
-        'isLiked': true
-      },
-      {
-        'category': '힐링',
-        'title': '이게낭만이지선',
-        'description': '낭만 가득한 힐링 맛집 가득 여행',
-        'period': '4박 5일',
-        'likeCount': 3,
-        'isLiked': false
-      },
-      {
-        'category': '힐링',
-        'title': '이게낭만이지선',
-        'description': '낭만 가득한 힐링 맛집 가득 여행',
-        'period': '4박 5일',
-        'likeCount': 3,
-        'isLiked': false
-      }
-    ];
-
+  Widget _buildRecommendBody({
+    required List<Lane> lanes,
+  }) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Column(
@@ -267,17 +279,18 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
           ),
-          for (final recommendation in recommendations)
+          for (final lane in lanes) ...[
             _buildRecommendItem(
-              category: recommendation['category'] as String,
-              title: recommendation['title'] as String,
-              description: recommendation['description'] as String,
-              period: recommendation['period'] as String,
-              likeCount: recommendation['likeCount'] as int,
-              isLiked: recommendation['isLiked'] as bool,
+              category: lane.category,
+              title: lane.laneName,
+              description: "설명",
+              period: "4박 5일",
+              likeCount: lane.likeCount,
+              isLiked: lane.likedByMe,
             ),
+          ],
         ],
-      ),
+      )
     );
   }
 
@@ -298,31 +311,9 @@ class HomeScreen extends StatelessWidget {
         isLiked: isLiked);
   }
 
-  Widget _buildRestaurantBody() {
-    final restaurants = [
-      {
-        'name': '감나무식당',
-        'rating': 4.5,
-        'location': '수원',
-        'category': '한식',
-        'isLiked': true
-      },
-      {
-        'name': '감나무식당',
-        'rating': 4.5,
-        'location': '수원',
-        'category': '한식',
-        'isLiked': false
-      },
-      {
-        'name': '감나무식당',
-        'rating': 4.5,
-        'location': '수원',
-        'category': '한식',
-        'isLiked': true
-      }
-    ];
-
+  Widget _buildRestaurantBody({
+    required List<LocalRestaurant> localRestaurants,
+  }) {
     return Container(
         padding: const EdgeInsets.symmetric(vertical: 20),
         child: Column(
@@ -364,13 +355,13 @@ class HomeScreen extends StatelessWidget {
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 children: [
-                  for (final restaurant in restaurants) ...[
+                  for (final restaurant in localRestaurants) ...[
                     _buildRestaurantItem(
-                      name: restaurant['name'] as String,
-                      rating: restaurant['rating'] as double,
-                      location: restaurant['location'] as String,
-                      category: restaurant['category'] as String,
-                      isLiked: restaurant['isLiked'] as bool,
+                      name: restaurant.name,
+                      likeCount: restaurant.likeCount,
+                      location: restaurant.sigunguValue,
+                      category: "한식",
+                      isLiked: restaurant.likedByMe,
                     ),
                     const SizedBox(width: 14),
                   ]
@@ -383,41 +374,22 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildRestaurantItem(
       {required String name,
-      required double rating,
+      required int likeCount,
       required String location,
       required String category,
       required bool isLiked}) {
     return RestaurantListItem(
       name: name,
-      rating: rating,
+      likeCount: likeCount,
       location: location,
       category: category,
       isLiked: isLiked,
     );
   }
 
-  Widget _buildPopularPlaceBody() {
-    final places = [
-      {
-        'rank': 1,
-        'name': '에버랜드',
-        'location': '용인',
-        'category': '놀이공원',
-      },
-      {
-        'rank': 2,
-        'name': '에버랜드',
-        'location': '용인',
-        'category': '놀이공원',
-      },
-      {
-        'rank': 3,
-        'name': '에버랜드',
-        'location': '용인',
-        'category': '놀이공원',
-      },
-    ];
-
+  Widget _buildPopularPlaceBody({
+    required List<PopularDestination> popularDestinations
+  }) {
     return Container(
         padding: const EdgeInsets.symmetric(vertical: 20),
         child: Column(
@@ -459,12 +431,12 @@ class HomeScreen extends StatelessWidget {
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 children: [
-                  for (final place in places) ...[
+                  for (final place in popularDestinations) ...[
                     _buildPopularPlaceItem(
-                      rank: place['rank'] as int,
-                      name: place['name'] as String,
-                      location: place['location'] as String,
-                      category: place['category'] as String,
+                      rank: place.ranking,
+                      name: place.name,
+                      location: place.sigunguValue,
+                      category: place.category,
                     ),
                     const SizedBox(width: 14),
                   ]
