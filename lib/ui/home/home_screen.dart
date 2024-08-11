@@ -6,6 +6,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/data/models/response/popular_destination_response.dart';
 import 'package:gyeonggi_express/route_extension.dart';
+import 'package:gyeonggi_express/ui/component/destination/popular_destination_list_item.dart';
 import 'package:gyeonggi_express/ui/component/lane/lane_list_item.dart';
 import 'package:gyeonggi_express/ui/component/restaurant/restaurant_list_item.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
@@ -435,7 +436,7 @@ class HomeScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 children: [
                   for (final place in popularDestinations) ...[
-                    _buildPopularPlaceItem(
+                    PopularDestinationListItem(
                       rank: place.ranking,
                       name: place.name,
                       image: place.image,
@@ -449,67 +450,5 @@ class HomeScreen extends StatelessWidget {
             )
           ],
         ));
-  }
-
-  Widget _buildPopularPlaceItem({
-    required int rank,
-    required String name,
-    required String? image,
-    required String location,
-    required String category
-  }) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: CachedNetworkImage(
-                        imageUrl: image ?? "",
-                        placeholder: (context, url) => const AppImagePlaceholder(width: 200, height: 145),
-                        errorWidget: (context, url, error) => const AppImagePlaceholder(width: 200, height: 145),
-                        width: 145,
-                        height: 145,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: const BoxDecoration(
-                          color: ColorStyles.gray800,
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(8),
-                              bottomRight: Radius.circular(8)),
-                        ),
-                        child: Text("$rank",
-                            style: TextStyles.titleXSmall
-                                .copyWith(color: ColorStyles.grayWhite)))
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  name,
-                  style: TextStyles.titleMedium.copyWith(
-                    color: ColorStyles.gray900,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  "$location | $category",
-                  style: TextStyles.bodyMedium.copyWith(
-                    color: ColorStyles.gray500,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ],
-    );
   }
 }

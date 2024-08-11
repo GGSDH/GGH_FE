@@ -56,10 +56,15 @@ class RestaurantListItem extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 12),
-                Text(
-                  name,
-                  style: TextStyles.titleMedium.copyWith(
-                    color: ColorStyles.gray900,
+                SizedBox(
+                  width: 200,
+                  child: Text(
+                    name,
+                    style: TextStyles.titleMedium.copyWith(
+                      color: ColorStyles.gray900,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 Row(
