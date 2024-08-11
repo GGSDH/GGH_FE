@@ -52,9 +52,4 @@ class AddPhotoItem {
   factory AddPhotoItem.fromJson(Map<String, dynamic> json) => _$AddPhotoItemFromJson(json);
 
   Map<String, dynamic> toJson() => _$AddPhotoItemToJson(this);
-
-  @override
-  String toString() {
-    return 'AddPhotoItem{timestamp: $timestamp, latitude: $latitude, longitude: $longitude, path: $path}';
-  }
 }

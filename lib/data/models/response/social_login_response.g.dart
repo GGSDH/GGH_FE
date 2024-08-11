@@ -15,7 +15,7 @@ SocialLoginResponse _$SocialLoginResponseFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$SocialLoginResponseToJson(
         SocialLoginResponse instance) =>
     <String, dynamic>{
-      'token': instance.token,
+      'token': instance.token.toJson(),
       'role': _$UserRoleEnumMap[instance.role]!,
     };
 

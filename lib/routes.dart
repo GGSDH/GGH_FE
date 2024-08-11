@@ -20,6 +20,7 @@ import 'package:gyeonggi_express/ui/onboarding/onboarding_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/add/add_photobook_loading_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/add/add_photobook_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/add/add_photobook_select_period_screen.dart';
+import 'package:gyeonggi_express/ui/photobook/photobook_detail_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_screen.dart';
 import 'package:gyeonggi_express/ui/splash/splash_screen.dart';
@@ -42,6 +43,7 @@ enum Routes {
   lanes,
   recommend,
   photobook,
+  photobookDetail,
   addPhotobook,
   addPhotobookSelectPeriod,
   addPhotobookLoading,
@@ -54,7 +56,7 @@ enum Routes {
       GlobalKey<NavigatorState>();
 
   static final GoRouter config = GoRouter(
-      initialLocation: Routes.photobook.path,
+      initialLocation: Routes.splash.path,
       observers: [RouterObserver()],
       navigatorKey: _rootNavigatorKey,
       routes: [
@@ -131,8 +133,7 @@ enum Routes {
                   GoRoute(
                       path: Routes.photobook.path,
                       name: Routes.photobook.name,
-                      builder: (context, state) =>
-                          const Scaffold(body: PhotobookScreen()),
+                      builder: (context, state) => const Scaffold(body: PhotobookScreen()),
                       routes: [
                         GoRoute(
                             path: Routes.addPhotobook.path,
@@ -166,6 +167,11 @@ enum Routes {
                         ),
                       ]
                   ),
+                  GoRoute(
+                    path: Routes.photobookDetail.path,
+                    name: Routes.photobookDetail.name,
+                    builder: (context, state) => PhotobookDetailScreen()
+                  )
                 ],
               ),
               StatefulShellBranch(

@@ -22,7 +22,7 @@ Map<String, dynamic> _$AddPhotobookRequestToJson(
       'title': instance.title,
       'startDate': instance.startDate,
       'endDate': instance.endDate,
-      'photos': instance.photos,
+      'photos': instance.photos.map((e) => e.toJson()).toList(),
     };
 
 AddPhotoItem _$AddPhotoItemFromJson(Map<String, dynamic> json) => AddPhotoItem(

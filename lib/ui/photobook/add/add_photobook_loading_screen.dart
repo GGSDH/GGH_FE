@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
+import 'package:gyeonggi_express/data/repository/photobook_repository.dart';
+import 'package:gyeonggi_express/route_extension.dart';
+import 'package:side_effect_bloc/side_effect_bloc.dart';
 
+import '../../../routes.dart';
 import '../../../themes/text_styles.dart';
 import 'add_photobook_bloc.dart';
 
@@ -19,41 +25,52 @@ class AddPhotobookLoadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("startDate: $startDate, endDate: $endDate, title: $title");
-
     return BlocProvider(
-      create: (context) => AddPhotobookBloc()..add(
-        AddPhotobookInitialize(
+      create: (context) => AddPhotobookBloc(
+        photobookRepository: GetIt.instance<PhotobookRepository>(),
+      )..add(
+        AddPhotobookUpload(
           title: title,
           startDate: DateTime.parse(startDate),
           endDate: DateTime.parse(endDate),
         ),
       ),
-      child: BlocBuilder<AddPhotobookBloc, AddPhotobookState>(
-        builder: (context, state) {
-          return Material(
-            color: Colors.white,
-            child: SafeArea(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    "소중한 추억이 담긴\n포토북을 생성중이예요",
-                    style: TextStyles.title2ExtraLarge,
-                    textAlign: TextAlign.center,
-                  ),
-
-                  const SizedBox(height: 100),
-
-                  SvgPicture.asset(
-                    "assets/icons/img_add_photobook_loading_illust.svg",
-                    fit: BoxFit.fill,
-                  )
-                ],
+      child: BlocSideEffectListener<AddPhotobookBloc, AddPhotobookSideEffect>(
+        listener: (context, sideEffect) {
+          if (sideEffect is AddPhotobookShowError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(sideEffect.message),
               ),
-            ),
-          );
-        }
+            );
+          } else if (sideEffect is AddPhotobookNavigateToPhotobook) {
+            GoRouter.of(context).go(Routes.photobook.path);
+          }
+        },
+        child: BlocBuilder<AddPhotobookBloc, AddPhotobookState>(
+          builder: (context, state) {
+            return Material(
+              color: Colors.white,
+              child: SafeArea(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "소중한 추억이 담긴\n포토북을 생성중이예요",
+                      style: TextStyles.title2ExtraLarge,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 100),
+                    SvgPicture.asset(
+                      "assets/icons/img_add_photobook_loading_illust.svg",
+                      fit: BoxFit.fill,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

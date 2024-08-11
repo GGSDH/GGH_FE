@@ -1,26 +1,24 @@
 import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../../data/models/request/add_photobook_request.dart';
+import '../../../data/repository/photobook_repository.dart';
 
 final class AddPhotobookState {
   final bool isLoading;
   final String title;
   final DateTime? startDate;
   final DateTime? endDate;
-  final List<AddPhotoItem>? photos;
 
   AddPhotobookState({
     required this.isLoading,
     required this.title,
     required this.startDate,
     required this.endDate,
-    this.photos,
   });
 
   factory AddPhotobookState.initial() {
@@ -29,7 +27,6 @@ final class AddPhotobookState {
       title: "",
       startDate: null,
       endDate: null,
-      photos: [],
     );
   }
 
@@ -44,20 +41,19 @@ final class AddPhotobookState {
       isLoading: isLoading ?? this.isLoading,
       title: title ?? this.title,
       startDate: startDate ?? this.startDate,
-      endDate: endDate ?? this.endDate,
-      photos: photos ?? this.photos,
+      endDate: endDate ?? this.endDate
     );
   }
 }
 
 sealed class AddPhotobookEvent {}
 
-final class AddPhotobookInitialize extends AddPhotobookEvent {
+final class AddPhotobookUpload extends AddPhotobookEvent {
   final String title;
   final DateTime startDate;
   final DateTime endDate;
 
-  AddPhotobookInitialize({
+  AddPhotobookUpload({
     required this.title,
     required this.startDate,
     required this.endDate,
@@ -65,33 +61,52 @@ final class AddPhotobookInitialize extends AddPhotobookEvent {
 }
 
 sealed class AddPhotobookSideEffect {}
+final class AddPhotobookNavigateToPhotobook extends AddPhotobookSideEffect {}
+final class AddPhotobookShowError extends AddPhotobookSideEffect {
+  final String message;
 
-class AddPhotobookBloc
-    extends SideEffectBloc<AddPhotobookEvent, AddPhotobookState, AddPhotobookSideEffect> {
-  AddPhotobookBloc() : super(AddPhotobookState.initial()) {
-    on<AddPhotobookInitialize>(_onInitialize);
+  AddPhotobookShowError(this.message);
+}
+
+class AddPhotobookBloc extends SideEffectBloc<AddPhotobookEvent, AddPhotobookState, AddPhotobookSideEffect> {
+  final PhotobookRepository _photobookRepository;
+
+  AddPhotobookBloc({
+    required PhotobookRepository photobookRepository,
+  }) : _photobookRepository = photobookRepository,
+        super(AddPhotobookState.initial()) {
+    on<AddPhotobookUpload>(_onInitialize);
   }
 
   void _onInitialize(
-      AddPhotobookInitialize event,
-      Emitter<AddPhotobookState> emit,
-      ) async {
+    AddPhotobookUpload event,
+    Emitter<AddPhotobookState> emit,
+  ) async {
     emit(state.copyWith(isLoading: true));
 
     try {
       final photos = await scanPhotos(event.startDate, event.endDate);
-      emit(state.copyWith(
-        isLoading: false,
-        title: event.title,
-        startDate: event.startDate,
-        endDate: event.endDate,
-        photos: photos,
-      ));
 
-      print("Photos scanned successfully: $photos");
+      final response = await _photobookRepository.addPhotobook(
+        title: event.title,
+        startDate: event.startDate.toString(),
+        endDate: event.endDate.toString(),
+        photos: photos,
+      );
+
+      response.when(
+        success: (data) {
+          emit(state.copyWith(isLoading: false));
+          produceSideEffect(AddPhotobookNavigateToPhotobook());
+        },
+        apiError: (errorMessage, errorCode) {
+          emit(state.copyWith(isLoading: false));
+          produceSideEffect(AddPhotobookShowError(errorMessage));
+        },
+      );
     } catch (e) {
       emit(state.copyWith(isLoading: false));
-      print("Failed to scan photos: $e");
+      produceSideEffect(AddPhotobookShowError(e.toString()));
     }
   }
 
@@ -100,10 +115,9 @@ class AddPhotobookBloc
     DateTime endDate,
   ) async {
     try {
-      // Request permission before accessing the photos
       PermissionStatus status = await Permission.photos.request();
       if (!status.isGranted) {
-        print("Permission denied.");
+        produceSideEffect(AddPhotobookShowError("사진 권한을 허용해주세요"));
         return [];
       }
 
@@ -128,14 +142,12 @@ class AddPhotobookBloc
                       assetDate.isAtSameMomentAs(endDate))) {
                 File? file = await asset.file;
                 if (file != null) {
-                  final filePath = await filePathToFile(file.path);
+                  final filePath = extractRelativePath(file.path);
                   final item = AddPhotoItem(
                       timestamp: assetDate.toString(),
                       latitude: asset.latitude ?? 0,
                       longitude: asset.longitude ?? 0,
                       path: filePath);
-                  print("Photo found: ${item.toString()}");
-
                   photos.add(item);
                 }
               }
@@ -151,14 +163,12 @@ class AddPhotobookBloc
     }
   }
 
-  Future<String> filePathToFile(String relativePath) async {
+  String extractRelativePath(String filePath) {
     if (Platform.isIOS) {
-      final appDocDir = await getApplicationDocumentsDirectory();
-      final appDirPath = appDocDir.parent.path; // Get the parent directory of the Documents directory
-      final filePath = '$appDirPath/tmp/$relativePath';
-      return filePath;
+      final startIndex = filePath.indexOf('flutter-images');
+      return filePath.substring(startIndex);
     } else {
-      return relativePath;
+      return filePath;
     }
   }
 }
