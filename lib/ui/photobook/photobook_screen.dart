@@ -12,7 +12,6 @@ import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
 import '../component/photobook/photobook_list_item.dart';
 
-import 'dart:math' as math;
 
 class PhotobookScreen extends StatefulWidget {
   const PhotobookScreen({super.key});
