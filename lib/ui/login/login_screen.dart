@@ -126,7 +126,7 @@ class LoginScreenContent extends StatelessWidget {
             SocialLoginButton(
               loginType: SocialLoginType.KAKAO,
               onClick: () {
-                BlocProvider.of<LoginBloc>(context).add(LoginButtonClicked());
+                BlocProvider.of<LoginBloc>(context).add(KakaoLoginButtonClicked());
               },
             ),
             const SizedBox(height: 14),
@@ -134,14 +134,7 @@ class LoginScreenContent extends StatelessWidget {
             SocialLoginButton(
               loginType: SocialLoginType.APPLE,
               onClick: () async {
-                final credential = await SignInWithApple.getAppleIDCredential(
-                  scopes: [
-                    AppleIDAuthorizationScopes.email,
-                    AppleIDAuthorizationScopes.fullName
-                  ]
-                );
-
-                print(credential);
+                BlocProvider.of<LoginBloc>(context).add(AppleLoginButtonClicked());
               },
             ),
             const SizedBox(height: 24),
