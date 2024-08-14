@@ -21,7 +21,7 @@ class _PhotobookDetailScreenState extends State<PhotobookDetailScreen> {
   late double baseCardWidth;
   late double baseCardHeight;
   double scaleFactor = 0.9; // 각 페이지가 멀어질수록 크기 줄어드는 비율
-  double visiblePartHeight = 20.0; // 겹치지 않는 부분의 높이
+  double visiblePartWidth = 20.0; // 겹치지 않는 부분의 너비
   double swipeOffset = 0.0;
   bool isSwiping = false;
 
@@ -29,7 +29,7 @@ class _PhotobookDetailScreenState extends State<PhotobookDetailScreen> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
-    baseCardWidth = screenWidth * 0.9;
+    baseCardWidth = screenWidth * 0.9 - 40;
     baseCardHeight = baseCardWidth * 1.4;
 
     return Material(
@@ -38,62 +38,59 @@ class _PhotobookDetailScreenState extends State<PhotobookDetailScreen> {
         child: Stack(
           children: [
             Column(
-            children: [
-              AppActionBar(
-                rightText: '',
-                onBackPressed: () {
-                  GoRouter.of(context).pop();
-                },
-                menuItems: [
-                  ActionBarMenuItem(
-                    icon: SvgPicture.asset(
-                      "assets/icons/ic_map.svg",
-                      width: 24,
-                      height: 24,
-                    ),
-                    onPressed: () => print("map clicked")
-                  )
-                ]
-              ),
-
-              const Text(
-                "의정부 탐방",
-                style: TextStyles.title2ExtraLarge
-              ),
-              const SizedBox(height: 4),
-              Text(
-                "24.05.12 ~ 24.05.17",
-                style: TextStyles.bodyLarge.copyWith(
-                  color: ColorStyles.gray500
-                )
-              ),
-              const SizedBox(height: 40),
-
-              SizedBox(
-                width: baseCardWidth,
-                height: baseCardHeight + 40,
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    double stackHeight = constraints.maxHeight;
-                    return Stack(
-                      clipBehavior: Clip.none,
-                      alignment: Alignment.center,
-                      children: [
-                        for (int i = pageCount - 1; i >= currentPage; i--)
-                          _buildCard(i, stackHeight), // 현재 페이지부터 페이지들을 역순으로 쌓음
-                      ],
-                    );
+              children: [
+                AppActionBar(
+                  rightText: '',
+                  onBackPressed: () {
+                    GoRouter.of(context).pop();
                   },
+                  menuItems: [
+                    ActionBarMenuItem(
+                      icon: SvgPicture.asset(
+                        "assets/icons/ic_map.svg",
+                        width: 24,
+                        height: 24,
+                      ),
+                      onPressed: () => print("map clicked"),
+                    )
+                  ],
                 ),
-              ),
-            ],
-          ),
+                const Text(
+                  "의정부 탐방",
+                  style: TextStyles.title2ExtraLarge,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "24.05.12 ~ 24.05.17",
+                  style: TextStyles.bodyLarge.copyWith(
+                      color: ColorStyles.gray500),
+                ),
+                const SizedBox(height: 40),
+                SizedBox(
+                  width: baseCardWidth + 40,
+                  height: baseCardHeight,
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      return Stack(
+                        clipBehavior: Clip.none,
+                        alignment: Alignment.center,
+                        children: [
+                          for (int i = pageCount - 1; i >= currentPage; i--)
+                            _buildCard(i), // 현재 페이지부터 페이지들을 역순으로 쌓음
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
             Positioned(
               bottom: 20,
               right: 20,
               child: GestureDetector(
                 onTap: () {
-                  GoRouter.of(context).push("${Routes.photobook.path}/${Routes.addPhotobook.path}");
+                  GoRouter.of(context).push(
+                      "${Routes.photobook.path}/${Routes.addPhotobook.path}");
                 },
                 child: SvgPicture.asset(
                   "assets/icons/ic_add_photo.svg",
@@ -103,43 +100,63 @@ class _PhotobookDetailScreenState extends State<PhotobookDetailScreen> {
                 ),
               ),
             ),
-      ],
-        )
-      ),
-    );
-  }
-
-  Widget _buildCard(int index, double stackHeight) {
-    return AnimatedPositioned(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-      bottom: calculateBottomOffset(index, stackHeight) + (index == currentPage ? swipeOffset : 0),
-      width: calculateCardWidth(index),
-      height: calculateCardHeight(index),
-      child: GestureDetector(
-        onVerticalDragUpdate: (details) {
-          setState(() {
-            swipeOffset += details.delta.dy; // 스와이프 방향으로 페이지 이동
-          });
-        },
-        onVerticalDragEnd: (details) => _onVerticalDragEnd(details),
-        child: Opacity(
-          opacity: calculateOpacity(index),
-          child: Page(
-            day: index + 1,
-            imageUrl: 'https://i.namu.wiki/i/4quYhHq2ToyXcDJ8eIQ7xxDUFIVhmdinYplLfVROQJS9oZDrswV63wfIR_0rZ_aaITRTwuy3qWVmbrTi_sslCzebO9oZW8sBTbP2mYz7p34RO6gLJjwCYOwvxLQIw8lDqNrgomn8KY1OHZvXMjrqVA.webp',
-            dateTime: '8월 5일',
-            name: '의정부 부대찌개',
-            location: '의정부',
-          ),
+          ],
         ),
       ),
     );
   }
 
-  double calculateBottomOffset(int index, double stackHeight) {
+  Widget _buildCard(int index) {
+    return AnimatedPositioned(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      left: calculateLeftOffset(index),
+      width: calculateCardWidth(index),
+      height: calculateCardHeight(index),
+      child: GestureDetector(
+        onHorizontalDragUpdate: (details) {
+          setState(() {
+            isSwiping = true;
+            swipeOffset += details.delta.dx; // 스와이프 방향으로 페이지 이동
+          });
+        },
+        onHorizontalDragEnd: (details) => _onHorizontalDragEnd(details),
+        child: (currentPage - index).abs() < 3 ?
+          Page(
+            day: index + 1,
+            imageUrl:
+            'https://i.namu.wiki/i/4quYhHq2ToyXcDJ8eIQ7xxDUFIVhmdinYplLfVROQJS9oZDrswV63wfIR_0rZ_aaITRTwuy3qWVmbrTi_sslCzebO9oZW8sBTbP2mYz7p34RO6gLJjwCYOwvxLQIw8lDqNrgomn8KY1OHZvXMjrqVA.webp',
+            dateTime: '8월 5일',
+            name: '의정부 부대찌개',
+            location: '의정부',
+          ) :
+          const SizedBox(),
+        )
+      );
+  }
+
+  double calculateLeftOffset(int index) {
+    if (index == currentPage) {
+      // 선택된 페이지는 항상 offset이 0이 되도록 설정
+      return swipeOffset;
+    }
+
     double offsetFromCenter = (index - currentPage).toDouble();
-    return 40 - offsetFromCenter * visiblePartHeight;
+    double cumulativeWidth = 0;
+
+    if (index > currentPage) {
+      // 현재 페이지보다 오른쪽에 있는 페이지들에 대해 cumulativeWidth를 계산
+      for (int i = currentPage; i < index; i++) {
+        cumulativeWidth += calculateCardWidth(i) * (1 - scaleFactor);
+      }
+    } else {
+      // 현재 페이지보다 왼쪽에 있는 페이지들에 대해 cumulativeWidth를 계산
+      for (int i = index; i < currentPage; i++) {
+        cumulativeWidth -= calculateCardWidth(i + 1) * (1 - scaleFactor);
+      }
+    }
+
+    return cumulativeWidth + offsetFromCenter * visiblePartWidth;
   }
 
   double calculateCardWidth(int index) {
@@ -154,17 +171,24 @@ class _PhotobookDetailScreenState extends State<PhotobookDetailScreen> {
 
   double calculateOpacity(int index) {
     double maxOpacityDecrease = 0.5; // 가장 멀리 있는 페이지의 최소 투명도
-    double opacity = 1 - ((index - currentPage).abs() * maxOpacityDecrease);
-    if ((index - currentPage).abs() > 2) return 0;
+    int offsetFromCenter = (index - currentPage).abs();
+
+    // 스와이프 중일 때, 전환될 페이지의 opacity를 1로 설정
+    if (isSwiping && offsetFromCenter == 1) {
+      return 1.0;
+    }
+
+    double opacity = 1 - (offsetFromCenter * maxOpacityDecrease);
+
+    if (offsetFromCenter > 2) return 0;
     return opacity.clamp(0.5, 1.0);
   }
 
-  void _onVerticalDragEnd(DragEndDetails details) {
+  void _onHorizontalDragEnd(DragEndDetails details) {
     if (details.primaryVelocity! < 0 && currentPage < pageCount - 1) {
-      // 아래 -> 위로 스와이프 (다음 페이지로 이동)
+      // 오른쪽 -> 왼쪽으로 스와이프 (다음 페이지로 이동)
       setState(() {
-        swipeOffset = MediaQuery.of(context).size.height; // 페이지를 아래로 이동
-        isSwiping = true;
+        swipeOffset = -MediaQuery.of(context).size.width; // 페이지를 오른쪽으로 이동
       });
       Future.delayed(const Duration(milliseconds: 300), () {
         setState(() {
@@ -174,14 +198,13 @@ class _PhotobookDetailScreenState extends State<PhotobookDetailScreen> {
         });
       });
     } else if (details.primaryVelocity! > 0 && currentPage > 0) {
-      // 위 -> 아래로 스와이프 (이전 페이지로 이동)
+      // 오른쪽 -> 왼쪽으로 스와이프 (이전 페이지로 이동)
       setState(() {
-        swipeOffset = -MediaQuery.of(context).size.height; // 페이지를 위로 이동
-        isSwiping = true;
+        currentPage--;
+        swipeOffset = -MediaQuery.of(context).size.width; // 페이지를 왼쪽으로 이동
       });
       Future.delayed(const Duration(milliseconds: 300), () {
         setState(() {
-          currentPage--;
           swipeOffset = 0.0; // 초기화
           isSwiping = false;
         });
@@ -207,7 +230,6 @@ class Page extends StatelessWidget {
     required this.imageUrl,
     required this.dateTime,
     required this.name,
-
     required this.location,
   });
 
@@ -219,8 +241,10 @@ class Page extends StatelessWidget {
         children: [
           CachedNetworkImage(
             imageUrl: imageUrl,
-            placeholder: (context, url) => const AppImagePlaceholder(width: double.infinity, height: double.infinity),
-            errorWidget: (context, url, error) => const AppImagePlaceholder(width: double.infinity, height: double.infinity),
+            placeholder: (context, url) => const AppImagePlaceholder(
+                width: double.infinity, height: double.infinity),
+            errorWidget: (context, url, error) => const AppImagePlaceholder(
+                width: double.infinity, height: double.infinity),
             fit: BoxFit.cover,
             width: double.infinity,
             height: double.infinity,
@@ -258,7 +282,8 @@ class Page extends StatelessWidget {
                       "assets/icons/ic_map_pin.svg",
                       width: 14,
                       height: 14,
-                      colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                      colorFilter: const ColorFilter.mode(
+                          Colors.white, BlendMode.srcIn),
                     ),
                     const SizedBox(width: 2),
                     Text(
@@ -266,7 +291,7 @@ class Page extends StatelessWidget {
                       style: TextStyles.bodyMedium.copyWith(color: Colors.white),
                     ),
                   ],
-                )
+                ),
               ],
             ),
           ),
