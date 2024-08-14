@@ -13,6 +13,7 @@ import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../data/models/response/lane_response.dart';
 import '../../data/models/response/local_restaurant_response.dart';
+import '../../data/repository/auth_repository.dart';
 import '../../data/repository/trip_repository.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
@@ -27,6 +28,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => HomeBloc(
+        authRepository: GetIt.instance<AuthRepository>(),
         tripRepository: GetIt.instance<TripRepository>(),
       )..add(
         HomeInitialize(),
@@ -64,7 +66,7 @@ class HomeScreen extends StatelessWidget {
                         );
                       },
                     ),
-                    _buildRecommendBody(lanes: state.lanes),
+                    _buildRecommendBody(userName: state.userName, lanes: state.lanes),
                     _buildRestaurantBody(localRestaurants: state.localRestaurants),
                     _buildPopularPlaceBody(popularDestinations: state.popularDestinations)
                   ],
@@ -232,6 +234,7 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildRecommendBody({
+    required String userName,
     required List<Lane> lanes,
   }) {
     return Container(
@@ -247,7 +250,7 @@ class HomeScreen extends StatelessWidget {
               children: [
                 RichText(
                   text: TextSpan(
-                    text: "전예나님",
+                    text: "$userName님",
                     style: TextStyles.titleExtraLarge.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
