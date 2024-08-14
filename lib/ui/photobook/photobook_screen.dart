@@ -70,6 +70,9 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware {
                       category: photobook['category']!,
                       title: photobook['title']!,
                       period: photobook['period']!,
+                      onTap: () {
+                        GoRouter.of(context).push("${Routes.photobook.path}/${Routes.photobookDetail.path}");
+                      },
                     );
                   },
                 ),
@@ -186,7 +189,7 @@ class _PhotobookSection extends StatelessWidget {
         ),
         Positioned(
           bottom: 20,
-          right: 10,
+          right: 20,
           child: GestureDetector(
             onTap: onAddPhotobook,
             child: SvgPicture.asset(

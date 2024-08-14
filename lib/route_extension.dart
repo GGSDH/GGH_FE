@@ -35,7 +35,7 @@ extension RoutesExtension on Routes {
       case Routes.photobook:
         return '/photobook';
       case Routes.photobookDetail:
-        return '/photobook-detail';
+        return 'detail';
       case Routes.addPhotobook:
         return 'add';
       case Routes.addPhotobookSelectPeriod:

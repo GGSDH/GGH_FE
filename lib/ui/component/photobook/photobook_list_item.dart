@@ -8,12 +8,14 @@ class PhotobookListItem extends StatelessWidget {
   String category;
   String title;
   String period;
+  VoidCallback onTap;
 
   PhotobookListItem({
     super.key,
     required this.category,
     required this.title,
     required this.period,
+    required this.onTap,
   });
 
   String calculateNightsAndDays(String dateRange) {
@@ -33,56 +35,59 @@ class PhotobookListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      child: Row(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
-                  decoration: BoxDecoration(
-                    color: ColorStyles.primaryLight,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    category,
-                    style: TextStyles.labelMedium.copyWith(
-                      color: ColorStyles.primary,
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
+                    decoration: BoxDecoration(
+                      color: ColorStyles.primaryLight,
+                      borderRadius: BorderRadius.circular(4),
                     ),
-                  ),
-                ),
-                Text(
-                  title,
-                  style: TextStyles.titleLarge.copyWith(
-                    color: ColorStyles.gray900,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Text(
-                      "$period | ${calculateNightsAndDays(period)}",
-                      style: TextStyles.bodyMedium.copyWith(
-                        color: ColorStyles.gray500,
+                    child: Text(
+                      category,
+                      style: TextStyles.labelMedium.copyWith(
+                        color: ColorStyles.primary,
                       ),
                     ),
-                  ],
-                ),
-              ],
-            ),
-            const Spacer(),
-
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: Image.asset(
-                "assets/images/img_dummy_place.png",
-                width: 104,
-                height: 104,
+                  ),
+                  Text(
+                    title,
+                    style: TextStyles.titleLarge.copyWith(
+                      color: ColorStyles.gray900,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Text(
+                        "$period | ${calculateNightsAndDays(period)}",
+                        style: TextStyles.bodyMedium.copyWith(
+                          color: ColorStyles.gray500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            ),
-          ]
+              const Spacer(),
+      
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: Image.asset(
+                  "assets/images/img_dummy_place.png",
+                  width: 104,
+                  height: 104,
+                ),
+              ),
+            ]
+        ),
       ),
     );
   }

@@ -56,7 +56,7 @@ enum Routes {
       GlobalKey<NavigatorState>();
 
   static final GoRouter config = GoRouter(
-      initialLocation: Routes.photobookDetail.path,
+      initialLocation: Routes.splash.path,
       observers: [RouterObserver()],
       navigatorKey: _rootNavigatorKey,
       routes: [
@@ -163,15 +163,19 @@ enum Routes {
                                   );
                                 }
                               )
-                            ]
+                            ],
+
                         ),
-                      ]
+
+                        GoRoute(
+                            path: Routes.photobookDetail.path,
+                            name: Routes.photobookDetail.name,
+                            parentNavigatorKey: _rootNavigatorKey,
+                            builder: (context, state) => PhotobookDetailScreen()
+                        )
+                      ],
                   ),
-                  GoRoute(
-                    path: Routes.photobookDetail.path,
-                    name: Routes.photobookDetail.name,
-                    builder: (context, state) => PhotobookDetailScreen()
-                  )
+
                 ],
               ),
               StatefulShellBranch(
