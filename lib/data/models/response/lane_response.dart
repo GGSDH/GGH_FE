@@ -1,5 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import '../trip_theme.dart';
+
 part 'lane_response.g.dart';
 
 @JsonSerializable()
@@ -8,22 +10,19 @@ class Lane {
   final int laneId;
   @JsonKey(name: 'laneName')
   final String laneName;
-  @JsonKey(name: 'category')
-  final String category;
-  @JsonKey(name: 'likeCnt')
+  @JsonKey(name: 'tripThemeConstants', fromJson: TripTheme.fromJson, toJson: TripTheme.toJson)
+  final TripTheme category;
+  @JsonKey(name: 'likes')
   final int likeCount;
-  @JsonKey(name: 'likedByMe')
-  final bool likedByMe;
   @JsonKey(name: 'image')
-  final String? image;
+  final String image;
 
   Lane({
     required this.laneId,
     required this.laneName,
     required this.category,
     required this.likeCount,
-    required this.likedByMe,
-    this.image,
+    required this.image,
   });
 
   factory Lane.fromJson(Map<String, dynamic> json) => _$LaneFromJson(json);

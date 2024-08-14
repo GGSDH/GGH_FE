@@ -7,6 +7,9 @@ import 'package:gyeonggi_express/ui/component/app/app_action_bar.dart';
 import 'package:gyeonggi_express/ui/component/lane/lane_list_item.dart';
 import 'package:gyeonggi_express/ui/component/restaurant/restaurant_list_item.dart';
 
+import '../../data/models/response/lane_response.dart';
+import '../../data/models/trip_theme.dart';
+
 class StationDetailScreen extends StatefulWidget {
   final exampleData = StationDetailScreenData(
     images: [
@@ -27,20 +30,18 @@ class StationDetailScreen extends StatefulWidget {
     ),
     lanes: [
       Lane(
-        category: "힐링",
-        title: "서울 도심 속 힐링 여행",
-        description: "서울역에서 시작하는 도심 속 힐링 여행",
-        period: "1박 2일",
+        laneId: 0,
+        category: TripTheme.NATURAL,
+        laneName: "서울 도심 속 힐링 여행",
+        image: '',
         likeCount: 10,
-        isLiked: true,
       ),
       Lane(
-        category: "맛집 탐방",
-        title: "서울역 주변 맛집 탐방",
-        description: "서울역 주변 숨은 맛집을 찾아가는 여행",
-        period: "당일치기",
+        laneId: 1,
+        category: TripTheme.RESTAURANT,
+        laneName: "서울역 주변 맛집 탐방",
+        image: '',
         likeCount: 25,
-        isLiked: false,
       ),
     ],
     nearbyRestaurants: [
@@ -241,12 +242,13 @@ class _StationDetailScreenState extends State<StationDetailScreen> {
         ),
         ...data.lanes.map(
           (lane) => LaneListItem(
-            category: lane.category,
-            title: lane.title,
-            description: lane.description,
-            period: lane.period,
+            category: lane.category.title,
+            title: lane.laneName,
+            description: '',
+            image: lane.image,
+            period: '',
             likeCount: lane.likeCount,
-            isLiked: lane.isLiked,
+            isLiked: false,
           ),
         ),
       ],
@@ -615,23 +617,6 @@ class SpotSummary {
     required this.summaryImageUrl,
     required this.title,
     required this.description,
-  });
-}
-
-class Lane {
-  final String category;
-  final String title;
-  final String description;
-  final String period;
-  final int likeCount;
-  final bool isLiked;
-  Lane({
-    required this.category,
-    required this.title,
-    required this.description,
-    required this.period,
-    required this.likeCount,
-    required this.isLiked,
   });
 }
 

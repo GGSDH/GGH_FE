@@ -68,6 +68,30 @@ class HomeBloc extends SideEffectBloc<HomeEvent, HomeState, HomeSideEffect> {
     emit(state.copyWith(isLoading: true));
 
     try {
+      final response = await _tripRepository.getRecommendedLanes();
+
+      response.when(
+        success: (data) {
+          print("$data");
+
+          emit(
+              state.copyWith(
+                  isLoading: false,
+                  lanes: data
+              )
+          );
+        },
+        apiError: (errorMessage, errorCode) {
+          emit(state.copyWith(isLoading: false));
+          produceSideEffect(HomeShowError(errorMessage));
+        }
+      );
+    } catch (e) {
+      emit(state.copyWith(isLoading: false));
+      produceSideEffect(HomeShowError(e.toString()));
+    }
+
+    try {
       final response = await _tripRepository.getPopularDestinations();
 
       response.when(
@@ -110,21 +134,5 @@ class HomeBloc extends SideEffectBloc<HomeEvent, HomeState, HomeSideEffect> {
       emit(state.copyWith(isLoading: false));
       produceSideEffect(HomeShowError(e.toString()));
     }
-
-    final lanes = List.generate(3, (index) =>
-      Lane(
-        laneId: index,
-        laneName: 'Lane $index',
-        category: 'Category $index',
-        likeCount: index * 10,
-        image: null,
-        likedByMe: false,
-      )
-    );
-
-    emit(state.copyWith(
-      isLoading: false,
-      lanes: lanes
-    ));
   }
 }

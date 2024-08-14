@@ -284,12 +284,13 @@ class HomeScreen extends StatelessWidget {
           ),
           for (final lane in lanes) ...[
             _buildRecommendItem(
-              category: lane.category,
+              category: lane.category.title,
               title: lane.laneName,
-              description: "설명",
-              period: "4박 5일",
+              description: '',
+              image: lane.image,
+              period: "당일치기",
               likeCount: lane.likeCount,
-              isLiked: lane.likedByMe,
+              isLiked: false,
             ),
           ],
         ],
@@ -301,6 +302,7 @@ class HomeScreen extends StatelessWidget {
     required String category,
     required String title,
     required String description,
+    required String image,
     required String period,
     required int likeCount,
     required bool isLiked,
@@ -309,9 +311,11 @@ class HomeScreen extends StatelessWidget {
         category: category,
         title: title,
         description: description,
+        image: image,
         period: period,
         likeCount: likeCount,
-        isLiked: isLiked);
+        isLiked: isLiked
+    );
   }
 
   Widget _buildRestaurantBody({

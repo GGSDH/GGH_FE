@@ -6,10 +6,22 @@ import 'package:gyeonggi_express/data/models/api_result.dart';
 import 'package:gyeonggi_express/data/models/response/local_restaurant_response.dart';
 import 'package:gyeonggi_express/data/models/response/popular_destination_response.dart';
 
+import '../models/response/lane_response.dart';
+
 class TripDataSourceImpl implements TripDataSource {
   final Dio _dio;
 
   TripDataSourceImpl(this._dio);
+
+  @override
+  Future<ApiResult<List<Lane>>> getRecommendedLanes() async {
+    return _dio.makeRequest<List<Lane>>(
+      () => _dio.get('v1/lane'),
+      (data) =>
+      (data as List).map((e) =>
+          Lane.fromJson(e as Map<String, dynamic>)).toList()
+    );
+  }
 
   @override
   Future<ApiResult<List<LocalRestaurant>>> getLocalRestaurants() async {

@@ -1,12 +1,16 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gyeonggi_express/themes/color_styles.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
 
+import '../app/app_image_plaeholder.dart';
+
 class LaneListItem extends StatelessWidget {
   String category;
   String title;
   String description;
+  String image;
   String period;
   int likeCount;
   bool isLiked;
@@ -16,6 +20,7 @@ class LaneListItem extends StatelessWidget {
     required this.category,
     required this.title,
     required this.description,
+    required this.image,
     required this.period,
     required this.likeCount,
     required this.isLiked,
@@ -27,65 +32,73 @@ class LaneListItem extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       child: Row(
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
-                decoration: BoxDecoration(
-                  color: ColorStyles.primaryLight,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  category,
-                  style: TextStyles.labelMedium.copyWith(
-                    color: ColorStyles.primary,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
+                  decoration: BoxDecoration(
+                    color: ColorStyles.primaryLight,
+                    borderRadius: BorderRadius.circular(4),
                   ),
-                ),
-              ),
-              Text(
-                title,
-                style: TextStyles.titleLarge.copyWith(
-                  color: ColorStyles.gray900,
-                ),
-              ),
-              Text(
-                description,
-                style: TextStyles.bodyLarge.copyWith(
-                  color: ColorStyles.gray800,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Row(
-                children: [
-                  Text(
-                    "$period | ",
-                    style: TextStyles.bodyMedium.copyWith(
-                      color: ColorStyles.gray500,
+                  child: Text(
+                    category,
+                    style: TextStyles.labelMedium.copyWith(
+                      color: ColorStyles.primary,
                     ),
                   ),
-                  SvgPicture.asset(
-                    "assets/icons/ic_train.svg",
-                    width: 20,
-                    height: 20,
+                ),
+                Text(
+                  title,
+                  style: TextStyles.titleLarge.copyWith(
+                    color: ColorStyles.gray900,
                   ),
-                  Text(
-                    "$likeCount명 탑승중",
-                    style: TextStyles.bodyMedium.copyWith(
-                      color: ColorStyles.gray500,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  description,
+                  style: TextStyles.bodyLarge.copyWith(
+                    color: ColorStyles.gray800,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Text(
+                      "$period | ",
+                      style: TextStyles.bodyMedium.copyWith(
+                        color: ColorStyles.gray500,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                    SvgPicture.asset(
+                      "assets/icons/ic_train.svg",
+                      width: 20,
+                      height: 20,
+                    ),
+                    Text(
+                      "$likeCount명 탑승중",
+                      style: TextStyles.bodyMedium.copyWith(
+                        color: ColorStyles.gray500,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-          const Spacer(),
+          const SizedBox(width: 16),
           Stack(
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(4),
-                child: Image.network(
-                  "http://tong.visitkorea.or.kr/cms/resource/48/2739048_image2_1.JPG",
+                child: CachedNetworkImage(
+                  imageUrl: image,
+                  placeholder: (context, url) => const AppImagePlaceholder(width: 200, height: 145),
+                  errorWidget: (context, url, error) => const AppImagePlaceholder(width: 200, height: 145),
                   width: 104,
                   height: 104,
                   fit: BoxFit.cover,
