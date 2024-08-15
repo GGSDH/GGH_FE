@@ -37,6 +37,14 @@ class AuthDataSourceImpl implements AuthDataSource {
   }
 
   @override
+  Future<ApiResult<SocialLoginResponse>> refreshAccessToken() async {
+    return _dio.makeRequest<SocialLoginResponse>(
+      () => _dio.get('v1/oauth/refresh'),
+      (data) => SocialLoginResponse.fromJson(data as Map<String, dynamic>)
+    );
+  }
+
+  @override
   Future<ApiResult<List<OnboardingTheme>>> getOnboardingThemes() async {
     return _dio.makeRequest<List<OnboardingTheme>>(
       () => _dio.get('v1/trip/onboarding/themes'),

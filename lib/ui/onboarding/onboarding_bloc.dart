@@ -1,6 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
+import '../../constants.dart';
 import '../../data/models/response/onboarding_response.dart';
 import '../../data/repository/auth_repository.dart';
 
@@ -60,10 +62,13 @@ final class OnboardingShowError extends OnboardingSideEffect {
 
 class OnboardingBloc extends SideEffectBloc<OnboardingEvent, OnboardingState, OnboardingSideEffect> {
   final AuthRepository _authRepository;
+  final FlutterSecureStorage _storage;
 
   OnboardingBloc({
-    required AuthRepository authRepository
+    required AuthRepository authRepository,
+    required FlutterSecureStorage secureStorage,
   }) : _authRepository = authRepository,
+        _storage = secureStorage,
         super(OnboardingState.initial()) {
     on<OnboardingNextButtonClicked>(_onNextButtonClicked);
     on<OnboardingInitialize>(_onInitialize);
@@ -85,8 +90,30 @@ class OnboardingBloc extends SideEffectBloc<OnboardingEvent, OnboardingState, On
       final response = await _authRepository.setOnboardingInfo(themeIds: event.selectedThemes);
 
       response.when(
-        success: (data) {
-          produceSideEffect(OnboardingComplete());
+        success: (data) async {
+          await refreshAccessToken();
+        },
+        apiError: (errorMessage, errorCode) {
+          produceSideEffect(OnboardingShowError(errorMessage));
+        }
+      );
+    } catch (error) {
+      produceSideEffect(OnboardingShowError(error.toString()));
+    }
+  }
+
+  Future<void> refreshAccessToken() async {
+    try {
+      final response = await _authRepository.refreshAccessToken();
+
+      response.when(
+        success: (data) async {
+          await _storage.write(
+            key: Constants.ACCESS_TOKEN_KEY,
+            value: data.token,
+          ).whenComplete(() {
+            produceSideEffect(OnboardingComplete());
+          });
         },
         apiError: (errorMessage, errorCode) {
           produceSideEffect(OnboardingShowError(errorMessage));

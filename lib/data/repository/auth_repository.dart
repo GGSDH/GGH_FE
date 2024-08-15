@@ -13,6 +13,8 @@ abstract class AuthRepository {
     required LoginProvider provider
   });
 
+  Future<ApiResult<SocialLoginResponse>> refreshAccessToken();
+
   Future<ApiResult<List<OnboardingTheme>>> getOnboardingThemes();
 
   Future<ApiResult<Response?>> setOnboardingInfo({

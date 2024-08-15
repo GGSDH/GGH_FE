@@ -69,7 +69,7 @@ class LoginBloc extends SideEffectBloc<LoginEvent, LoginState, LoginSideEffect> 
           emit(state.copyWith(isLoading: false));
           await _storage.write(
             key: Constants.ACCESS_TOKEN_KEY,
-            value: data.token.accessToken,
+            value: data.token,
           ).whenComplete(() {
             if (data.role == UserRole.roleUser) {
               produceSideEffect(LoginNavigateToHome());
@@ -114,7 +114,7 @@ class LoginBloc extends SideEffectBloc<LoginEvent, LoginState, LoginSideEffect> 
             emit(state.copyWith(isLoading: false));
             await _storage.write(
               key: Constants.ACCESS_TOKEN_KEY,
-              value: data.token.accessToken,
+              value: data.token,
             ).whenComplete(() {
               if (data.role == UserRole.roleUser) {
                 produceSideEffect(LoginNavigateToHome());
