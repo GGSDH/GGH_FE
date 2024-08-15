@@ -1,7 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:gyeonggi_express/data/models/login_provider.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
+import '../../constants.dart';
 import '../../data/repository/auth_repository.dart';
 
 final class MyPageState {
@@ -54,6 +56,8 @@ final class MyPageSettingButtonClicked extends MyPageEvent {
     required this.loginType,
   });
 }
+final class MyPageLogOutButtonClicked extends MyPageEvent { }
+final class MyPageWithdrawalButtonClicked extends MyPageEvent { }
 
 sealed class MyPageSideEffect { }
 final class MyPageNavigateToSetting extends MyPageSideEffect {
@@ -67,6 +71,7 @@ final class MyPageNavigateToSetting extends MyPageSideEffect {
     required this.loginType,
   });
 }
+final class MyPageNavigateToLogin extends MyPageSideEffect { }
 final class MyPageShowError extends MyPageSideEffect {
   final String message;
 
@@ -75,13 +80,18 @@ final class MyPageShowError extends MyPageSideEffect {
 
 class MyPageBloc extends SideEffectBloc<MyPageEvent, MyPageState, MyPageSideEffect> {
   final AuthRepository _authRepository;
+  final FlutterSecureStorage _storage;
 
   MyPageBloc({
     required AuthRepository authRepository,
+    required FlutterSecureStorage secureStorage,
   }) : _authRepository = authRepository,
+        _storage = secureStorage,
         super(MyPageState.initial()) {
     on<MyPageInitialize>(_onMyPageInitialize);
     on<MyPageSettingButtonClicked>(_onMyPageSettingButtonClicked);
+    on<MyPageLogOutButtonClicked>(_onLogOut);
+    on<MyPageWithdrawalButtonClicked>(_onWithdrawal);
 
     add(MyPageInitialize());
   }
@@ -128,5 +138,50 @@ class MyPageBloc extends SideEffectBloc<MyPageEvent, MyPageState, MyPageSideEffe
         loginType: event.loginType,
       )
     );
+  }
+
+  void _onLogOut(
+    MyPageLogOutButtonClicked event,
+    Emitter<MyPageState> emit
+  ) async {
+    try {
+      await _storage.delete(key: Constants.ACCESS_TOKEN_KEY);
+      produceSideEffect(MyPageShowError("로그아웃 되었습니다."));
+      produceSideEffect(MyPageNavigateToLogin());
+    } catch (e) {
+      produceSideEffect(MyPageShowError("로그아웃 중 오류가 발생했습니다: ${e.toString()}"));
+    }
+  }
+
+  void _onWithdrawal(
+    MyPageWithdrawalButtonClicked event,
+    Emitter<MyPageState> emit
+  ) async {
+    emit(state.copyWith(isLoading: true));
+
+    try {
+      final response = await _authRepository.withdrawal();
+
+      response.when(
+        success: (data) async {
+          emit(state.copyWith(isLoading: false));
+
+          if (data) {
+            await _storage.delete(key: Constants.ACCESS_TOKEN_KEY);
+            produceSideEffect(MyPageShowError("탈퇴되었습니다"));
+            produceSideEffect(MyPageNavigateToLogin());
+          } else {
+            produceSideEffect(MyPageShowError("탈퇴에 실패했습니다"));
+          }
+        },
+        apiError: (errorMessage, errorCode) {
+          emit(state.copyWith(isLoading: false));
+          produceSideEffect(MyPageShowError(errorMessage));
+        }
+      );
+    } catch (e) {
+      emit(state.copyWith(isLoading: false));
+      produceSideEffect(MyPageShowError(e.toString()));
+    }
   }
 }

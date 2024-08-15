@@ -26,4 +26,6 @@ abstract class AuthDataSource {
     required String nickname
   });
 
+  Future<ApiResult<bool>> withdrawal();
+
 }

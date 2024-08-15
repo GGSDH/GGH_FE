@@ -39,4 +39,7 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<ApiResult<ProfileResponse>> updateNickname({
     required String nickname
   }) => _authDataSource.updateNickname(nickname: nickname);
+
+  @override
+  Future<ApiResult<bool>> withdrawal() => _authDataSource.withdrawal();
 }

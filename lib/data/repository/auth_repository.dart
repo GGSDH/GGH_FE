@@ -24,4 +24,6 @@ abstract class AuthRepository {
   Future<ApiResult<ProfileResponse>> updateNickname({
     required String nickname
   });
+
+  Future<ApiResult<bool>> withdrawal();
 }

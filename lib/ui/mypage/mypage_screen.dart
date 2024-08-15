@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -22,6 +23,7 @@ class MyPageScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => MyPageBloc(
         authRepository: GetIt.instance<AuthRepository>(),
+        secureStorage: GetIt.instance<FlutterSecureStorage>(),
       ),
       child: BlocSideEffectListener<MyPageBloc, MyPageSideEffect>(
         listener: (context, sideEffect) {
@@ -45,6 +47,8 @@ class MyPageScreen extends StatelessWidget {
                 content: Text(sideEffect.message),
               ),
             );
+          } else if (sideEffect is MyPageNavigateToLogin) {
+            GoRouter.of(context).go(Routes.login.path);
           }
         },
         child: BlocBuilder<MyPageBloc, MyPageState>(
@@ -99,10 +103,20 @@ class MyPageScreen extends StatelessWidget {
                     );
                   },
                   onTapLogOut: () {
-                    _showLogoutDialog(context);
+                    _showLogoutDialog(
+                      context,
+                      () {
+                        context.read<MyPageBloc>().add(MyPageLogOutButtonClicked());
+                      },
+                    );
                   },
                   onTapWithdrawal: () {
-                    _showWithdrawalDialog(context);
+                    _showWithdrawalDialog(
+                      context,
+                      () {
+                        context.read<MyPageBloc>().add(MyPageWithdrawalButtonClicked());
+                      },
+                    );
                   },
                   nickname: state.nickname,
                   email: state.email,
@@ -116,7 +130,10 @@ class MyPageScreen extends StatelessWidget {
     );
   }
 
-  void _showLogoutDialog(BuildContext context) {
+  void _showLogoutDialog(
+    BuildContext context,
+    VoidCallback onLogOut,
+  ) {
     showDialog(
       context: context,
       builder: (BuildContext context) => Dialog(
@@ -164,9 +181,7 @@ class MyPageScreen extends StatelessWidget {
                     child: SizedBox(
                       width: double.infinity,
                       child: TextButton(
-                        onPressed: () {
-                          GoRouter.of(context).pop();
-                        },
+                        onPressed: onLogOut,
                         style: TextButton.styleFrom(
                           backgroundColor: ColorStyles.primary,
                           padding: const EdgeInsets.symmetric(vertical: 12),
@@ -192,7 +207,10 @@ class MyPageScreen extends StatelessWidget {
     );
   }
 
-  void _showWithdrawalDialog(BuildContext context) {
+  void _showWithdrawalDialog(
+    BuildContext context,
+    VoidCallback onWithdrawal,
+  ) {
     showDialog(
       context: context,
       builder: (BuildContext context) => Dialog(
@@ -256,9 +274,7 @@ class MyPageScreen extends StatelessWidget {
                     child: SizedBox(
                       width: double.infinity,
                       child: TextButton(
-                        onPressed: () {
-                          GoRouter.of(context).pop();
-                        },
+                        onPressed: onWithdrawal,
                         style: TextButton.styleFrom(
                           backgroundColor: ColorStyles.primary,
                           padding: const EdgeInsets.symmetric(vertical: 12),

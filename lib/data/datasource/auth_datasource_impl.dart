@@ -83,4 +83,12 @@ class AuthDataSourceImpl implements AuthDataSource {
       (data) => ProfileResponse.fromJson(data as Map<String, dynamic>)
     );
   }
+
+  @override
+  Future<ApiResult<bool>> withdrawal() async {
+    return _dio.makeRequest<bool>(
+      () => _dio.delete('v1/member'),
+      (data) => true
+    );
+  }
 }
