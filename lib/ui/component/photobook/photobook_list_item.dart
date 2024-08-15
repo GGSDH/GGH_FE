@@ -3,34 +3,45 @@ import 'package:intl/intl.dart';
 
 import '../../../themes/color_styles.dart';
 import '../../../themes/text_styles.dart';
+import '../app/app_file_image.dart';
+import '../app/app_image_plaeholder.dart';
 
 class PhotobookListItem extends StatelessWidget {
-  String category;
-  String title;
-  String period;
-  VoidCallback onTap;
+  final String title;
+  final String imageFilePath;
+  final String startDate;
+  final String endDate;
+  final String location;
+  final VoidCallback onTap;
 
-  PhotobookListItem({
+  const PhotobookListItem({
     super.key,
-    required this.category,
     required this.title,
-    required this.period,
+    required this.imageFilePath,
+    required this.startDate,
+    required this.endDate,
+    required this.location,
     required this.onTap,
   });
 
-  String calculateNightsAndDays(String dateRange) {
+  String formatDateRangeAndDuration(String startDate, String endDate) {
+    // DateTime으로 변환
+    DateTime start = DateTime.parse(startDate);
+    DateTime end = DateTime.parse(endDate);
+
+    // 날짜 형식 지정
     final DateFormat dateFormat = DateFormat('yy. MM. dd');
 
-    final List<String> dates = dateRange.split(' ~ ');
-    final DateTime startDate = dateFormat.parse(dates[0].trim());
-    final DateTime endDate = dateFormat.parse(dates[1].trim());
+    // 날짜 차이 계산 (일)
+    int totalDays = end.difference(start).inDays + 1; // 마지막 날 포함
+    int nights = totalDays - 1;
 
-    final Duration duration = endDate.difference(startDate);
+    // 형식화된 날짜 출력
+    String formattedDateRange = '${dateFormat.format(start)} ~ ${dateFormat.format(end)}';
+    String duration = '${nights}박 ${totalDays}일';
 
-    final int days = duration.inDays + 1; // 하루를 포함하기 위해 +1
-    final int nights = duration.inDays;
-
-    return '$nights박 $days일';
+    // 최종 포맷
+    return '$formattedDateRange | $duration';
   }
 
   @override
@@ -41,51 +52,44 @@ class PhotobookListItem extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Row(
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
-                    decoration: BoxDecoration(
-                      color: ColorStyles.primaryLight,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      category,
-                      style: TextStyles.labelMedium.copyWith(
-                        color: ColorStyles.primary,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyles.titleLarge.copyWith(
+                        color: ColorStyles.gray900,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                  Text(
-                    title,
-                    style: TextStyles.titleLarge.copyWith(
-                      color: ColorStyles.gray900,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Text(
-                        "$period | ${calculateNightsAndDays(period)}",
-                        style: TextStyles.bodyMedium.copyWith(
-                          color: ColorStyles.gray500,
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Text(
+                          formatDateRangeAndDuration(startDate, endDate),
+                          style: TextStyles.bodyMedium.copyWith(
+                            color: ColorStyles.gray500,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const Spacer(),
-      
-              ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: Image.asset(
-                  "assets/images/img_dummy_place.png",
-                  width: 104,
-                  height: 104,
+                      ],
+                    ),
+                  ],
                 ),
               ),
+              
+              const SizedBox(width: 16),
+
+              AppFileImage(
+                width: 78,
+                height: 78,
+                imageFilePath: imageFilePath,
+                placeholder: const AppImagePlaceholder(width: 78, height: 78),
+                errorWidget: const AppImagePlaceholder(width: 78, height: 78),
+              )
             ]
         ),
       ),

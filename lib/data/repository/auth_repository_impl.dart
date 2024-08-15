@@ -6,7 +6,6 @@ import 'package:gyeonggi_express/data/models/response/social_login_response.dart
 import '../models/api_result.dart';
 import '../models/response/onboarding_response.dart';
 import '../models/response/profile_response.dart';
-import '../models/response/refresh_token_response.dart';
 import 'auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {

@@ -1,12 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/route_extension.dart';
+import 'package:gyeonggi_express/ui/photobook/photobook_bloc.dart';
+import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../constants.dart';
+import '../../data/models/response/photobook_list_response.dart';
+import '../../data/repository/photobook_repository.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
@@ -23,22 +29,7 @@ class PhotobookScreen extends StatefulWidget {
 class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware {
   final Completer<NaverMapController> _mapControllerCompleter = Completer<NaverMapController>();
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showBottomSheet();
-    });
-  }
-
-  void _showBottomSheet() {
-    final photobooks = List<Map<String, String>>.generate(10, (index) => {
-        'category': '힐링',
-        'title': '이게낭만이지선',
-        'period': '24. 05. 12 ~ 24. 05. 21',
-      }
-    );
-
+  void _showBottomSheet(List<Photobook> photobooks) {
     showBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -67,9 +58,11 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware {
                   itemBuilder: (context, index) {
                     final photobook = photobooks[index];
                     return PhotobookListItem(
-                      category: photobook['category']!,
-                      title: photobook['title']!,
-                      period: photobook['period']!,
+                      title: photobook.title,
+                      imageFilePath: photobook.photo,
+                      startDate: photobook.startDate,
+                      endDate: photobook.endDate,
+                      location: photobook.location,
                       onTap: () {
                         GoRouter.of(context).push("${Routes.photobook.path}/${Routes.photobookDetail.path}");
                       },
@@ -86,34 +79,60 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      child: DefaultTabController(
-        length: 2,
-        child: SafeArea(
-          child: Stack(
-            children: [
-              Column(
-                children: [
-                  const _TabBarSection(),
-                  Expanded(
-                    child: TabBarView(
-                      children: [
-                        _PhotobookSection(
-                          mapControllerCompleter: _mapControllerCompleter,
-                          onAddPhotobook: () {
-                            GoRouter.of(context).go("${Routes.photobook.path}/${Routes.addPhotobook.path}");
-                          },
-                          showPhotobookList: _showBottomSheet,
-                        ),
-                        _PhotoTicketSection(),
-                      ],
+    return BlocProvider(
+      create: (context) => PhotobookBloc(
+        photobookRepository: GetIt.instance.get<PhotobookRepository>(),
+      )..add(PhotobookInitialize()),
+      child: BlocSideEffectListener<PhotobookBloc, PhotobookSideEffect>(
+        listener: (context, sideEffect) {
+          if (sideEffect is PhotobookShowError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(sideEffect.message),
+              ),
+            );
+          } else if (sideEffect is PhotobookShowBottomSheet) {
+            _showBottomSheet(sideEffect.photobooks);
+          }
+        },
+        child: BlocBuilder<PhotobookBloc, PhotobookState>(
+          builder: (context, state) {
+            if (state.isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            } else {
+              return Material(
+                color: Colors.white,
+                child: DefaultTabController(
+                  length: 2,
+                  child: SafeArea(
+                    child: Stack(
+                        children: [
+                          Column(
+                            children: [
+                              const _TabBarSection(),
+                              Expanded(
+                                child: TabBarView(
+                                  children: [
+                                    _PhotobookSection(
+                                      mapControllerCompleter: _mapControllerCompleter,
+                                      onAddPhotobook: () {
+                                        GoRouter.of(context).go("${Routes.photobook.path}/${Routes.addPhotobook.path}");
+                                      },
+                                      showPhotobookList: () => _showBottomSheet(state.photobooks),
+                                    ),
+                                    _PhotoTicketSection(),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ]
                     ),
                   ),
-                ],
-              ),
-            ]
-          ),
+                ),
+              );
+            }
+          }
         ),
       ),
     );
