@@ -105,7 +105,7 @@ class PhotobookDetailBloc extends SideEffectBloc<PhotobookDetailEvent, Photobook
           final Map<String, int> locationFrequency = {};
 
           final List<PhotobookDetailCard> cards = data.dailyPhotoGroup.expand((dailyGroup) {
-            return dailyGroup.hourlyPhotoGroups.expand((hourlyGroup) {
+            return dailyGroup.hourlyPhotoGroups.map((hourlyGroup) {
               if (hourlyGroup.dominantLocation != null) {
                 final locationKey = hourlyGroup.dominantLocation!.city ?? "알 수 없는 도시";
 
@@ -116,16 +116,17 @@ class PhotobookDetailBloc extends SideEffectBloc<PhotobookDetailEvent, Photobook
                 }
               }
 
-              return hourlyGroup.photos.map((photo) {
-                return PhotobookDetailCard(
-                  id: photo.id,
-                  date: hourlyGroup.dateTime,
-                  title: hourlyGroup.dominantLocation?.name ?? "알 수 없는 도시",
-                  location: hourlyGroup.dominantLocation,
-                  filePathUrl: photo.path,
-                );
-              }).toList();
-            }).toList();
+              // hourlyPhotoGroup에서 첫 번째 사진을 선택하여 PhotobookDetailCard 생성
+              final firstPhoto = hourlyGroup.photos.first;
+
+              return PhotobookDetailCard(
+                id: firstPhoto.id,
+                date: hourlyGroup.dateTime,
+                title: hourlyGroup.dominantLocation?.name ?? "알 수 없는 도시",
+                location: hourlyGroup.dominantLocation,
+                filePathUrl: firstPhoto.path,
+              );
+            }).toList(); // null이 아닌 카드만 필터링하고 캐스팅
           }).toList();
 
           // 빈도가 가장 높은 위치를 찾기
