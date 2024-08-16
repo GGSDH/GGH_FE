@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:gyeonggi_express/ui/ext/file_path_extension.dart';
 
-class AppFileImage extends StatelessWidget {
+class AppFileImage extends StatefulWidget {
   final String imageFilePath;
   final double width;
   final double height;
@@ -19,37 +19,59 @@ class AppFileImage extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(4),
-      child: FutureBuilder<String>(
-        future: _getResolvedFilePath(imageFilePath),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return placeholder;
-          } else if (snapshot.hasError || !snapshot.hasData) {
-            return errorWidget;
-          } else {
-            return Image.file(
-              File(snapshot.data!),
-              width: width,
-              height: height,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return errorWidget;
-              },
-            );
-          }
-        },
-      ),
-    );
+  _AppFileImageState createState() => _AppFileImageState();
+}
+
+class _AppFileImageState extends State<AppFileImage> {
+  String? resolvedFilePath;
+  bool isLoading = true;
+  bool hasError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadImage();
   }
 
-  Future<String> _getResolvedFilePath(String relativePath) async {
-    final filePath = await relativePath.getFilePath();
-    if (!await File(filePath).exists()) {
-      return '';
+  Future<void> _loadImage() async {
+    try {
+      final filePath = await widget.imageFilePath.getFilePath();
+      if (await File(filePath).exists()) {
+        setState(() {
+          resolvedFilePath = filePath;
+          isLoading = false;
+          hasError = false;
+        });
+      } else {
+        setState(() {
+          hasError = true;
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        hasError = true;
+        isLoading = false;
+      });
     }
-    return filePath;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (isLoading) {
+      return widget.placeholder;
+    } else if (hasError || resolvedFilePath == null) {
+      return widget.errorWidget;
+    } else {
+      return Image.file(
+        File(resolvedFilePath!),
+        width: widget.width,
+        height: widget.height,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return widget.errorWidget;
+        },
+      );
+    }
   }
 }
