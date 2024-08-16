@@ -24,7 +24,7 @@ final class PhotobookDetailState {
   final String startDate;
   final String endDate;
   final List<PhotobookDetailCard> photobookDetailCards;
-  final LocationItem? dominantLocation;
+  final String dominantLocationCity;
 
   PhotobookDetailState({
     required this.isLoading,
@@ -32,7 +32,7 @@ final class PhotobookDetailState {
     required this.startDate,
     required this.endDate,
     required this.photobookDetailCards,
-    this.dominantLocation,
+    required this.dominantLocationCity,
   });
 
   factory PhotobookDetailState.initial() {
@@ -42,7 +42,7 @@ final class PhotobookDetailState {
       startDate: "",
       endDate: "",
       photobookDetailCards: [],
-      dominantLocation: null,
+      dominantLocationCity: ""
     );
   }
 
@@ -52,7 +52,7 @@ final class PhotobookDetailState {
     String? startDate,
     String? endDate,
     List<PhotobookDetailCard>? photobookDetailCards,
-    LocationItem? dominantLocation,
+    String? dominantLocationCity
   }) {
     return PhotobookDetailState(
       isLoading: isLoading ?? this.isLoading,
@@ -60,7 +60,7 @@ final class PhotobookDetailState {
       startDate: startDate ?? this.startDate,
       endDate: endDate ?? this.endDate,
       photobookDetailCards: photobookDetailCards ?? this.photobookDetailCards,
-      dominantLocation: dominantLocation ?? this.dominantLocation,
+      dominantLocationCity: dominantLocationCity ?? this.dominantLocationCity,
     );
   }
 }
@@ -92,45 +92,67 @@ class PhotobookDetailBloc extends SideEffectBloc<PhotobookDetailEvent, Photobook
   void _onPhotobookDetailInitialize(
       PhotobookDetailInitialize event,
       Emitter<PhotobookDetailState> emit
-  ) async {
+      ) async {
     emit(state.copyWith(isLoading: true));
 
     try {
       final response = await _photobookRepository.getPhotobookDetail(event.photobookId);
 
       response.when(
-          success: (data) {
-            print("$data");
+        success: (data) {
+          // Location 빈도를 저장할 Map
+          final Map<String, int> locationFrequency = {};
 
-            final List<PhotobookDetailCard> cards = data.dailyPhotoGroup.expand((dailyGroup) {
-              return dailyGroup.hourlyPhotoGroups.expand((hourlyGroup) {
-                return hourlyGroup.photos.map((photo) {
-                  return PhotobookDetailCard(
-                    date: hourlyGroup.dateTime,
-                    title: hourlyGroup.dominantLocation?.name ?? "Unknown location",
-                    location: hourlyGroup.dominantLocation?.city ?? "Unknown city",
-                    filePathUrl: photo.path,
-                  );
-                }).toList();
+          final List<PhotobookDetailCard> cards = data.dailyPhotoGroup.expand((dailyGroup) {
+            return dailyGroup.hourlyPhotoGroups.expand((hourlyGroup) {
+              // dominantLocation이 null이 아니면 위치를 카운트
+              if (hourlyGroup.dominantLocation != null) {
+                final locationKey = hourlyGroup.dominantLocation!.city ?? "Unknown location";
+
+                if (locationFrequency.containsKey(locationKey)) {
+                  locationFrequency[locationKey] = locationFrequency[locationKey]! + 1;
+                } else {
+                  locationFrequency[locationKey] = 1;
+                }
+              }
+
+              return hourlyGroup.photos.map((photo) {
+                return PhotobookDetailCard(
+                  date: hourlyGroup.dateTime,
+                  title: hourlyGroup.dominantLocation?.name ?? "Unknown location",
+                  location: hourlyGroup.dominantLocation?.city ?? "Unknown city",
+                  filePathUrl: photo.path,
+                );
               }).toList();
             }).toList();
+          }).toList();
 
-            emit(
-              state.copyWith(
-                isLoading: false,
-                title: data.title,
-                startDate: data.startDate,
-                endDate: data.endDate,
-                photobookDetailCards: cards
-              )
-            );
-          },
-          apiError: (errorMessage, errorCode) {
-            print(errorMessage);
+          // 빈도가 가장 높은 위치를 찾기
+          String? mostFrequentLocation;
+          int highestFrequency = 0;
 
-            emit(state.copyWith(isLoading: false));
-            produceSideEffect(PhotobookDetailShowError(errorMessage));
-          }
+          locationFrequency.forEach((location, frequency) {
+            if (frequency > highestFrequency) {
+              highestFrequency = frequency;
+              mostFrequentLocation = location;
+            }
+          });
+
+          emit(
+            state.copyWith(
+              isLoading: false,
+              title: data.title,
+              startDate: data.startDate,
+              endDate: data.endDate,
+              dominantLocationCity: mostFrequentLocation ?? "알 수 없는 도시",
+              photobookDetailCards: cards,
+            ),
+          );
+        },
+        apiError: (errorMessage, errorCode) {
+          emit(state.copyWith(isLoading: false));
+          produceSideEffect(PhotobookDetailShowError(errorMessage));
+        },
       );
     } on Exception catch (e) {
       emit(state.copyWith(isLoading: false));

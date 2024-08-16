@@ -87,6 +87,21 @@ class _PhotobookDetailScreenState extends State<PhotobookDetailScreen> {
                             )
                           ],
                         ),
+                        const SizedBox(height: 4),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: const Color(0xFFFBB12C)),
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Text(
+                            state.dominantLocationCity,
+                            style: TextStyles.bodyMedium.copyWith(
+                              color: const Color(0xFFFBB12C),
+                            ),
+                          )
+                        ),
+                        const SizedBox(height: 14),
                         Text(
                           state.title,
                           style: TextStyles.title2ExtraLarge,

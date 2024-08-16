@@ -31,7 +31,6 @@ class PhotobookScreen extends StatefulWidget {
 
 class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware {
   final Completer<NaverMapController> _mapControllerCompleter = Completer<NaverMapController>();
-  NaverMapController? mapController = null;
 
   void _showBottomSheet(List<Photobook> photobooks) {
     showBottomSheet(
@@ -124,10 +123,6 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware {
                                   children: [
                                     _PhotobookSection(
                                       mapControllerCompleter: _mapControllerCompleter,
-                                      mapController: mapController,
-                                      setMapController: (controller) {
-                                        mapController = controller;
-                                      },
                                       photobooks: state.photobooks,
                                       onAddPhotobook: () {
                                         GoRouter.of(context).go("${Routes.photobook.path}/${Routes.addPhotobook.path}");
@@ -195,69 +190,18 @@ class _TabBarSection extends StatelessWidget {
 class _PhotobookSection extends StatelessWidget {
   const _PhotobookSection({
     required this.mapControllerCompleter,
-    required this.mapController,
-    required this.setMapController,
     required this.photobooks,
     required this.onAddPhotobook,
     required this.showPhotobookList,
   });
 
   final Completer<NaverMapController> mapControllerCompleter;
-  final NaverMapController? mapController;
-  final Function(NaverMapController) setMapController;
   final List<Photobook> photobooks;
   final VoidCallback onAddPhotobook;
   final VoidCallback showPhotobookList;
 
   @override
   Widget build(BuildContext context) {
-    if (mapController != null) {
-      print("${photobooks.length} photobooks");
-
-      for (var photobook in photobooks) {
-        photobook.photo.getFilePath().then((filePath) async {
-          try {
-            // 이미지 파일을 불러오고 NOverlayImage를 비동기적으로 생성
-            final overlayImage = await NOverlayImage.fromWidget(
-              context: context,
-              widget: AppFileImage(
-                imageFilePath: filePath,
-                placeholder: const AppImagePlaceholder(width: 48, height: 48),
-                errorWidget: const AppImagePlaceholder(width: 48, height: 48),
-              ),
-              size: const Size(48, 48),
-            );
-
-            // NMarker 생성
-            final photobookMarker = NMarker(
-              id: "${photobook.id}",
-              position: NLatLng(37.745, 127.058),  // photobook의 좌표 사용
-              icon: overlayImage,
-            );
-
-            // 마커 추가
-            mapController?.addOverlay(photobookMarker);
-          } catch (e) {
-            // 예외 처리
-            print("Failed to create overlay image for marker: $e");
-
-            // 기본 마커 추가
-            final errorMarker = NMarker(
-              id: "${photobook.id}",
-              position: NLatLng(37.745, 127.058),  // photobook의 좌표 사용
-              icon: await NOverlayImage.fromWidget(
-                context: context,
-                widget: const AppImagePlaceholder(width: 48, height: 48),
-                size: const Size(48, 48),
-              ),
-            );
-
-            mapController?.addOverlay(errorMarker);
-          }
-        });
-      }
-    }
-
     return Stack(
       children: [
         NaverMap(
@@ -272,34 +216,56 @@ class _PhotobookSection extends StatelessWidget {
           ),
           onMapReady: (controller) async {
             if (!mapControllerCompleter.isCompleted) {
-              mapControllerCompleter.complete(controller);
-              setMapController(controller);
+                mapControllerCompleter.complete(controller);
             }
 
-            try {
-              final overlayImage = await NOverlayImage.fromWidget(
-                context: context,
-                widget: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: const AppFileImage(
-                    imageFilePath: '',
-                    placeholder: AppImagePlaceholder(width: 48, height: 48),
-                    errorWidget: AppImagePlaceholder(width: 48, height: 48),
-                  ),
-                ),
-                size: const Size(48, 48),
-              );
+            for (var photobook in photobooks) {
+              photobook.photo.getFilePath().then((filePath) async {
+                try {
+                  // 이미지 파일을 불러오고 NOverlayImage를 비동기적으로 생성
+                  final overlayImage = await NOverlayImage.fromWidget(
+                    context: context,
+                    widget: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: AppFileImage(
+                        imageFilePath: filePath,
+                        placeholder: const AppImagePlaceholder(width: 48, height: 48),
+                        errorWidget: const AppImagePlaceholder(width: 48, height: 48),
+                      ),
+                    ),
+                    size: const Size(48, 48),
+                  );
 
-              // NMarker 생성
-              final photobookMarker = NMarker(
-                id: "123415",
-                position: const NLatLng(37.745, 127.058),  // photobook의 좌표 사용
-                icon: overlayImage,
-              );
+                  // NMarker 생성
+                  final photobookMarker = NMarker(
+                    id: "${photobook.id}",
+                    position: NLatLng(37.745, 127.058),  // photobook의 좌표 사용
+                    icon: overlayImage,
+                  );
 
-              controller.addOverlay(photobookMarker);
-            } catch (e) {
-              print("Error creating marker: $e");
+                  // 마커 추가
+                  controller.addOverlay(photobookMarker);
+                } catch (e) {
+                  // 예외 처리
+                  print("Failed to create overlay image for marker: $e");
+
+                  // 기본 마커 추가
+                  final errorMarker = NMarker(
+                    id: "${photobook.id}",
+                    position: NLatLng(37.745, 127.058),  // photobook의 좌표 사용
+                    icon: await NOverlayImage.fromWidget(
+                      context: context,
+                      widget: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: const AppImagePlaceholder(width: 48, height: 48)
+                      ),
+                      size: const Size(48, 48),
+                    ),
+                  );
+
+                  controller.addOverlay(errorMarker);
+                }
+              });
             }
           },
           forceGesture: true,

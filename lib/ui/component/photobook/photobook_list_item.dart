@@ -83,12 +83,15 @@ class PhotobookListItem extends StatelessWidget {
               
               const SizedBox(width: 16),
 
-              AppFileImage(
-                width: 78,
-                height: 78,
-                imageFilePath: imageFilePath,
-                placeholder: const AppImagePlaceholder(width: 78, height: 78),
-                errorWidget: const AppImagePlaceholder(width: 78, height: 78),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: AppFileImage(
+                  width: 78,
+                  height: 78,
+                  imageFilePath: imageFilePath,
+                  placeholder: const AppImagePlaceholder(width: 78, height: 78),
+                  errorWidget: const AppImagePlaceholder(width: 78, height: 78),
+                ),
               )
             ]
         ),
