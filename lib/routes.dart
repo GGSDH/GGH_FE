@@ -171,7 +171,9 @@ enum Routes {
                             path: Routes.photobookDetail.path,
                             name: Routes.photobookDetail.name,
                             parentNavigatorKey: _rootNavigatorKey,
-                            builder: (context, state) => PhotobookDetailScreen()
+                            builder: (context, state) => PhotobookDetailScreen(
+                              photobookId: state.uri.queryParameters['photobookId'] ?? '',
+                            )
                         )
                       ],
                   ),

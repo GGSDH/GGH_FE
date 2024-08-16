@@ -1,3 +1,5 @@
+import 'package:gyeonggi_express/data/models/response/photobook_detail_response.dart';
+
 import '../models/api_result.dart';
 import '../models/request/add_photobook_request.dart';
 import '../models/response/add_photobook_response.dart';
@@ -12,4 +14,6 @@ abstract class PhotobookRepository {
     required String endDate,
     required List<AddPhotoItem> photos,
   });
+
+  Future<ApiResult<PhotobookDetailResponse>> getPhotobookDetail(int photobookId);
 }

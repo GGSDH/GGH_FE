@@ -3,6 +3,7 @@ import 'package:gyeonggi_express/data/models/response/add_photobook_response.dar
 import 'package:gyeonggi_express/data/models/response/photobook_list_response.dart';
 
 import '../models/api_result.dart';
+import '../models/response/photobook_detail_response.dart';
 
 abstract class PhotobookDataSource {
 
@@ -14,5 +15,7 @@ abstract class PhotobookDataSource {
     required String endDate,
     required List<AddPhotoItem> photos,
   });
+
+  Future<ApiResult<PhotobookDetailResponse>> getPhotobookDetail(int photobookId);
 
 }

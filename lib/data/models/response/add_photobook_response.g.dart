@@ -79,7 +79,7 @@ Map<String, dynamic> _$HourlyPhotoGroupToJson(HourlyPhotoGroup instance) =>
     };
 
 PhotoItem _$PhotoItemFromJson(Map<String, dynamic> json) => PhotoItem(
-      id: (json['id'] as num).toInt(),
+      id: json['id'] as String,
       path: json['path'] as String,
       location: json['location'] == null
           ? null

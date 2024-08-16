@@ -64,7 +64,12 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware {
                       endDate: photobook.endDate,
                       location: photobook.location,
                       onTap: () {
-                        GoRouter.of(context).push("${Routes.photobook.path}/${Routes.photobookDetail.path}");
+                        GoRouter.of(context).push(
+                          Uri(
+                              path: "${Routes.photobook.path}/${Routes.photobookDetail.path}",
+                              queryParameters: { 'photobookId': "${photobook.id}" }
+                          ).toString()
+                        );
                       },
                     );
                   },

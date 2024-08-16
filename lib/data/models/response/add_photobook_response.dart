@@ -102,7 +102,7 @@ class HourlyPhotoGroup {
 @JsonSerializable()
 class PhotoItem {
   @JsonKey(name: 'id')
-  final int id;
+  final String id;
 
   @JsonKey(name: 'path')
   final String path;

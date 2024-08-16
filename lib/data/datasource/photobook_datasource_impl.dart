@@ -4,6 +4,7 @@ import 'package:gyeonggi_express/data/ext/dio_extensions.dart';
 import 'package:gyeonggi_express/data/models/api_result.dart';
 import 'package:gyeonggi_express/data/models/request/add_photobook_request.dart';
 import 'package:gyeonggi_express/data/models/response/add_photobook_response.dart';
+import 'package:gyeonggi_express/data/models/response/photobook_detail_response.dart';
 
 import '../models/response/photobook_list_response.dart';
 
@@ -42,6 +43,14 @@ class PhotobookDataSourceImpl implements PhotobookDataSource {
         data: addPhotobookRequest.toJson(),
       ),
       (data) => AddPhotobookResponse.fromJson(data as Map<String, dynamic>)
+    );
+  }
+
+  @override
+  Future<ApiResult<PhotobookDetailResponse>> getPhotobookDetail(int photobookId) {
+    return _dio.makeRequest<PhotobookDetailResponse>(
+      () => _dio.get('v1/photobook/$photobookId'),
+      (data) => PhotobookDetailResponse.fromJson(data as Map<String, dynamic>)
     );
   }
 

@@ -5,22 +5,35 @@ import 'package:gyeonggi_express/route_extension.dart';
 
 import '../../routes.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // 2초 후에 LoginScreen으로 이동
-    Future.delayed(const Duration(seconds: 2), () {
-      GoRouter.of(context).go(Routes.login.path);
-    });
+  _SplashScreenState createState() => _SplashScreenState();
+}
 
+class _SplashScreenState extends State<SplashScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Navigate to LoginScreen after a 2-second delay
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        GoRouter.of(context).go(Routes.login.path);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
-          color: Color(0xFF1778FB)
+          color: Color(0xFF1778FB),
         ),
         child: Align(
           alignment: const Alignment(0.0, -0.33),
@@ -29,7 +42,7 @@ class SplashScreen extends StatelessWidget {
             width: 205,
             height: 85,
           ),
-        )
+        ),
       ),
     );
   }

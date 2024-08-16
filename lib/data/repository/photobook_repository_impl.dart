@@ -4,6 +4,7 @@ import 'package:gyeonggi_express/data/models/response/add_photobook_response.dar
 import 'package:gyeonggi_express/data/repository/photobook_repository.dart';
 
 import '../datasource/photobook_datasource.dart';
+import '../models/response/photobook_detail_response.dart';
 import '../models/response/photobook_list_response.dart';
 
 class PhotobookRepositoryImpl implements PhotobookRepository {
@@ -26,4 +27,7 @@ class PhotobookRepositoryImpl implements PhotobookRepository {
     endDate: endDate,
     photos: photos
   );
+
+  @override
+  Future<ApiResult<PhotobookDetailResponse>> getPhotobookDetail(int photobookId) => _photobookDataSource.getPhotobookDetail(photobookId);
 }

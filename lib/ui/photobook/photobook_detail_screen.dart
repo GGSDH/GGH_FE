@@ -1,23 +1,37 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/ui/component/app/app_action_bar.dart';
+import 'package:gyeonggi_express/ui/photobook/photobook_detail_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:side_effect_bloc/side_effect_bloc.dart';
 
+import '../../data/repository/photobook_repository.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
+import '../component/app/app_file_image.dart';
 import '../component/app/app_image_plaeholder.dart';
 
 class PhotobookDetailScreen extends StatefulWidget {
+  final String photobookId;
+
+  const PhotobookDetailScreen({
+    super.key,
+    required this.photobookId,
+  });
+
   @override
   _PhotobookDetailScreenState createState() => _PhotobookDetailScreenState();
 }
 
 class _PhotobookDetailScreenState extends State<PhotobookDetailScreen> {
   int currentPage = 0;
-  final int pageCount = 5;
+  int pageCount = 3;
   late double baseCardWidth;
   late double baseCardHeight;
   double scaleFactor = 0.9; // 각 페이지가 멀어질수록 크기 줄어드는 비율
@@ -27,86 +41,110 @@ class _PhotobookDetailScreenState extends State<PhotobookDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     final screenWidth = MediaQuery.of(context).size.width;
 
     baseCardWidth = screenWidth * 0.9 - 40;
     baseCardHeight = baseCardWidth * 1.4;
 
-    return Material(
-      color: Colors.white,
-      child: SafeArea(
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                AppActionBar(
-                  rightText: '',
-                  onBackPressed: () {
-                    GoRouter.of(context).pop();
-                  },
-                  menuItems: [
-                    ActionBarMenuItem(
-                      icon: SvgPicture.asset(
-                        "assets/icons/ic_map.svg",
-                        width: 24,
-                        height: 24,
+    return BlocProvider(
+      create: (context) => PhotobookDetailBloc(
+        photobookRepository: GetIt.instance<PhotobookRepository>(),
+      )..add(PhotobookDetailInitialize(int.parse(widget.photobookId))),
+      child: BlocSideEffectListener<PhotobookDetailBloc, PhotobookDetailSideEffect>(
+        listener: (context, sideEffect) {
+          if (sideEffect is PhotobookDetailShowError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(sideEffect.message),
+              ),
+            );
+          }
+        },
+        child: BlocBuilder<PhotobookDetailBloc, PhotobookDetailState>(
+          builder: (context, state) {
+            pageCount = state.photobookDetailCards.length;
+
+            return Material(
+              color: Colors.white,
+              child: SafeArea(
+                child: Stack(
+                  children: [
+                    Column(
+                      children: [
+                        AppActionBar(
+                          rightText: '',
+                          onBackPressed: () {
+                            GoRouter.of(context).pop();
+                          },
+                          menuItems: [
+                            ActionBarMenuItem(
+                              icon: SvgPicture.asset(
+                                "assets/icons/ic_map.svg",
+                                width: 24,
+                                height: 24,
+                              ),
+                              onPressed: () => print("map clicked"),
+                            )
+                          ],
+                        ),
+                        Text(
+                          state.title,
+                          style: TextStyles.title2ExtraLarge,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          formatDates(state.startDate, state.endDate),
+                          style: TextStyles.bodyLarge.copyWith(
+                              color: ColorStyles.gray500),
+                        ),
+                        const SizedBox(height: 40),
+                        SizedBox(
+                          width: baseCardWidth + 40,
+                          height: baseCardHeight,
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              return Stack(
+                                clipBehavior: Clip.none,
+                                alignment: Alignment.center,
+                                children: [
+                                  for (int i = pageCount - 1; i >= currentPage; i--)
+                                    _buildCard(i, state.photobookDetailCards[i]), // 현재 페이지부터 페이지들을 역순으로 쌓음
+                                ],
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    Positioned(
+                      bottom: 20,
+                      right: 20,
+                      child: GestureDetector(
+                        onTap: () {
+                          GoRouter.of(context).push(
+                              "${Routes.photobook.path}/${Routes.addPhotobook
+                                  .path}");
+                        },
+                        child: SvgPicture.asset(
+                          "assets/icons/ic_add_photo.svg",
+                          width: 52,
+                          height: 52,
+                          fit: BoxFit.fill,
+                        ),
                       ),
-                      onPressed: () => print("map clicked"),
-                    )
+                    ),
                   ],
                 ),
-                const Text(
-                  "의정부 탐방",
-                  style: TextStyles.title2ExtraLarge,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  "24.05.12 ~ 24.05.17",
-                  style: TextStyles.bodyLarge.copyWith(
-                      color: ColorStyles.gray500),
-                ),
-                const SizedBox(height: 40),
-                SizedBox(
-                  width: baseCardWidth + 40,
-                  height: baseCardHeight,
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      return Stack(
-                        clipBehavior: Clip.none,
-                        alignment: Alignment.center,
-                        children: [
-                          for (int i = pageCount - 1; i >= currentPage; i--)
-                            _buildCard(i), // 현재 페이지부터 페이지들을 역순으로 쌓음
-                        ],
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-            Positioned(
-              bottom: 20,
-              right: 20,
-              child: GestureDetector(
-                onTap: () {
-                  GoRouter.of(context).push(
-                      "${Routes.photobook.path}/${Routes.addPhotobook.path}");
-                },
-                child: SvgPicture.asset(
-                  "assets/icons/ic_add_photo.svg",
-                  width: 52,
-                  height: 52,
-                  fit: BoxFit.fill,
-                ),
               ),
-            ),
-          ],
+            );
+          }
         ),
       ),
     );
   }
 
-  Widget _buildCard(int index) {
+  Widget _buildCard(int index, PhotobookDetailCard card) {
     return AnimatedPositioned(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
@@ -124,11 +162,10 @@ class _PhotobookDetailScreenState extends State<PhotobookDetailScreen> {
         child: (currentPage - index).abs() < 3 ?
           Page(
             day: index + 1,
-            imageUrl:
-            'https://i.namu.wiki/i/4quYhHq2ToyXcDJ8eIQ7xxDUFIVhmdinYplLfVROQJS9oZDrswV63wfIR_0rZ_aaITRTwuy3qWVmbrTi_sslCzebO9oZW8sBTbP2mYz7p34RO6gLJjwCYOwvxLQIw8lDqNrgomn8KY1OHZvXMjrqVA.webp',
-            dateTime: '8월 5일',
-            name: '의정부 부대찌개',
-            location: '의정부',
+            imageUrl: card.filePathUrl,
+            dateTime: card.date,
+            name: card.title,
+            location: card.location,
           ) :
           const SizedBox(),
         )
@@ -239,15 +276,14 @@ class Page extends StatelessWidget {
       borderRadius: BorderRadius.circular(12),
       child: Stack(
         children: [
-          CachedNetworkImage(
-            imageUrl: imageUrl,
-            placeholder: (context, url) => const AppImagePlaceholder(
-                width: double.infinity, height: double.infinity),
-            errorWidget: (context, url, error) => const AppImagePlaceholder(
-                width: double.infinity, height: double.infinity),
-            fit: BoxFit.cover,
+          AppFileImage(
             width: double.infinity,
             height: double.infinity,
+            imageFilePath: imageUrl,
+            placeholder: const AppImagePlaceholder(
+                width: double.infinity, height: double.infinity),
+            errorWidget: const AppImagePlaceholder(
+                width: double.infinity, height: double.infinity),
           ),
           Padding(
             padding: const EdgeInsets.all(24),
@@ -298,5 +334,34 @@ class Page extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+String formatDates(String startDate, String endDate) {
+  try {
+    DateTime startDateTime = DateTime.parse(startDate);
+    DateTime endDateTime = DateTime.parse(endDate);
+
+    final dateFormat = DateFormat('yy. MM. dd');
+
+    final formattedStartDate = dateFormat.format(startDateTime);
+    final formattedEndDate = dateFormat.format(endDateTime);
+
+    return '$formattedStartDate ~ $formattedEndDate';
+  } catch (e) {
+    return '';
+  }
+}
+
+
+String formatDate(String date) {
+  try {
+    DateTime dateTime = DateTime.parse(date);
+
+    final dateFormat = DateFormat('MM월 dd일');
+
+    return dateFormat.format(dateTime);
+  } catch (e) {
+    return '';
   }
 }
