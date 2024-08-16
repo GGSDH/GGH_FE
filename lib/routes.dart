@@ -21,6 +21,7 @@ import 'package:gyeonggi_express/ui/photobook/add/add_photobook_loading_screen.d
 import 'package:gyeonggi_express/ui/photobook/add/add_photobook_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/add/add_photobook_select_period_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_detail_screen.dart';
+import 'package:gyeonggi_express/ui/photobook/photobook_map_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_screen.dart';
 import 'package:gyeonggi_express/ui/splash/splash_screen.dart';
@@ -31,22 +32,29 @@ import 'data/models/login_provider.dart';
 enum Routes {
   splash,
   login,
+
   onboarding,
   onboardingComplete,
+
   home,
   popularDestinations,
   recommendedLanes,
   localRestaurants,
   categoryDetail,
   areaFilter,
+
   stations,
   lanes,
+
   recommend,
+
   photobook,
   photobookDetail,
+  photobookMap,
   addPhotobook,
   addPhotobookSelectPeriod,
   addPhotobookLoading,
+
   myPage,
   myPageSetting,
   myPageServicePolicy,
@@ -172,6 +180,15 @@ enum Routes {
                             name: Routes.photobookDetail.name,
                             parentNavigatorKey: _rootNavigatorKey,
                             builder: (context, state) => PhotobookDetailScreen(
+                              photobookId: state.uri.queryParameters['photobookId'] ?? '',
+                            )
+                        ),
+
+                        GoRoute(
+                            path: Routes.photobookMap.path,
+                            name: Routes.photobookMap.name,
+                            parentNavigatorKey: _rootNavigatorKey,
+                            builder: (context, state) => PhotobookMapScreen(
                               photobookId: state.uri.queryParameters['photobookId'] ?? '',
                             )
                         )

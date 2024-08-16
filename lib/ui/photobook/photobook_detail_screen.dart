@@ -40,7 +40,6 @@ class _PhotobookDetailScreenState extends State<PhotobookDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     final screenWidth = MediaQuery.of(context).size.width;
 
     baseCardWidth = screenWidth * 0.9 - 40;
@@ -83,8 +82,16 @@ class _PhotobookDetailScreenState extends State<PhotobookDetailScreen> {
                                 width: 24,
                                 height: 24,
                               ),
-                              onPressed: () => print("map clicked"),
-                            )
+                              onPressed: () {
+                                GoRouter.of(context).push(
+                                  Uri(
+                                    path: "${Routes.photobook.path}/${Routes.photobookMap.path}",
+                                    queryParameters: {
+                                      "photobookId": widget.photobookId,
+                                    },
+                                  ).toString()
+                                );
+                              })
                           ],
                         ),
                         const SizedBox(height: 4),
@@ -113,20 +120,22 @@ class _PhotobookDetailScreenState extends State<PhotobookDetailScreen> {
                               color: ColorStyles.gray500),
                         ),
                         const SizedBox(height: 40),
-                        SizedBox(
-                          width: baseCardWidth + 40,
-                          height: baseCardHeight,
-                          child: LayoutBuilder(
-                            builder: (context, constraints) {
-                              return Stack(
-                                clipBehavior: Clip.none,
-                                alignment: Alignment.center,
-                                children: [
-                                  for (int i = pageCount - 1; i >= currentPage; i--)
-                                    _buildCard(i, state.photobookDetailCards[i]), // 현재 페이지부터 페이지들을 역순으로 쌓음
-                                ],
-                              );
-                            },
+                        Expanded(
+                          child: SizedBox(
+                            width: baseCardWidth + 40,
+                            height: baseCardHeight,
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                return Stack(
+                                  clipBehavior: Clip.none,
+                                  alignment: Alignment.center,
+                                  children: [
+                                    for (int i = pageCount - 1; i >= currentPage; i--)
+                                      _buildCard(i, state.photobookDetailCards[i]), // 현재 페이지부터 페이지들을 역순으로 쌓음
+                                  ],
+                                );
+                              },
+                            ),
                           ),
                         ),
                       ],
@@ -179,7 +188,7 @@ class _PhotobookDetailScreenState extends State<PhotobookDetailScreen> {
             imageUrl: card.filePathUrl,
             dateTime: card.date,
             name: card.title,
-            location: card.location,
+            location: card.location?.city ?? "알 수 없는 도시",
           ) :
           const SizedBox(),
         )

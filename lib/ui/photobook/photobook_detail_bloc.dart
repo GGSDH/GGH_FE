@@ -5,12 +5,14 @@ import 'package:side_effect_bloc/side_effect_bloc.dart';
 import '../../data/repository/photobook_repository.dart';
 
 final class PhotobookDetailCard {
+  final String id;
   final String date;
   final String title;
-  final String location;
+  final LocationItem? location;
   final String filePathUrl;
 
   PhotobookDetailCard({
+    required this.id,
     required this.date,
     required this.title,
     required this.location,
@@ -90,9 +92,9 @@ class PhotobookDetailBloc extends SideEffectBloc<PhotobookDetailEvent, Photobook
   }
 
   void _onPhotobookDetailInitialize(
-      PhotobookDetailInitialize event,
-      Emitter<PhotobookDetailState> emit
-      ) async {
+    PhotobookDetailInitialize event,
+    Emitter<PhotobookDetailState> emit
+  ) async {
     emit(state.copyWith(isLoading: true));
 
     try {
@@ -100,14 +102,12 @@ class PhotobookDetailBloc extends SideEffectBloc<PhotobookDetailEvent, Photobook
 
       response.when(
         success: (data) {
-          // Location 빈도를 저장할 Map
           final Map<String, int> locationFrequency = {};
 
           final List<PhotobookDetailCard> cards = data.dailyPhotoGroup.expand((dailyGroup) {
             return dailyGroup.hourlyPhotoGroups.expand((hourlyGroup) {
-              // dominantLocation이 null이 아니면 위치를 카운트
               if (hourlyGroup.dominantLocation != null) {
-                final locationKey = hourlyGroup.dominantLocation!.city ?? "Unknown location";
+                final locationKey = hourlyGroup.dominantLocation!.city ?? "알 수 없는 도시";
 
                 if (locationFrequency.containsKey(locationKey)) {
                   locationFrequency[locationKey] = locationFrequency[locationKey]! + 1;
@@ -118,9 +118,10 @@ class PhotobookDetailBloc extends SideEffectBloc<PhotobookDetailEvent, Photobook
 
               return hourlyGroup.photos.map((photo) {
                 return PhotobookDetailCard(
+                  id: photo.id,
                   date: hourlyGroup.dateTime,
-                  title: hourlyGroup.dominantLocation?.name ?? "Unknown location",
-                  location: hourlyGroup.dominantLocation?.city ?? "Unknown city",
+                  title: hourlyGroup.dominantLocation?.name ?? "알 수 없는 도시",
+                  location: hourlyGroup.dominantLocation,
                   filePathUrl: photo.path,
                 );
               }).toList();
