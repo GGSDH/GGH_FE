@@ -14,6 +14,7 @@ import 'package:side_effect_bloc/side_effect_bloc.dart';
 import '../../constants.dart';
 import '../../data/repository/photobook_repository.dart';
 import '../component/app/app_image_plaeholder.dart';
+import '../component/map/map_marker.dart';
 
 class PhotobookMapScreen extends StatefulWidget {
   final String photobookId;
@@ -113,21 +114,11 @@ class _MapSection extends StatelessWidget {
         for (var photobook in photobookDetailCards) {
           if (photobook.location?.lat != null && photobook.location?.lon != null) {
             try {
-              // 파일 경로를 가져오는 작업을 기다림
-              final filePath = await photobook.filePathUrl.getFilePath();
-
               // 이미지 파일을 불러오고 NOverlayImage를 비동기적으로 생성
               final overlayImage = await NOverlayImage.fromWidget(
                 context: context,
-                widget: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: AppFileImage(
-                    imageFilePath: filePath,
-                    placeholder: const AppImagePlaceholder(width: 48, height: 48),
-                    errorWidget: const AppImagePlaceholder(width: 48, height: 48),
-                  ),
-                ),
-                size: const Size(48, 48),
+                widget: MapMarker(filePath: photobook.filePathUrl),
+                size: const Size(48, 70),
               );
 
               // NMarker 생성
@@ -156,11 +147,8 @@ class _MapSection extends StatelessWidget {
                 position: currentLocation,
                 icon: await NOverlayImage.fromWidget(
                   context: context,
-                  widget: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: const AppImagePlaceholder(width: 48, height: 48),
-                  ),
-                  size: const Size(48, 48),
+                  widget: MapMarker(filePath: photobook.filePathUrl),
+                  size: const Size(48, 70),
                 ),
               );
 
@@ -168,8 +156,6 @@ class _MapSection extends StatelessWidget {
             }
           }
         }
-
-        print('pathCoords: $pathCoords');
 
         // 경로를 그릴 좌표가 존재하는 경우
         if (pathCoords.isNotEmpty) {

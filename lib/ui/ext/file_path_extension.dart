@@ -20,6 +20,8 @@ extension FilePathExtension on String {
 
       _filePathCache[this] = filePath;
 
+      print('filePath: $filePath');
+
       return filePath;
     } else {
       return this;
