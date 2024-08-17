@@ -21,6 +21,7 @@ import 'package:gyeonggi_express/ui/photobook/add/add_photobook_loading_screen.d
 import 'package:gyeonggi_express/ui/photobook/add/add_photobook_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/add/add_photobook_select_period_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_card_screen.dart';
+import 'package:gyeonggi_express/ui/photobook/photobook_detail_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_map_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_screen.dart';
@@ -189,7 +190,7 @@ enum Routes {
                             path: Routes.photobookDetail.path,
                             name: Routes.photobookDetail.name,
                             parentNavigatorKey: _rootNavigatorKey,
-                            builder: (context, state) => PhotobookCardScreen(
+                            builder: (context, state) => PhotobookDetailScreen(
                               photobookId: state.uri.queryParameters['photobookId'] ?? '',
                             )
                         ),

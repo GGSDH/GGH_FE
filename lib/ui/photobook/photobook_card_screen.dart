@@ -78,19 +78,12 @@ class _PhotobookCardScreenState extends State<PhotobookCardScreen> {
                           menuItems: [
                             ActionBarMenuItem(
                               icon: SvgPicture.asset(
-                                "assets/icons/ic_map.svg",
+                                "assets/icons/ic_trash.svg",
                                 width: 24,
                                 height: 24,
                               ),
                               onPressed: () {
-                                GoRouter.of(context).push(
-                                  Uri(
-                                    path: "${Routes.photobook.path}/${Routes.photobookMap.path}",
-                                    queryParameters: {
-                                      "photobookId": widget.photobookId,
-                                    },
-                                  ).toString()
-                                );
+
                               })
                           ],
                         ),
@@ -172,30 +165,43 @@ class _PhotobookCardScreenState extends State<PhotobookCardScreen> {
 
   Widget _buildCard(int index, PhotobookDetailCard card) {
     return AnimatedPositioned(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-      left: calculateLeftOffset(index),
-      width: calculateCardWidth(index),
-      height: calculateCardHeight(index),
-      child: GestureDetector(
-        onHorizontalDragUpdate: (details) {
-          setState(() {
-            isSwiping = true;
-            swipeOffset += details.delta.dx; // 스와이프 방향으로 페이지 이동
-          });
-        },
-        onHorizontalDragEnd: (details) => _onHorizontalDragEnd(details),
-        child: (currentPage - index).abs() < 3 ?
-          Page(
-            day: index + 1,
-            imageUrl: card.filePathUrl,
-            dateTime: card.date,
-            name: card.title,
-            location: card.location?.city ?? "알 수 없는 도시",
-          ) :
-          const SizedBox(),
-        )
-      );
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        left: calculateLeftOffset(index),
+        width: calculateCardWidth(index),
+        height: calculateCardHeight(index),
+        child: GestureDetector(
+          onHorizontalDragUpdate: (details) {
+            setState(() {
+              isSwiping = true;
+              swipeOffset += details.delta.dx; // 스와이프 방향으로 페이지 이동
+            });
+          },
+          onHorizontalDragEnd: (details) => _onHorizontalDragEnd(details),
+          child: (currentPage - index).abs() < 3 ?
+            InkWell(
+              onTap: () {
+                GoRouter.of(context).push(
+                  Uri(
+                      path: "${Routes.photobook.path}/${Routes.photobookDetail.path}",
+                      queryParameters: {
+                        "photobookId": widget.photobookId,
+                        "cardId": card.id.toString(),
+                      }
+                  ).toString(),
+                );
+              },
+              child: Page(
+                day: index + 1,
+                imageUrl: card.filePathUrl,
+                dateTime: card.date,
+                name: card.title,
+                location: card.location?.city ?? "알 수 없는 도시",
+              )
+            ):
+            const SizedBox(),
+          )
+    );
   }
 
   double calculateLeftOffset(int index) {

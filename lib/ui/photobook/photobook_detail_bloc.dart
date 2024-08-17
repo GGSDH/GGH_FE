@@ -26,6 +26,7 @@ final class PhotobookDetailState {
   final String startDate;
   final String endDate;
   final List<PhotobookDetailCard> photobookDetailCards;
+  final List<DailyPhotoGroup> photobookDailyPhotoGroups;
   final String dominantLocationCity;
 
   PhotobookDetailState({
@@ -34,6 +35,7 @@ final class PhotobookDetailState {
     required this.startDate,
     required this.endDate,
     required this.photobookDetailCards,
+    required this.photobookDailyPhotoGroups,
     required this.dominantLocationCity,
   });
 
@@ -44,6 +46,7 @@ final class PhotobookDetailState {
       startDate: "",
       endDate: "",
       photobookDetailCards: [],
+      photobookDailyPhotoGroups: [],
       dominantLocationCity: ""
     );
   }
@@ -54,6 +57,7 @@ final class PhotobookDetailState {
     String? startDate,
     String? endDate,
     List<PhotobookDetailCard>? photobookDetailCards,
+    List<DailyPhotoGroup>? photobookDailyPhotoGroups,
     String? dominantLocationCity
   }) {
     return PhotobookDetailState(
@@ -62,6 +66,7 @@ final class PhotobookDetailState {
       startDate: startDate ?? this.startDate,
       endDate: endDate ?? this.endDate,
       photobookDetailCards: photobookDetailCards ?? this.photobookDetailCards,
+      photobookDailyPhotoGroups: photobookDailyPhotoGroups ?? this.photobookDailyPhotoGroups,
       dominantLocationCity: dominantLocationCity ?? this.dominantLocationCity,
     );
   }
@@ -146,6 +151,7 @@ class PhotobookDetailBloc extends SideEffectBloc<PhotobookDetailEvent, Photobook
               title: data.title,
               startDate: data.startDate,
               endDate: data.endDate,
+              photobookDailyPhotoGroups: data.dailyPhotoGroup,
               dominantLocationCity: mostFrequentLocation ?? "알 수 없는 도시",
               photobookDetailCards: cards,
             ),
