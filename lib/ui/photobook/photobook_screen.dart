@@ -33,7 +33,10 @@ class PhotobookScreen extends StatefulWidget {
 class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware {
   final Completer<NaverMapController> _mapControllerCompleter = Completer<NaverMapController>();
 
-  void _showBottomSheet(List<Photobook> photobooks) {
+  void _showBottomSheet(
+    List<Photobook> photobooks,
+    Function onLoadPhotobooks
+  ) {
     showBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -73,7 +76,9 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware {
                               path: "${Routes.photobook.path}/${Routes.photobookCard.path}",
                               queryParameters: { 'photobookId': "${photobook.id}" }
                           ).toString()
-                        );
+                        ).then((_) {
+                          onLoadPhotobooks();
+                        });
                       },
                     );
                   },
@@ -101,7 +106,10 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware {
               ),
             );
           } else if (sideEffect is PhotobookShowBottomSheet) {
-            _showBottomSheet(sideEffect.photobooks);
+            _showBottomSheet(
+              sideEffect.photobooks,
+              () => context.read<PhotobookBloc>().add(PhotobookInitialize())
+            );
           }
         },
         child: BlocBuilder<PhotobookBloc, PhotobookState>(
@@ -126,9 +134,12 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware {
                                       mapControllerCompleter: _mapControllerCompleter,
                                       photobooks: state.photobooks,
                                       onAddPhotobook: () {
-                                        GoRouter.of(context).go("${Routes.photobook.path}/${Routes.addPhotobook.path}");
+                                        GoRouter.of(context).push("${Routes.photobook.path}/${Routes.addPhotobook.path}");
                                       },
-                                      showPhotobookList: () => _showBottomSheet(state.photobooks),
+                                      showPhotobookList: () => _showBottomSheet(
+                                        state.photobooks,
+                                        () => context.read<PhotobookBloc>().add(PhotobookInitialize())
+                                      ),
                                     ),
                                     _PhotoTicketSection(),
                                   ],

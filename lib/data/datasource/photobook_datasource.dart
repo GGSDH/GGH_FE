@@ -18,4 +18,6 @@ abstract class PhotobookDataSource {
 
   Future<ApiResult<PhotobookDetailResponse>> getPhotobookDetail(int photobookId);
 
+  Future<ApiResult<bool>> deletePhotobook(int photobookId);
+
 }

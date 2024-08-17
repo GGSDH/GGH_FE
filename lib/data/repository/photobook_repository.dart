@@ -16,4 +16,6 @@ abstract class PhotobookRepository {
   });
 
   Future<ApiResult<PhotobookDetailResponse>> getPhotobookDetail(int photobookId);
+
+  Future<ApiResult<bool>> deletePhotobook(int photobookId);
 }

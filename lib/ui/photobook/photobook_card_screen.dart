@@ -57,6 +57,8 @@ class _PhotobookCardScreenState extends State<PhotobookCardScreen> {
                 content: Text(sideEffect.message),
               ),
             );
+          } else if (sideEffect is PhotobookDeleteComplete) {
+            GoRouter.of(context).pop();
           }
         },
         child: BlocBuilder<PhotobookDetailBloc, PhotobookDetailState>(
@@ -83,7 +85,9 @@ class _PhotobookCardScreenState extends State<PhotobookCardScreen> {
                                 height: 24,
                               ),
                               onPressed: () {
-
+                                context.read<PhotobookDetailBloc>().add(
+                                  PhotobookDelete(int.parse(widget.photobookId)),
+                                );
                               })
                           ],
                         ),

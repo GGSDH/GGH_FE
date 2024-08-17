@@ -54,4 +54,12 @@ class PhotobookDataSourceImpl implements PhotobookDataSource {
     );
   }
 
+  @override
+  Future<ApiResult<bool>> deletePhotobook(int photobookId) {
+    return _dio.makeRequest<bool>(
+      () => _dio.delete('v1/photobook/$photobookId'),
+      (data) => true
+    );
+  }
+
 }

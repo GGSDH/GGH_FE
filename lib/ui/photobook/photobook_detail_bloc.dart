@@ -78,6 +78,11 @@ final class PhotobookDetailInitialize extends PhotobookDetailEvent {
 
   PhotobookDetailInitialize(this.photobookId);
 }
+final class PhotobookDelete extends PhotobookDetailEvent {
+  final int photobookId;
+
+  PhotobookDelete(this.photobookId);
+}
 
 sealed class PhotobookDetailSideEffect { }
 final class PhotobookDetailShowError extends PhotobookDetailSideEffect {
@@ -85,6 +90,7 @@ final class PhotobookDetailShowError extends PhotobookDetailSideEffect {
 
   PhotobookDetailShowError(this.message);
 }
+final class PhotobookDeleteComplete extends PhotobookDetailSideEffect { }
 
 class PhotobookDetailBloc extends SideEffectBloc<PhotobookDetailEvent, PhotobookDetailState, PhotobookDetailSideEffect> {
   final PhotobookRepository _photobookRepository;
@@ -94,6 +100,7 @@ class PhotobookDetailBloc extends SideEffectBloc<PhotobookDetailEvent, Photobook
   }) : _photobookRepository = photobookRepository,
        super(PhotobookDetailState.initial()) {
     on<PhotobookDetailInitialize>(_onPhotobookDetailInitialize);
+    on<PhotobookDelete>(_onDeletePhotobook);
   }
 
   void _onPhotobookDetailInitialize(
@@ -156,6 +163,31 @@ class PhotobookDetailBloc extends SideEffectBloc<PhotobookDetailEvent, Photobook
               photobookDetailCards: cards,
             ),
           );
+        },
+        apiError: (errorMessage, errorCode) {
+          emit(state.copyWith(isLoading: false));
+          produceSideEffect(PhotobookDetailShowError(errorMessage));
+        },
+      );
+    } on Exception catch (e) {
+      emit(state.copyWith(isLoading: false));
+      produceSideEffect(PhotobookDetailShowError(e.toString()));
+    }
+  }
+
+  void _onDeletePhotobook(
+    PhotobookDelete event,
+    Emitter<PhotobookDetailState> emit
+  ) async {
+    emit(state.copyWith(isLoading: true));
+
+    try {
+      final response = await _photobookRepository.deletePhotobook(event.photobookId);
+
+      response.when(
+        success: (data) {
+          emit(state.copyWith(isLoading: false));
+          produceSideEffect(PhotobookDeleteComplete());
         },
         apiError: (errorMessage, errorCode) {
           emit(state.copyWith(isLoading: false));

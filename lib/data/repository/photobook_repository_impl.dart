@@ -30,4 +30,7 @@ class PhotobookRepositoryImpl implements PhotobookRepository {
 
   @override
   Future<ApiResult<PhotobookDetailResponse>> getPhotobookDetail(int photobookId) => _photobookDataSource.getPhotobookDetail(photobookId);
+
+  @override
+  Future<ApiResult<bool>> deletePhotobook(int photobookId) => _photobookDataSource.deletePhotobook(photobookId);
 }
