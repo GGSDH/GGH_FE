@@ -43,29 +43,42 @@ class AddPhotobookLoadingScreen extends StatelessWidget {
                 content: Text(sideEffect.message),
               ),
             );
-          } else if (sideEffect is AddPhotobookNavigateToPhotobook) {
-            GoRouter.of(context).go(Routes.photobook.path);
+          } else if (sideEffect is AddPhotobookComplete) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              GoRouter.of(context).go(
+                Uri(
+                  path: "${Routes.photobook.path}/${Routes.photobookCard.path}",
+                  queryParameters: {
+                    "photobookId": sideEffect.photobookId.toString(),
+                  },
+                ).toString(),
+              );
+            });
           }
         },
         child: BlocBuilder<AddPhotobookBloc, AddPhotobookState>(
           builder: (context, state) {
-            return Material(
-              color: Colors.white,
-              child: SafeArea(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      "소중한 추억이 담긴\n포토북을 생성중이예요",
-                      style: TextStyles.title2ExtraLarge,
-                      textAlign: TextAlign.center,
+            return Scaffold(
+              body: Material(
+                color: Colors.white,
+                child: Center(
+                  child: SafeArea(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          "소중한 추억이 담긴\n포토북을 생성중이예요",
+                          style: TextStyles.title2ExtraLarge,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 100),
+                        SvgPicture.asset(
+                          "assets/icons/img_add_photobook_loading_illust.svg",
+                          fit: BoxFit.fill,
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 100),
-                    SvgPicture.asset(
-                      "assets/icons/img_add_photobook_loading_illust.svg",
-                      fit: BoxFit.fill,
-                    ),
-                  ],
+                  ),
                 ),
               ),
             );

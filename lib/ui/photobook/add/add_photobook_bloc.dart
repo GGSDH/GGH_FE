@@ -61,7 +61,11 @@ final class AddPhotobookUpload extends AddPhotobookEvent {
 }
 
 sealed class AddPhotobookSideEffect {}
-final class AddPhotobookNavigateToPhotobook extends AddPhotobookSideEffect {}
+final class AddPhotobookComplete extends AddPhotobookSideEffect {
+  final int photobookId;
+
+  AddPhotobookComplete(this.photobookId);
+}
 final class AddPhotobookShowError extends AddPhotobookSideEffect {
   final String message;
 
@@ -97,7 +101,7 @@ class AddPhotobookBloc extends SideEffectBloc<AddPhotobookEvent, AddPhotobookSta
       response.when(
         success: (data) {
           emit(state.copyWith(isLoading: false));
-          produceSideEffect(AddPhotobookNavigateToPhotobook());
+          produceSideEffect(AddPhotobookComplete(data.id));
         },
         apiError: (errorMessage, errorCode) {
           emit(state.copyWith(isLoading: false));

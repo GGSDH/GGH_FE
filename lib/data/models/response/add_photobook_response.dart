@@ -19,24 +19,12 @@ class AddPhotobookResponse {
   @JsonKey(name: 'dailyPhotoGroup')
   final List<DailyPhotoGroup> dailyPhotoGroup;
 
-  @JsonKey(name: 'photosCount')
-  final int photosCount;
-
-  @JsonKey(name: 'localizedTime')
-  final String localizedTime;
-
-  @JsonKey(name: 'dominantLocation')
-  final LocationItem? dominantLocation;
-
   AddPhotobookResponse({
     required this.id,
     required this.title,
     required this.startDate,
     required this.endDate,
-    required this.dailyPhotoGroup,
-    required this.photosCount,
-    required this.localizedTime,
-    this.dominantLocation,
+    required this.dailyPhotoGroup
   });
 
   factory AddPhotobookResponse.fromJson(Map<String, dynamic> json) =>

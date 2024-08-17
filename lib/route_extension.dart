@@ -34,6 +34,8 @@ extension RoutesExtension on Routes {
         return '/recommend';
       case Routes.photobook:
         return '/photobook';
+      case Routes.photobookCard:
+        return 'card';
       case Routes.photobookDetail:
         return 'detail';
       case Routes.photobookMap:

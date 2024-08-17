@@ -16,19 +16,19 @@ import '../../themes/text_styles.dart';
 import '../component/app/app_file_image.dart';
 import '../component/app/app_image_plaeholder.dart';
 
-class PhotobookDetailScreen extends StatefulWidget {
+class PhotobookCardScreen extends StatefulWidget {
   final String photobookId;
 
-  const PhotobookDetailScreen({
+  const PhotobookCardScreen({
     super.key,
     required this.photobookId,
   });
 
   @override
-  _PhotobookDetailScreenState createState() => _PhotobookDetailScreenState();
+  _PhotobookCardScreenState createState() => _PhotobookCardScreenState();
 }
 
-class _PhotobookDetailScreenState extends State<PhotobookDetailScreen> {
+class _PhotobookCardScreenState extends State<PhotobookCardScreen> {
   int currentPage = 0;
   int pageCount = 3;
   late double baseCardWidth;

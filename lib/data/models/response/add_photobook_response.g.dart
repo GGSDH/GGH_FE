@@ -16,12 +16,6 @@ AddPhotobookResponse _$AddPhotobookResponseFromJson(
       dailyPhotoGroup: (json['dailyPhotoGroup'] as List<dynamic>)
           .map((e) => DailyPhotoGroup.fromJson(e as Map<String, dynamic>))
           .toList(),
-      photosCount: (json['photosCount'] as num).toInt(),
-      localizedTime: json['localizedTime'] as String,
-      dominantLocation: json['dominantLocation'] == null
-          ? null
-          : LocationItem.fromJson(
-              json['dominantLocation'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$AddPhotobookResponseToJson(
@@ -33,9 +27,6 @@ Map<String, dynamic> _$AddPhotobookResponseToJson(
       'endDate': instance.endDate,
       'dailyPhotoGroup':
           instance.dailyPhotoGroup.map((e) => e.toJson()).toList(),
-      'photosCount': instance.photosCount,
-      'localizedTime': instance.localizedTime,
-      'dominantLocation': instance.dominantLocation?.toJson(),
     };
 
 DailyPhotoGroup _$DailyPhotoGroupFromJson(Map<String, dynamic> json) =>
