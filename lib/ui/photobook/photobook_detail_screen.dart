@@ -98,13 +98,13 @@ class _PhotobookDetailScreenState extends State<PhotobookDetailScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                           decoration: BoxDecoration(
-                            border: Border.all(color: const Color(0xFFFBB12C)),
+                            border: Border.all(color: ColorStyles.primary),
                             borderRadius: BorderRadius.circular(100),
                           ),
                           child: Text(
                             state.dominantLocationCity,
                             style: TextStyles.bodyMedium.copyWith(
-                              color: const Color(0xFFFBB12C),
+                              color: ColorStyles.primary,
                             ),
                           )
                         ),
@@ -121,20 +121,23 @@ class _PhotobookDetailScreenState extends State<PhotobookDetailScreen> {
                         ),
                         const SizedBox(height: 40),
                         Expanded(
-                          child: SizedBox(
-                            width: baseCardWidth + 40,
-                            height: baseCardHeight,
-                            child: LayoutBuilder(
-                              builder: (context, constraints) {
-                                return Stack(
-                                  clipBehavior: Clip.none,
-                                  alignment: Alignment.center,
-                                  children: [
-                                    for (int i = pageCount - 1; i >= currentPage; i--)
-                                      _buildCard(i, state.photobookDetailCards[i]), // 현재 페이지부터 페이지들을 역순으로 쌓음
-                                  ],
-                                );
-                              },
+                          child: Align(
+                            alignment: Alignment.topCenter,
+                            child: SizedBox(
+                              width: baseCardWidth + 40,
+                              height: baseCardHeight,
+                              child: LayoutBuilder(
+                                builder: (context, constraints) {
+                                  return Stack(
+                                    clipBehavior: Clip.none,
+                                    alignment: Alignment.center,
+                                    children: [
+                                      for (int i = pageCount - 1; i >= currentPage; i--)
+                                        _buildCard(i, state.photobookDetailCards[i]), // 현재 페이지부터 페이지들을 역순으로 쌓음
+                                    ],
+                                  );
+                                },
+                              ),
                             ),
                           ),
                         ),

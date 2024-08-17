@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../themes/color_styles.dart';
 import '../app/app_file_image.dart';
 import '../app/app_image_plaeholder.dart';
 
@@ -13,6 +14,8 @@ class MapMarker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(filePath);
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -45,7 +48,7 @@ class MapMarker extends StatelessWidget {
               height: 10,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                    color: Color(0xFFF7BC25),
+                    color: ColorStyles.primary,
                     shape: BoxShape.circle
                 ),
               ),
