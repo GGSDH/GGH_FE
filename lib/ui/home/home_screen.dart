@@ -67,7 +67,12 @@ class HomeScreen extends StatelessWidget {
                       },
                     ),
                     _buildRecommendBody(userName: state.userName, lanes: state.lanes),
-                    _buildRestaurantBody(localRestaurants: state.localRestaurants),
+                    _buildRestaurantBody(
+                      localRestaurants: state.localRestaurants,
+                      onShowMore: () {
+                        GoRouter.of(context).push("${Routes.home.path}/${Routes.localRestaurants.path}");
+                      },
+                    ),
                     _buildPopularPlaceBody(popularDestinations: state.popularDestinations)
                   ],
                 ),
@@ -323,6 +328,7 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildRestaurantBody({
     required List<LocalRestaurant> localRestaurants,
+    required VoidCallback onShowMore,
   }) {
     return Container(
         padding: const EdgeInsets.symmetric(vertical: 20),
@@ -335,9 +341,7 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   const Text("지역 맛집", style: TextStyles.headlineXSmall),
                   GestureDetector(
-                    onTap: () {
-                      // Handle more tap
-                    },
+                    onTap: onShowMore,
                     child: Row(
                       children: [
                         Text(

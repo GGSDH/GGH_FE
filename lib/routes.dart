@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/router_observer.dart';
 import 'package:gyeonggi_express/ui/category/category_detail_screen.dart';
 import 'package:gyeonggi_express/ui/component/app/app_bottom_navigation_bar.dart';
 import 'package:gyeonggi_express/ui/home/home_screen.dart';
+import 'package:gyeonggi_express/ui/home/local_restaruant_bloc.dart';
 import 'package:gyeonggi_express/ui/home/local_restaurants_screen.dart';
 import 'package:gyeonggi_express/ui/home/popular_destinations_screen.dart';
 import 'package:gyeonggi_express/ui/home/recommended_lane_screen.dart';
@@ -29,6 +31,7 @@ import 'package:gyeonggi_express/ui/splash/splash_screen.dart';
 import 'package:gyeonggi_express/ui/station/station_detail_screen.dart';
 
 import 'data/models/login_provider.dart';
+import 'data/repository/trip_repository.dart';
 
 enum Routes {
   splash,
@@ -121,10 +124,16 @@ enum Routes {
                         name: Routes.recommendedLanes.name,
                         builder: (context, state) => RecommendedLaneScreen(),
                       ),
+
                       GoRoute(
                         path: Routes.localRestaurants.path,
                         name: Routes.localRestaurants.name,
-                        builder: (context, state) => LocalRestaurantsScreen()
+                        builder: (context, state) => BlocProvider(
+                          create: (context) => LocalRestaurantBloc(
+                            tripRepository: GetIt.instance<TripRepository>(),
+                          )..add(LocalRestaurantFetched()),
+                          child: const LocalRestaurantScreen(),
+                        )
                       )
                     ]
                 ),

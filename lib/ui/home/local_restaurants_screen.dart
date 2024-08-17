@@ -1,132 +1,160 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get_it/get_it.dart';
+import 'package:gyeonggi_express/data/repository/trip_repository.dart';
+import 'package:side_effect_bloc/side_effect_bloc.dart';
 
+import '../../data/models/response/local_restaurant_response.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
 import '../component/app/app_action_bar.dart';
+import '../component/app/app_image_plaeholder.dart';
+import 'local_restaruant_bloc.dart';
 
+class LocalRestaurantScreen extends StatefulWidget {
+  const LocalRestaurantScreen({super.key});
 
-class RestaurantData {
-  final String title;
-  final String description;
-  final int likeCount;
-  final String region;
-  final String type;
-  final String imagePath;
-  final bool isLiked;
-
-  RestaurantData({
-    required this.title,
-    required this.description,
-    required this.likeCount,
-    required this.region,
-    required this.type,
-    required this.imagePath,
-    required this.isLiked,
-  });
+  @override
+  _LocalRestaurantScreenState createState() => _LocalRestaurantScreenState();
 }
 
-class LocalRestaurantsScreen extends StatelessWidget {
-  LocalRestaurantsScreen({super.key});
+class _LocalRestaurantScreenState extends State<LocalRestaurantScreen> {
+  final _scrollController = ScrollController();
 
-  final List<RestaurantData> restaurants = [
-    RestaurantData(
-      title: "맛있는 김밥",
-      description: "30년 전통의 김밥 전문점",
-      region: "수원",
-      type: "분식",
-      likeCount: 128,
-      isLiked: true, imagePath: 'https://picsum.photos/seed/gimbap/500/500',
-    ),
-    RestaurantData(
-      title: "왕갈비",
-      description: "참숯으로 구워내는 특급 갈비",
-      region: "용인",
-      type: "한식",
-      likeCount: 256,
-      isLiked: false, imagePath: 'https://picsum.photos/seed/galbi/500/500',
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_isReachEnd) {
+      context.read<LocalRestaurantBloc>().add(LocalRestaurantFetched());
+    }
+  }
+
+  bool get _isReachEnd {
+    if (!_scrollController.hasClients) return false;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.offset;
+    return currentScroll >= (maxScroll * 0.9);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      child: SafeArea(
-        child: Column(
-          children: [
-            AppActionBar(
-              rightText: "",
-              onBackPressed: () => Navigator.pop(context),
-              menuItems: const [],
-              title: "지역 맛집",
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
+    return BlocSideEffectListener<LocalRestaurantBloc, LocalRestaurantSideEffect>(
+      listener: (context, sideEffect) {
+        if (sideEffect is LocalRestaurantShowError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(sideEffect.message)),
+          );
+        }
+      },
+      child: BlocBuilder<LocalRestaurantBloc, LocalRestaurantState>(
+        builder: (context, state) {
+          if (state.isInitial) {
+            return const Center(child: CircularProgressIndicator());
+          } else {
+            return Scaffold(
+              body: Material(
+                color: Colors.white,
+                child: SafeArea(
+                  child: Column(
                     children: [
-                      Text('전체',
-                          style: TextStyles.bodyMedium.copyWith(
-                              color: ColorStyles.gray700,
-                              fontWeight: FontWeight.w400)),
-                      const SizedBox(width: 4),
-                      Text('${restaurants.length}개',
-                          style: TextStyles.titleSmall.copyWith(
-                            color: ColorStyles.gray900,
-                            fontWeight: FontWeight.w600,
-                          ))
+                      AppActionBar(
+                        rightText: "",
+                        onBackPressed: () => Navigator.pop(context),
+                        menuItems: const [],
+                        title: "지역 맛집",
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Text('전체',
+                                    style: TextStyles.bodyMedium.copyWith(
+                                        color: ColorStyles.gray700,
+                                        fontWeight: FontWeight.w400)),
+                                const SizedBox(width: 4),
+                                Text('${state.localRestaurants.length}개',
+                                    style: TextStyles.titleSmall.copyWith(
+                                      color: ColorStyles.gray900,
+                                      fontWeight: FontWeight.w600,
+                                    ))
+                              ],
+                            ),
+                            ElevatedButton(
+                              onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.black,
+                                backgroundColor: Colors.white,
+                                padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  side: BorderSide(color: Colors.grey[200]!, width: 1),
+                                ),
+                                elevation: 0,
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    '지역',
+                                    style: TextStyles.bodyMedium.copyWith(
+                                        color: ColorStyles.gray900,
+                                        fontWeight: FontWeight.w400),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  SvgPicture.asset(
+                                    "assets/icons/ic_chevron_right.svg",
+                                    width: 20,
+                                    height: 20,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: RestaurantItemList(
+                          items: state.localRestaurants,
+                          scrollController: _scrollController,
+                        ),
+                      ),
                     ],
                   ),
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.black,
-                      backgroundColor: Colors.white,
-                      padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        side: BorderSide(color: Colors.grey[200]!, width: 1),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          '지역',
-                          style: TextStyles.bodyMedium.copyWith(
-                              color: ColorStyles.gray900,
-                              fontWeight: FontWeight.w400),
-                        ),
-                        const SizedBox(width: 12),
-                        SvgPicture.asset(
-                          "assets/icons/ic_chevron_right.svg",
-                          width: 20,
-                          height: 20,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
-            Expanded(
-              child: RestaurantItemList(items: restaurants),
-            ),
-          ],
-        ),
+            );
+          }
+        },
       ),
     );
   }
 }
 
 class RestaurantItemList extends StatelessWidget {
-  final List<RestaurantData> items;
+  final List<LocalRestaurant> items;
+  final ScrollController scrollController;
 
-  const RestaurantItemList({super.key, required this.items});
+  const RestaurantItemList({
+    super.key,
+    required this.items,
+    required this.scrollController
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -134,12 +162,13 @@ class RestaurantItemList extends StatelessWidget {
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
-        return RestaurantListItem(item);
+        return _restaurantListItem(item);
       },
+      controller: scrollController,
     );
   }
 
-  Container RestaurantListItem(RestaurantData item) {
+  Container _restaurantListItem(LocalRestaurant item) {
     return Container(
       padding: const EdgeInsets.all(20),
       child: Row(
@@ -150,13 +179,13 @@ class RestaurantItemList extends StatelessWidget {
               children: [
                 const SizedBox(height: 12),
                 Text(
-                  item.title,
+                  item.name,
                   style: TextStyles.titleLarge.copyWith(
                     color: ColorStyles.gray900,
                   ),
                 ),
                 Text(
-                  item.description,
+                  "",
                   style: TextStyles.bodyLarge.copyWith(
                     color: ColorStyles.gray800,
                   ),
@@ -165,7 +194,7 @@ class RestaurantItemList extends StatelessWidget {
                 Row(
                   children: [
                     SvgPicture.asset(
-                      item.isLiked
+                      item.likedByMe
                           ? "assets/icons/ic_heart_filled.svg"
                           : "assets/icons/ic_heart.svg",
                       width: 18,
@@ -185,7 +214,7 @@ class RestaurantItemList extends StatelessWidget {
                             fontWeight: FontWeight.w400)),
                     const SizedBox(width: 4),
                     Text(
-                      item.region,
+                      item.sigunguValue,
                       style: TextStyles.bodyMedium.copyWith(
                           color: ColorStyles.gray500,
                           fontWeight: FontWeight.w400),
@@ -195,13 +224,6 @@ class RestaurantItemList extends StatelessWidget {
                         style: TextStyles.bodyMedium.copyWith(
                             color: ColorStyles.gray300,
                             fontWeight: FontWeight.w400)),
-                    const SizedBox(width: 4),
-                    Text(
-                      item.type,
-                      style: TextStyles.bodyMedium.copyWith(
-                          color: ColorStyles.gray500,
-                          fontWeight: FontWeight.w400),
-                    )
                   ],
                 ),
               ],
@@ -211,17 +233,20 @@ class RestaurantItemList extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(4),
-                child: Image.network(
-                  item.imagePath,
+                child: CachedNetworkImage(
+                  imageUrl: item.image ?? "",
+                  placeholder: (context, url) => const AppImagePlaceholder(width: 104, height: 104),
+                  errorWidget: (context, url, error) => const AppImagePlaceholder(width: 104, height: 104),
                   width: 104,
                   height: 104,
+                  fit: BoxFit.cover,
                 ),
               ),
               Positioned(
                 right: 10,
                 top: 10,
                 child: SvgPicture.asset(
-                  item.isLiked
+                  item.likedByMe
                       ? "assets/icons/ic_heart_filled.svg"
                       : "assets/icons/ic_heart_white.svg",
                   width: 24,
