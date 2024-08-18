@@ -45,11 +45,11 @@ class PopularDestinationScreen extends StatelessWidget {
                           padding: const EdgeInsets.all(20),
                           child: state.popularDestinations.isNotEmpty
                               ? ListView.builder(
-                            itemCount: (state.popularDestinations?.length ?? 0) == 0
+                            itemCount: (state.popularDestinations.isEmpty)
                                 ? 0
                                 : (state.popularDestinations.length / 2).ceil(),
                             itemBuilder: (context, index) {
-                              if (state.popularDestinations == null || state.popularDestinations.isEmpty) {
+                              if (state.popularDestinations.isEmpty) {
                                 // 만약 데이터가 없거나 null이라면 안전하게 처리
                                 return const Center(
                                   child: Text(
