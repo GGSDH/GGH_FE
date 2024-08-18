@@ -119,7 +119,7 @@ class PhotobookDetailBloc extends SideEffectBloc<PhotobookDetailEvent, Photobook
           final List<PhotobookDetailCard> cards = data.dailyPhotoGroup.expand((dailyGroup) {
             return dailyGroup.hourlyPhotoGroups.map((hourlyGroup) {
               if (hourlyGroup.dominantLocation != null) {
-                final locationKey = hourlyGroup.dominantLocation!.city ?? "알 수 없는 도시";
+                final locationKey = hourlyGroup.dominantLocation!.city ?? "";
 
                 if (locationFrequency.containsKey(locationKey)) {
                   locationFrequency[locationKey] = locationFrequency[locationKey]! + 1;
@@ -134,7 +134,7 @@ class PhotobookDetailBloc extends SideEffectBloc<PhotobookDetailEvent, Photobook
               return PhotobookDetailCard(
                 id: firstPhoto.id,
                 date: hourlyGroup.dateTime,
-                title: hourlyGroup.dominantLocation?.name ?? "알 수 없는 도시",
+                title: hourlyGroup.dominantLocation?.name ?? "",
                 location: hourlyGroup.dominantLocation,
                 filePathUrl: firstPhoto.path,
               );
@@ -159,7 +159,7 @@ class PhotobookDetailBloc extends SideEffectBloc<PhotobookDetailEvent, Photobook
               startDate: data.startDate,
               endDate: data.endDate,
               photobookDailyPhotoGroups: data.dailyPhotoGroup,
-              dominantLocationCity: mostFrequentLocation ?? "알 수 없는 도시",
+              dominantLocationCity: mostFrequentLocation ?? "",
               photobookDetailCards: cards,
             ),
           );

@@ -56,26 +56,26 @@ class PhotobookDetailScreen extends StatelessWidget {
                         onBackPressed: () => GoRouter.of(context).pop(),
                         menuItems: [
                           ActionBarMenuItem(
-                            icon: SvgPicture.asset(
-                              "assets/icons/ic_map.svg",
-                              width: 24,
-                              height: 24,
-                            ),
-                            onPressed: () {
-                              GoRouter.of(context).push(
-                                  Uri(
-                                    path: "${Routes.photobook.path}/${Routes.photobookMap.path}",
-                                    queryParameters: {
-                                      "photobookId": photobookId,
-                                    },
-                                  ).toString()
-                              );
-                            })
+                              icon: SvgPicture.asset(
+                                "assets/icons/ic_map.svg",
+                                width: 24,
+                                height: 24,
+                              ),
+                              onPressed: () {
+                                GoRouter.of(context).push(
+                                    Uri(
+                                      path: "${Routes.photobook.path}/${Routes.photobookMap.path}",
+                                      queryParameters: {
+                                        "photobookId": photobookId,
+                                      },
+                                    ).toString()
+                                );
+                              })
                         ],
                       ),
                       Column(
-                        children: state.photobookDailyPhotoGroups
-                          .expand((dailyPhotoGroup) {
+                          children: state.photobookDailyPhotoGroups
+                              .expand((dailyPhotoGroup) {
                             return [
                               _dayItem(dailyPhotoGroup),
                               ...dailyPhotoGroup.hourlyPhotoGroups.map((hourlyPhotoGroup) {
@@ -96,8 +96,8 @@ class PhotobookDetailScreen extends StatelessWidget {
   }
 
   Widget _dayItem(
-    DailyPhotoGroup dailyPhotoGroup,
-  ) {
+      DailyPhotoGroup dailyPhotoGroup,
+      ) {
     return Column(
       children: [
         Padding(
@@ -107,14 +107,14 @@ class PhotobookDetailScreen extends StatelessWidget {
               Text(
                 "${dailyPhotoGroup.day}일차",
                 style: TextStyles.titleLarge.copyWith(
-                  color: ColorStyles.gray900
+                    color: ColorStyles.gray900
                 ),
               ),
               const SizedBox(width: 8),
               Text(
                 dailyPhotoGroup.dateTime,
                 style: TextStyles.bodyLarge.copyWith(
-                  color: ColorStyles.gray500
+                    color: ColorStyles.gray500
                 ),
               ),
             ],
@@ -124,11 +124,11 @@ class PhotobookDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _hourItem(
-    HourlyPhotoGroup hourlyPhotoGroup,
-  ) {
+  Widget _hourItem(HourlyPhotoGroup hourlyPhotoGroup) {
+    final photosCount = hourlyPhotoGroup.photos.length;
+
     return Padding(
-      padding: const EdgeInsets.only(left: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: IntrinsicHeight(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -152,83 +152,143 @@ class PhotobookDetailScreen extends StatelessWidget {
                     width: 1,
                     color: ColorStyles.primary,
                   ),
-                )
+                ),
               ],
             ),
-
             const SizedBox(width: 20),
-
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Text(
-                        hourlyPhotoGroup.localizedTime,
-                        style: TextStyles.titleMedium.copyWith(
-                          color: ColorStyles.gray800
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        hourlyPhotoGroup.dominantLocation?.name ?? "알 수 없는 도시",
-                        style: TextStyles.bodyLarge.copyWith(
-                          color: ColorStyles.gray500
-                        ),
-                      ),
-                    ],
-                  ),
-
+                  _buildHeader(hourlyPhotoGroup),
                   const SizedBox(height: 8),
-
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: hourlyPhotoGroup.photos.map((photo) {
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: AppFileImage(
-                              imageFilePath: photo.path,
-                              width: 150,
-                              height: 150,
-                              placeholder: const AppImagePlaceholder(width: 150, height: 150),
-                              errorWidget: const AppImagePlaceholder(width: 150, height: 150)
-                            )
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-
-                  const SizedBox(height: 34)
+                  _buildPhotoLayout(hourlyPhotoGroup),
+                  const SizedBox(height: 34),
                 ],
               ),
-            )
+            ),
           ],
-        )
-      )
+        ),
+      ),
     );
   }
 
-  String formatIso8601ToKoreanTime(String iso8601String) {
-    try {
-      DateTime dateTime = DateTime.parse(iso8601String);
-      String period = DateFormat('a', 'ko').format(dateTime); // 'a' will give AM/PM in Korean
-      String hour = DateFormat('h', 'ko').format(dateTime);   // 'h' will give the hour in 12-hour format
+  Widget _buildHeader(HourlyPhotoGroup hourlyPhotoGroup) {
+    return Row(
+      children: [
+        Text(
+          hourlyPhotoGroup.localizedTime,
+          style: TextStyles.titleMedium.copyWith(
+            color: ColorStyles.gray800,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          hourlyPhotoGroup.dominantLocation?.name ?? "",
+          style: TextStyles.bodyLarge.copyWith(
+            color: ColorStyles.gray500,
+          ),
+        ),
+      ],
+    );
+  }
 
-      // Convert AM/PM to Korean equivalent
-      if (period == 'AM') {
-        period = '오전';
-      } else {
-        period = '오후';
-      }
+  Widget _buildPhotoLayout(HourlyPhotoGroup hourlyPhotoGroup) {
+    final photos = hourlyPhotoGroup.photos;
+    final photosCount = photos.length;
 
-      return '$period $hour시';
-    } catch (e) {
-      return '알 수 없음';
+    if (photosCount == 1) {
+      return _buildSinglePhoto(photos.first);
+    } else if (photosCount == 2) {
+      return _buildTwoPhotos(photos[0], photos[1]);
+    } else if (photosCount == 3) {
+      return _buildThreePhotos(photos);
+    } else {
+      return _buildMultiplePhotos(photos, photosCount);
     }
+  }
+
+  Widget _buildSinglePhoto(PhotoItem photo) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: AppFileImage(
+        imageFilePath: photo.path,
+        width: double.infinity,
+        height: 150,
+        placeholder: const AppImagePlaceholder(width: double.infinity, height: 150),
+        errorWidget: const AppImagePlaceholder(width: double.infinity, height: 150),
+      ),
+    );
+  }
+
+  Widget _buildTwoPhotos(PhotoItem photo1, PhotoItem photo2) {
+    return Row(
+      children: [
+        Expanded(child: _buildSinglePhoto(photo1)),
+        const SizedBox(width: 8),
+        Expanded(child: _buildSinglePhoto(photo2)),
+      ],
+    );
+  }
+
+  Widget _buildThreePhotos(List<PhotoItem> photos) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(child: _buildSinglePhoto(photos[1])),
+            const SizedBox(width: 8),
+            Expanded(child: _buildSinglePhoto(photos[2])),
+          ],
+        ),
+        const SizedBox(height: 8),
+        _buildSinglePhoto(photos[0]),
+      ],
+    );
+  }
+
+  Widget _buildMultiplePhotos(List<PhotoItem> photos, int photosCount) {
+    return Stack(
+      children: [
+        Column(
+          children: [
+            Row(
+              children: [
+                Expanded(child: _buildSinglePhoto(photos[0])),
+                const SizedBox(width: 8),
+                Expanded(child: _buildSinglePhoto(photos[1])),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(child: _buildSinglePhoto(photos[2])),
+                const SizedBox(width: 8),
+                Expanded(child: _buildSinglePhoto(photos[3]))
+              ],
+            ),
+          ],
+        ),
+
+        (photosCount > 4) ?
+          Positioned(
+            right: 10,
+            bottom: 10,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: ColorStyles.gray900.withOpacity(0.7),
+                borderRadius: BorderRadius.circular(100),
+              ),
+              child: Text(
+                "+${photosCount - 4}장",
+                style: TextStyles.titleXSmall.copyWith(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ) : const SizedBox(),
+      ]
+    );
   }
 }
