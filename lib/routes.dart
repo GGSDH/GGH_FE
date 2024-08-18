@@ -207,6 +207,7 @@ enum Routes {
                             parentNavigatorKey: _rootNavigatorKey,
                             builder: (context, state) => PhotobookDetailScreen(
                               photobookId: state.uri.queryParameters['photobookId'] ?? '',
+                              selectedDay: state.uri.queryParameters['selectedDay'] ?? '1',
                             )
                         ),
 

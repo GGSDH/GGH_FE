@@ -66,9 +66,6 @@ class PopularDestinationScreen extends StatelessWidget {
                                   ? state.popularDestinations[index * 2 + 1]
                                   : null;
 
-                              print('firstDestination: $firstDestination');
-                              print('secondDestination: $secondDestination');
-
                               return Padding(
                                 padding: const EdgeInsets.only(bottom: 20),
                                 child: Row(

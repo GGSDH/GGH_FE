@@ -90,6 +90,7 @@ final class PhotobookDetailShowError extends PhotobookDetailSideEffect {
 
   PhotobookDetailShowError(this.message);
 }
+final class PhotobookFetchComplete extends PhotobookDetailSideEffect { }
 final class PhotobookDeleteComplete extends PhotobookDetailSideEffect { }
 
 class PhotobookDetailBloc extends SideEffectBloc<PhotobookDetailEvent, PhotobookDetailState, PhotobookDetailSideEffect> {
@@ -163,6 +164,7 @@ class PhotobookDetailBloc extends SideEffectBloc<PhotobookDetailEvent, Photobook
               photobookDetailCards: cards,
             ),
           );
+          produceSideEffect(PhotobookFetchComplete());
         },
         apiError: (errorMessage, errorCode) {
           emit(state.copyWith(isLoading: false));
