@@ -43,18 +43,56 @@ class PopularDestinationScreen extends StatelessWidget {
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.all(20),
-                          child: GridView.count(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: 20,
-                            crossAxisSpacing: 14,
-                            childAspectRatio: 0.92,
-                            children: [
-                              for (final destination in state.popularDestinations)
-                                DestinationItem(destination: destination),
-                            ],
-                          ),
-                        )
-                      )
+                          child: state.popularDestinations.isNotEmpty
+                              ? ListView.builder(
+                            itemCount: (state.popularDestinations?.length ?? 0) == 0
+                                ? 0
+                                : (state.popularDestinations.length / 2).ceil(),
+                            itemBuilder: (context, index) {
+                              if (state.popularDestinations == null || state.popularDestinations.isEmpty) {
+                                // 만약 데이터가 없거나 null이라면 안전하게 처리
+                                return const Center(
+                                  child: Text(
+                                    'No destinations available',
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                                );
+                              }
+
+                              final firstDestination = (index * 2 < state.popularDestinations.length)
+                                  ? state.popularDestinations[index * 2]
+                                  : null;
+                              final secondDestination = (index * 2 + 1 < state.popularDestinations.length)
+                                  ? state.popularDestinations[index * 2 + 1]
+                                  : null;
+
+                              print('firstDestination: $firstDestination');
+                              print('secondDestination: $secondDestination');
+
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 20),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: firstDestination != null
+                                          ? DestinationItem(destination: firstDestination)
+                                          : const SizedBox(),
+                                    ),
+                                    const SizedBox(width: 14),
+                                    Expanded(
+                                      child: secondDestination != null
+                                          ? DestinationItem(destination: secondDestination)
+                                          : const SizedBox(),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          )
+                          : const SizedBox()
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -74,20 +112,26 @@ class DestinationItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const double aspectRatio = 1.17;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min, // 추가된 부분: Column이 자식의 크기에 맞게 줄어들도록 설정
       children: [
         Stack(
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: CachedNetworkImage(
-                imageUrl: destination.image ?? "",
-                placeholder: (context, url) => const AppImagePlaceholder(width: 200, height: 145),
-                errorWidget: (context, url, error) => const AppImagePlaceholder(width: 200, height: 145),
-                width: double.infinity,
-                height: 145,
-                fit: BoxFit.cover,
+            AspectRatio(
+              aspectRatio: aspectRatio,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: CachedNetworkImage(
+                  imageUrl: destination.image ?? "",
+                  placeholder: (context, url) => const AppImagePlaceholder(width: double.infinity, height: 145),
+                  errorWidget: (context, url, error) => const AppImagePlaceholder(width: double.infinity, height: 145),
+                  width: double.infinity,
+                  height: 145,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             Positioned(
@@ -108,13 +152,11 @@ class DestinationItem extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 12),
-        Expanded(
-          child: Text(
-            destination.name,
-            style: TextStyles.titleMedium.copyWith(color: ColorStyles.gray900, fontWeight: FontWeight.w600),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
+        Text(
+          destination.name,
+          style: TextStyles.titleMedium.copyWith(color: ColorStyles.gray900, fontWeight: FontWeight.w600),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         const SizedBox(height: 2),
         Row(
