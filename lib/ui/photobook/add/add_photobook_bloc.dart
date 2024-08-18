@@ -115,9 +115,9 @@ class AddPhotobookBloc extends SideEffectBloc<AddPhotobookEvent, AddPhotobookSta
   }
 
   Future<List<AddPhotoItem>> scanPhotos(
-    DateTime startDate,
-    DateTime endDate,
-  ) async {
+      DateTime startDate,
+      DateTime endDate,
+      ) async {
     try {
       PermissionStatus status = await Permission.photos.request();
       if (!status.isGranted) {
@@ -125,9 +125,9 @@ class AddPhotobookBloc extends SideEffectBloc<AddPhotobookEvent, AddPhotobookSta
         return [];
       }
 
-      List<AssetPathEntity> albums =
-      await PhotoManager.getAssetPathList(type: RequestType.image);
+      List<AssetPathEntity> albums = await PhotoManager.getAssetPathList(type: RequestType.image);
       List<AddPhotoItem> photos = [];
+      Set<String> uniquePaths = {}; // Set to track unique file paths
 
       for (var album in albums) {
         int albumCount = await album.assetCountAsync;
@@ -135,24 +135,28 @@ class AddPhotobookBloc extends SideEffectBloc<AddPhotobookEvent, AddPhotobookSta
           int batchSize = 100;
           for (int i = 0; i < albumCount; i += batchSize) {
             int end = (i + batchSize > albumCount) ? albumCount : i + batchSize;
-            List<AssetEntity> albumPhotos =
-            await album.getAssetListRange(start: i, end: end);
+            List<AssetEntity> albumPhotos = await album.getAssetListRange(start: i, end: end);
 
             for (var asset in albumPhotos) {
               DateTime assetDate = asset.createDateTime;
-              if ((assetDate.isAfter(startDate) ||
-                  assetDate.isAtSameMomentAs(startDate)) &&
-                  (assetDate.isBefore(endDate) ||
-                      assetDate.isAtSameMomentAs(endDate))) {
+              if ((assetDate.isAfter(startDate) || assetDate.isAtSameMomentAs(startDate)) &&
+                  (assetDate.isBefore(endDate) || assetDate.isAtSameMomentAs(endDate))) {
                 File? file = await asset.file;
                 if (file != null) {
                   final filePath = extractRelativePath(file.path);
-                  final item = AddPhotoItem(
+
+                  // Check if the file path is already added
+                  if (!uniquePaths.contains(filePath)) {
+                    uniquePaths.add(filePath); // Add to Set to ensure uniqueness
+
+                    final item = AddPhotoItem(
                       timestamp: assetDate.toString(),
                       latitude: asset.latitude ?? 0,
                       longitude: asset.longitude ?? 0,
-                      path: filePath);
-                  photos.add(item);
+                      path: filePath,
+                    );
+                    photos.add(item);
+                  }
                 }
               }
             }
@@ -166,6 +170,7 @@ class AddPhotobookBloc extends SideEffectBloc<AddPhotobookEvent, AddPhotobookSta
       return [];
     }
   }
+
 
   String extractRelativePath(String filePath) {
     if (Platform.isIOS) {
