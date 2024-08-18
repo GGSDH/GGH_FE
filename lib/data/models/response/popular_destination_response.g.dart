@@ -12,7 +12,7 @@ PopularDestination _$PopularDestinationFromJson(Map<String, dynamic> json) =>
       image: json['image'] as String?,
       name: json['name'] as String,
       sigunguValue: json['sigunguValue'] as String,
-      category: json['category'] as String,
+      category: TripTheme.fromJson(json['category'] as String),
     );
 
 Map<String, dynamic> _$PopularDestinationToJson(PopularDestination instance) =>
@@ -21,5 +21,5 @@ Map<String, dynamic> _$PopularDestinationToJson(PopularDestination instance) =>
       'image': instance.image,
       'name': instance.name,
       'sigunguValue': instance.sigunguValue,
-      'category': instance.category,
+      'category': TripTheme.toJson(instance.category),
     };

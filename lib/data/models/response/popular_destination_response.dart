@@ -1,5 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import '../trip_theme.dart';
+
 part 'popular_destination_response.g.dart';
 
 @JsonSerializable()
@@ -12,8 +14,8 @@ class PopularDestination {
   final String name;
   @JsonKey(name: 'sigunguValue')
   final String sigunguValue;
-  @JsonKey(name: 'category')
-  final String category;
+  @JsonKey(name: 'category', fromJson: TripTheme.fromJson, toJson: TripTheme.toJson)
+  final TripTheme category;
 
   PopularDestination({
     required this.ranking,

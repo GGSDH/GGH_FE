@@ -8,8 +8,9 @@ import 'package:gyeonggi_express/ui/category/category_detail_screen.dart';
 import 'package:gyeonggi_express/ui/component/app/app_bottom_navigation_bar.dart';
 import 'package:gyeonggi_express/ui/home/home_screen.dart';
 import 'package:gyeonggi_express/ui/home/local_restaruant_bloc.dart';
-import 'package:gyeonggi_express/ui/home/local_restaurants_screen.dart';
-import 'package:gyeonggi_express/ui/home/popular_destinations_screen.dart';
+import 'package:gyeonggi_express/ui/home/local_restaurant_screen.dart';
+import 'package:gyeonggi_express/ui/home/popular_destination_bloc.dart';
+import 'package:gyeonggi_express/ui/home/popular_destination_screen.dart';
 import 'package:gyeonggi_express/ui/home/recommended_lane_screen.dart';
 import 'package:gyeonggi_express/ui/home/area_filter_screen.dart';
 import 'package:gyeonggi_express/ui/lane/lane_detail_screen.dart';
@@ -116,9 +117,14 @@ enum Routes {
                       GoRoute(
                         path: Routes.popularDestinations.path,
                         name: Routes.popularDestinations.name,
-                        builder: (context, state) =>
-                            PopularDestinationsScreen(),
+                        builder: (context, state) => BlocProvider(
+                          create: (context) => PopularDestinationBloc(
+                            tripRepository: GetIt.instance<TripRepository>(),
+                          )..add(PopularDestinationFetched()),
+                          child: const PopularDestinationScreen()
+                        ),
                       ),
+
                       GoRoute(
                         path: Routes.recommendedLanes.path,
                         name: Routes.recommendedLanes.name,

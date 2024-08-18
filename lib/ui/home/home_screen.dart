@@ -18,7 +18,6 @@ import '../../data/repository/trip_repository.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
-import '../component/app/app_image_plaeholder.dart';
 import 'home_bloc.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -73,7 +72,12 @@ class HomeScreen extends StatelessWidget {
                         GoRouter.of(context).push("${Routes.home.path}/${Routes.localRestaurants.path}");
                       },
                     ),
-                    _buildPopularPlaceBody(popularDestinations: state.popularDestinations)
+                    _buildPopularPlaceBody(
+                      popularDestinations: state.popularDestinations,
+                      onShowMore: () {
+                        GoRouter.of(context).push("${Routes.home.path}/${Routes.popularDestinations.path}");
+                      },
+                    )
                   ],
                 ),
               );
@@ -403,7 +407,8 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildPopularPlaceBody({
-    required List<PopularDestination> popularDestinations
+    required List<PopularDestination> popularDestinations,
+    required VoidCallback onShowMore,
   }) {
     return Container(
         padding: const EdgeInsets.symmetric(vertical: 20),
@@ -416,9 +421,7 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   const Text("인기 여행지 순위", style: TextStyles.headlineXSmall),
                   GestureDetector(
-                    onTap: () {
-                      // Handle more tap
-                    },
+                    onTap: onShowMore,
                     child: Row(
                       children: [
                         Text(
@@ -452,7 +455,7 @@ class HomeScreen extends StatelessWidget {
                       name: place.name,
                       image: place.image,
                       location: place.sigunguValue,
-                      category: place.category,
+                      category: place.category.title,
                     ),
                     const SizedBox(width: 14),
                   ]
