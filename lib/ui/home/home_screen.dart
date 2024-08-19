@@ -13,6 +13,7 @@ import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../data/models/response/lane_response.dart';
 import '../../data/models/response/local_restaurant_response.dart';
+import '../../data/models/trip_theme.dart';
 import '../../data/repository/auth_repository.dart';
 import '../../data/repository/trip_repository.dart';
 import '../../routes.dart';
@@ -190,10 +191,10 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildCategories(Function (String category) onTapCategory) {
-    final categories = ['체험', '핫플', '관광', '지역특색', '문화', '맛집', '힐링'];
+    const categories = TripTheme.values;
 
     return SizedBox(
-      height: 108,
+      height: 120,
       child: ListView(
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
@@ -201,9 +202,8 @@ class HomeScreen extends StatelessWidget {
         children: [
           for (final category in categories) ...[
             _buildCategoryItem(
-                "assets/icons/ic_category.svg",
                 category,
-                () { onTapCategory(category);
+                () { onTapCategory(category.title);
               }
             ),
             const SizedBox(width: 8)
@@ -213,27 +213,25 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryItem(
-      String assetPath, String title, VoidCallback onTap) {
+  Widget _buildCategoryItem(TripTheme category, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SvgPicture.asset(
-            assetPath,
-            width: 40,
-            height: 40,
+          Text(
+            category.icon,
+            style: const TextStyle(fontSize: 36),
           ),
           const SizedBox(height: 8),
           SizedBox(
             width: 60,
             child: Text(
-              title,
-              style: const TextStyle(
-                  color: ColorStyles.gray800,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600),
+              category.title,
+              style: TextStyles.titleSmall.copyWith(
+                color: ColorStyles.gray800,
+              ),
               textAlign: TextAlign.center,
             ),
           )
