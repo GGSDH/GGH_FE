@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:gyeonggi_express/data/models/sigungu_code.dart';
 import 'package:gyeonggi_express/ui/component/app/app_button.dart';
 
 import '../../themes/color_styles.dart';
@@ -14,12 +15,9 @@ class AreaFilterScreen extends StatefulWidget {
 }
 
 class AreaFilterScreenState extends State<AreaFilterScreen> {
-  final Set<String> _selectedAreas = <String>{};
+  final Set<SigunguCode> _selectedAreas = <SigunguCode>{};
 
-  final chips = [
-    "전체", "가평군", "고양시", "과천시", "광명시", "광주시", "구리시", "군포시", "남양주시", "동두천시", "부천시", "성남시",
-    "수원시", "시흥시", "안산시", "안성시", "안양시", "양주시", "양평군", "여주시", "연천군", "오산시", "용인시", "의왕시"
-  ];
+  final chips = SigunguCode.values.sublist(0, SigunguCode.values.length - 1);
 
   @override
   Widget build(BuildContext context) {
@@ -64,16 +62,16 @@ class AreaFilterScreenState extends State<AreaFilterScreen> {
     );
   }
 
-  Widget areaChip(String label) {
-    final isSelected = _selectedAreas.contains(label);
+  Widget areaChip(SigunguCode code) {
+    final isSelected = _selectedAreas.contains(code);
 
     return GestureDetector(
       onTap: () {
         setState(() {
           if (isSelected) {
-            _selectedAreas.remove(label);
+            _selectedAreas.remove(code);
           } else {
-            _selectedAreas.add(label);
+            _selectedAreas.add(code);
           }
         });
       },
@@ -89,7 +87,7 @@ class AreaFilterScreenState extends State<AreaFilterScreen> {
           ),
         ),
         label: Text(
-          label,
+          code.value,
           style: TextStyles.titleMedium.copyWith(
             color: isSelected ? Colors.white : ColorStyles.gray600
           )
