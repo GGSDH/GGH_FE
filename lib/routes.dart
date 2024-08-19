@@ -27,6 +27,7 @@ import 'package:gyeonggi_express/ui/photobook/photobook_card_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_detail_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_map_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_screen.dart';
+import 'package:gyeonggi_express/ui/recommend/recommend_result_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_screen.dart';
 import 'package:gyeonggi_express/ui/splash/splash_screen.dart';
 import 'package:gyeonggi_express/ui/station/station_detail_screen.dart';
@@ -52,6 +53,7 @@ enum Routes {
   lanes,
 
   recommend,
+  recommendresult,
 
   photobook,
   photobookCard,
@@ -70,7 +72,7 @@ enum Routes {
       GlobalKey<NavigatorState>();
 
   static final GoRouter config = GoRouter(
-      initialLocation: Routes.splash.path,
+      initialLocation: Routes.recommendresult.path,
       observers: [RouterObserver()],
       navigatorKey: _rootNavigatorKey,
       routes: [
@@ -99,14 +101,14 @@ enum Routes {
             ]),
         StatefulShellRoute.indexedStack(
             builder: (context, state, child) => Scaffold(
-              backgroundColor: Colors.white,
-              body: child,
-              bottomNavigationBar: AppBottomNavigationBar(
-                  currentIndex: child.currentIndex,
-                  onTap: (index) {
-                    child.goBranch(index);
-                  }),
-            ),
+                  backgroundColor: Colors.white,
+                  body: child,
+                  bottomNavigationBar: AppBottomNavigationBar(
+                      currentIndex: child.currentIndex,
+                      onTap: (index) {
+                        child.goBranch(index);
+                      }),
+                ),
             branches: [
               StatefulShellBranch(routes: [
                 GoRoute(
@@ -118,31 +120,28 @@ enum Routes {
                         path: Routes.popularDestinations.path,
                         name: Routes.popularDestinations.name,
                         builder: (context, state) => BlocProvider(
-                          create: (context) => PopularDestinationBloc(
-                            tripRepository: GetIt.instance<TripRepository>(),
-                          )..add(PopularDestinationFetched()),
-                          child: const PopularDestinationScreen()
-                        ),
+                            create: (context) => PopularDestinationBloc(
+                                  tripRepository:
+                                      GetIt.instance<TripRepository>(),
+                                )..add(PopularDestinationFetched()),
+                            child: const PopularDestinationScreen()),
                       ),
-
                       GoRoute(
                         path: Routes.recommendedLanes.path,
                         name: Routes.recommendedLanes.name,
                         builder: (context, state) => RecommendedLaneScreen(),
                       ),
-
                       GoRoute(
-                        path: Routes.localRestaurants.path,
-                        name: Routes.localRestaurants.name,
-                        builder: (context, state) => BlocProvider(
-                          create: (context) => LocalRestaurantBloc(
-                            tripRepository: GetIt.instance<TripRepository>(),
-                          )..add(LocalRestaurantFetched()),
-                          child: const LocalRestaurantScreen(),
-                        )
-                      )
-                    ]
-                ),
+                          path: Routes.localRestaurants.path,
+                          name: Routes.localRestaurants.name,
+                          builder: (context, state) => BlocProvider(
+                                create: (context) => LocalRestaurantBloc(
+                                  tripRepository:
+                                      GetIt.instance<TripRepository>(),
+                                )..add(LocalRestaurantFetched()),
+                                child: const LocalRestaurantScreen(),
+                              ))
+                    ]),
               ]),
               StatefulShellBranch(
                 routes: [
@@ -156,71 +155,73 @@ enum Routes {
               StatefulShellBranch(
                 routes: [
                   GoRoute(
-                      path: Routes.photobook.path,
-                      name: Routes.photobook.name,
-                      builder: (context, state) => const Scaffold(body: PhotobookScreen()),
-                      routes: [
-                        GoRoute(
-                            path: Routes.addPhotobook.path,
-                            name: Routes.addPhotobook.name,
-                            parentNavigatorKey: _rootNavigatorKey,
-                            builder: (context, state) => const AddPhotobookScreen(),
-                            routes: [
-                              GoRoute(
-                                path: Routes.addPhotobookSelectPeriod.path,
-                                name: Routes.addPhotobookSelectPeriod.name,
-                                parentNavigatorKey: _rootNavigatorKey,
-                                builder: (context, state) => const AddPhotobookSelectPeriodScreen()
-                              ),
-                              GoRoute(
-                                path: Routes.addPhotobookLoading.path,
-                                name: Routes.addPhotobookLoading.name,
-                                parentNavigatorKey: _rootNavigatorKey,
-                                builder: (context, state) {
-                                  final startDate = state.uri.queryParameters['startDate'] ?? '';
-                                  final endDate = state.uri.queryParameters['endDate'] ?? '';
-                                  final title = state.uri.queryParameters['title'] ?? '';
+                    path: Routes.photobook.path,
+                    name: Routes.photobook.name,
+                    builder: (context, state) =>
+                        const Scaffold(body: PhotobookScreen()),
+                    routes: [
+                      GoRoute(
+                        path: Routes.addPhotobook.path,
+                        name: Routes.addPhotobook.name,
+                        parentNavigatorKey: _rootNavigatorKey,
+                        builder: (context, state) => const AddPhotobookScreen(),
+                        routes: [
+                          GoRoute(
+                              path: Routes.addPhotobookSelectPeriod.path,
+                              name: Routes.addPhotobookSelectPeriod.name,
+                              parentNavigatorKey: _rootNavigatorKey,
+                              builder: (context, state) =>
+                                  const AddPhotobookSelectPeriodScreen()),
+                          GoRoute(
+                              path: Routes.addPhotobookLoading.path,
+                              name: Routes.addPhotobookLoading.name,
+                              parentNavigatorKey: _rootNavigatorKey,
+                              builder: (context, state) {
+                                final startDate =
+                                    state.uri.queryParameters['startDate'] ??
+                                        '';
+                                final endDate =
+                                    state.uri.queryParameters['endDate'] ?? '';
+                                final title =
+                                    state.uri.queryParameters['title'] ?? '';
 
-                                  return AddPhotobookLoadingScreen(
-                                    startDate: startDate,
-                                    endDate: endDate,
-                                    title: title,
-                                  );
-                                }
-                              )
-                            ],
-
-                        ),
-
-                        GoRoute(
+                                return AddPhotobookLoadingScreen(
+                                  startDate: startDate,
+                                  endDate: endDate,
+                                  title: title,
+                                );
+                              })
+                        ],
+                      ),
+                      GoRoute(
                           path: Routes.photobookCard.path,
                           name: Routes.photobookCard.name,
                           parentNavigatorKey: _rootNavigatorKey,
                           builder: (context, state) => PhotobookCardScreen(
-                            photobookId: state.uri.queryParameters['photobookId'] ?? '',
-                          )
-                        ),
-
-                        GoRoute(
-                            path: Routes.photobookDetail.path,
-                            name: Routes.photobookDetail.name,
-                            parentNavigatorKey: _rootNavigatorKey,
-                            builder: (context, state) => PhotobookDetailScreen(
-                              photobookId: state.uri.queryParameters['photobookId'] ?? '',
-                            )
-                        ),
-
-                        GoRoute(
-                            path: Routes.photobookMap.path,
-                            name: Routes.photobookMap.name,
-                            parentNavigatorKey: _rootNavigatorKey,
-                            builder: (context, state) => PhotobookMapScreen(
-                              photobookId: state.uri.queryParameters['photobookId'] ?? '',
-                            )
-                        )
-                      ],
+                                photobookId:
+                                    state.uri.queryParameters['photobookId'] ??
+                                        '',
+                              )),
+                      GoRoute(
+                          path: Routes.photobookDetail.path,
+                          name: Routes.photobookDetail.name,
+                          parentNavigatorKey: _rootNavigatorKey,
+                          builder: (context, state) => PhotobookDetailScreen(
+                                photobookId:
+                                    state.uri.queryParameters['photobookId'] ??
+                                        '',
+                              )),
+                      GoRoute(
+                          path: Routes.photobookMap.path,
+                          name: Routes.photobookMap.name,
+                          parentNavigatorKey: _rootNavigatorKey,
+                          builder: (context, state) => PhotobookMapScreen(
+                                photobookId:
+                                    state.uri.queryParameters['photobookId'] ??
+                                        '',
+                              ))
+                    ],
                   ),
-
                 ],
               ),
               StatefulShellBranch(
@@ -275,6 +276,10 @@ enum Routes {
             name: Routes.lanes.name,
             builder: (context, state) => LaneDetailScreen()),
         GoRoute(
+            path: Routes.recommendresult.path,
+            name: Routes.recommendresult.name,
+            builder: (context, state) => RecommendResultScreen()),
+        GoRoute(
           path: Routes.categoryDetail.path,
           name: Routes.categoryDetail.name,
           builder: (context, state) {
@@ -283,12 +288,10 @@ enum Routes {
           },
         ),
         GoRoute(
-          path: Routes.areaFilter.path,
-          name: Routes.areaFilter.name,
-          builder: (context, state) {
-            return const AreaFilterScreen();
-          }
-        )
-      ]
-  );
+            path: Routes.areaFilter.path,
+            name: Routes.areaFilter.name,
+            builder: (context, state) {
+              return const AreaFilterScreen();
+            })
+      ]);
 }

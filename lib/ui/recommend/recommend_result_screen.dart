@@ -5,48 +5,11 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
 import 'package:gyeonggi_express/ui/component/app/app_action_bar.dart';
+import 'package:gyeonggi_express/ui/lane/lane_detail_screen.dart';
 
 import '../../themes/color_styles.dart';
 
-// Lane Data 클래스 정의
-class LaneData {
-  final String category;
-  final String name;
-  final String description;
-  final List<DayData> days;
-
-  LaneData({
-    required this.category,
-    required this.name,
-    required this.description,
-    required this.days,
-  });
-}
-
-class DayData {
-  final String date;
-  final List<PlaceData> places;
-
-  DayData({required this.date, required this.places});
-}
-
-class PlaceData {
-  final String name;
-  final String region;
-  final String category;
-  final int likeCount;
-  final List<String> imageUrls;
-
-  PlaceData({
-    required this.name,
-    required this.region,
-    required this.category,
-    required this.likeCount,
-    required this.imageUrls,
-  });
-}
-
-class LaneDetailScreen extends StatefulWidget {
+class RecommendResultScreen extends StatefulWidget {
   final LaneData laneData = LaneData(
     category: '경기도 여행',
     name: '경기도 3일 완전정복 코스',
@@ -133,16 +96,19 @@ class LaneDetailScreen extends StatefulWidget {
     ],
   );
 
-  LaneDetailScreen({super.key});
+  RecommendResultScreen({super.key});
 
   @override
-  _LaneDetailScreenState createState() => _LaneDetailScreenState();
+  _RecommendResultScreen createState() => _RecommendResultScreen();
 }
 
-class _LaneDetailScreenState extends State<LaneDetailScreen> {
+class _RecommendResultScreen extends State<RecommendResultScreen> {
   final Completer<NaverMapController> _mapControllerCompleter =
       Completer<NaverMapController>();
   int _selectedDayIndex = 0;
+
+  final GlobalKey _containerKey = GlobalKey();
+  double _bottomButtonsHeight = 72.0;
 
   @override
   Widget build(BuildContext context) {
@@ -151,60 +117,58 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
       child: SafeArea(
         child: DefaultTabController(
           length: 2,
-          child: Column(
+          child: Stack(
             children: [
-              AppActionBar(
-                onBackPressed: () => Navigator.of(context).pop(),
-                menuItems: [
-                  ActionBarMenuItem(
-                    icon: SvgPicture.asset(
-                      "assets/icons/ic_heart.svg",
-                      width: 24,
-                      height: 24,
-                      colorFilter: const ColorFilter.mode(
-                        ColorStyles.gray800,
-                        BlendMode.srcIn,
+              Column(
+                children: [
+                  AppActionBar(
+                    onBackPressed: () => Navigator.of(context).pop(),
+                    menuItems: [
+                      ActionBarMenuItem(
+                        icon: SvgPicture.asset(
+                          "assets/icons/ic_close_24px.svg",
+                          width: 24,
+                          height: 24,
+                          colorFilter: const ColorFilter.mode(
+                            ColorStyles.gray800,
+                            BlendMode.srcIn,
+                          ),
+                        ),
+                        onPressed: () {},
                       ),
-                    ),
-                    onPressed: () {},
+                    ],
+                    rightText: "",
                   ),
-                  ActionBarMenuItem(
-                    icon: SvgPicture.asset(
-                      "assets/icons/ic_share.svg",
-                      width: 24,
-                      height: 24,
-                      colorFilter: const ColorFilter.mode(
-                        ColorStyles.gray800,
-                        BlendMode.srcIn,
-                      ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 4, 24, 20),
+                    child: _laneHeader(),
+                  ),
+                  const TabBar(
+                    tabs: [
+                      Tab(text: '코스'),
+                      Tab(text: '지도'),
+                    ],
+                    indicatorColor: ColorStyles.gray900,
+                    indicatorWeight: 1,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    labelColor: Colors.black,
+                    unselectedLabelColor: ColorStyles.gray400,
+                  ),
+                  Expanded(
+                    child: TabBarView(
+                      children: [
+                        _laneCourseWidget(widget.laneData),
+                        _mapViewWidget(),
+                      ],
                     ),
-                    onPressed: () {},
-                  )
+                  ),
                 ],
-                rightText: "",
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 4, 24, 20),
-                child: _laneHeader(),
-              ),
-              const TabBar(
-                tabs: [
-                  Tab(text: '코스'),
-                  Tab(text: '지도'),
-                ],
-                indicatorColor: ColorStyles.gray900,
-                indicatorWeight: 1,
-                indicatorSize: TabBarIndicatorSize.tab,
-                labelColor: Colors.black,
-                unselectedLabelColor: ColorStyles.gray400,
-              ),
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    _laneCourseWidget(widget.laneData),
-                    _mapViewWidget(),
-                  ],
-                ),
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: _buildFixedBottomButtons(),
               ),
             ],
           ),
@@ -220,11 +184,25 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
         Positioned(
           left: 0,
           right: 0,
-          bottom: 0,
+          bottom: _bottomButtonsHeight,
           child: _buildBottomSheetLikeView(),
         ),
       ],
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _updateHeight());
+  }
+
+  void _updateHeight() {
+    final RenderBox renderBox =
+        _containerKey.currentContext?.findRenderObject() as RenderBox;
+    setState(() {
+      _bottomButtonsHeight = renderBox.size.height;
+    });
   }
 
   Widget _buildBottomSheetLikeView() {
@@ -363,8 +341,6 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
     );
   }
 
-  // _placeDetailItemInBottomSheet, _laneCourseWidget, _lanePlace, _laneHeader 메서드들은 이전과 동일
-
   Widget _laneHeader() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -406,6 +382,91 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildFixedBottomButtons() {
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        return Container(
+          key: _containerKey,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                spreadRadius: 0,
+                blurRadius: 10,
+                offset: const Offset(0, -5),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: const Color(0xFFE5E8EB),
+                    width: 1.0,
+                  ),
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () {},
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 14.0, horizontal: 20.0),
+                      child: SvgPicture.asset(
+                        "assets/icons/ic_share.svg",
+                        width: 20,
+                        height: 20,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    elevation: 0,
+                    backgroundColor: ColorStyles.gray800,
+                    foregroundColor: ColorStyles.grayWhite,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SvgPicture.asset(
+                        "assets/icons/ic_arrow_loop_right.svg",
+                        width: 20,
+                        height: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        "재추천 받기",
+                        style: TextStyles.titleMedium.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: ColorStyles.grayWhite),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -632,32 +693,33 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
             ),
             child: IntrinsicHeight(
               child: Column(
-                children: laneData.days
-                    .expand((day) => [
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(20, 20, 20, 14),
-                            child: Row(children: [
-                              Text(
-                                "Day ${laneData.days.indexOf(day) + 1}",
-                                style: TextStyles.titleLarge.copyWith(
-                                    color: ColorStyles.gray900,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                day.date,
-                                style: TextStyles.bodyLarge.copyWith(
-                                    color: ColorStyles.gray500,
-                                    fontWeight: FontWeight.w400),
-                              ),
+                children: [
+                  ...laneData.days.expand((day) => [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 20, 20, 14),
+                          child: Row(children: [
+                            Text(
+                              "Day ${laneData.days.indexOf(day) + 1}",
+                              style: TextStyles.titleLarge.copyWith(
+                                  color: ColorStyles.gray900,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              day.date,
+                              style: TextStyles.bodyLarge.copyWith(
+                                  color: ColorStyles.gray500,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                          ]),
+                        ),
+                        ...day.places.expand((place) => [
+                              _lanePlace(place),
+                              if (day.places.last != place) _laneDivider(),
                             ]),
-                          ),
-                          ...day.places.expand((place) => [
-                                _lanePlace(place),
-                                if (day.places.last != place) _laneDivider(),
-                              ]),
-                        ])
-                    .toList(),
+                      ]),
+                  SizedBox(height: _bottomButtonsHeight),
+                ],
               ),
             ),
           ),
