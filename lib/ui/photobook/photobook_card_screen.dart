@@ -190,7 +190,7 @@ class _PhotobookCardScreenState extends State<PhotobookCardScreen> {
                       path: "${Routes.photobook.path}/${Routes.photobookDetail.path}",
                       queryParameters: {
                         "photobookId": widget.photobookId,
-                        "cardId": card.id.toString(),
+                        "selectedDay": "${currentPage + 1}"
                       }
                   ).toString(),
                 );

@@ -210,6 +210,9 @@ enum Routes {
                                 photobookId:
                                     state.uri.queryParameters['photobookId'] ??
                                         '',
+                                selectedDay:
+                                    state.uri.queryParameters['selectedDay'] ??
+                                        '1',
                               )),
                       GoRoute(
                           path: Routes.photobookMap.path,
