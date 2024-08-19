@@ -335,7 +335,7 @@ class Page extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  dateTime,
+                  formatIso8601String(dateTime),
                   style: TextStyles.bodyMedium.copyWith(color: Colors.white),
                 ),
                 const Spacer(),
@@ -390,14 +390,9 @@ String formatDates(String startDate, String endDate) {
 }
 
 
-String formatDate(String date) {
-  try {
-    DateTime dateTime = DateTime.parse(date);
+String formatIso8601String(String iso8601String) {
+  DateTime dateTime = DateTime.parse(iso8601String);
 
-    final dateFormat = DateFormat('MM월 dd일');
-
-    return dateFormat.format(dateTime);
-  } catch (e) {
-    return '';
-  }
+  DateFormat formatter = DateFormat('yy. MM. dd');
+  return formatter.format(dateTime);
 }
