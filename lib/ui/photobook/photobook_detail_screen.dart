@@ -142,8 +142,6 @@ class _PhotobookDetailScreenState extends State<PhotobookDetailScreen> {
   }
 
   Widget _hourItem(HourlyPhotoGroup hourlyPhotoGroup) {
-    final photosCount = hourlyPhotoGroup.photos.length;
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: IntrinsicHeight(
@@ -214,15 +212,22 @@ class _PhotobookDetailScreenState extends State<PhotobookDetailScreen> {
     final photos = hourlyPhotoGroup.photos;
     final photosCount = photos.length;
 
-    if (photosCount == 1) {
-      return _buildSinglePhoto(photos.first);
-    } else if (photosCount == 2) {
-      return _buildTwoPhotos(photos[0], photos[1]);
-    } else if (photosCount == 3) {
-      return _buildThreePhotos(photos);
-    } else {
-      return _buildMultiplePhotos(photos, photosCount);
-    }
+    return GestureDetector(
+      onTap: () => _navigateToPhotoList(photos),  // GestureDetector wraps the entire widget
+      child: Builder(
+        builder: (context) {
+          if (photosCount == 1) {
+            return _buildSinglePhoto(photos.first);
+          } else if (photosCount == 2) {
+            return _buildTwoPhotos(photos[0], photos[1]);
+          } else if (photosCount == 3) {
+            return _buildThreePhotos(photos);
+          } else {
+            return _buildMultiplePhotos(photos, photosCount);
+          }
+        },
+      ),
+    );
   }
 
   Widget _buildSinglePhoto(PhotoItem photo) {
@@ -266,28 +271,27 @@ class _PhotobookDetailScreenState extends State<PhotobookDetailScreen> {
 
   Widget _buildMultiplePhotos(List<PhotoItem> photos, int photosCount) {
     return Stack(
-        children: [
-          Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(child: _buildSinglePhoto(photos[0])),
-                  const SizedBox(width: 8),
-                  Expanded(child: _buildSinglePhoto(photos[1])),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(child: _buildSinglePhoto(photos[2])),
-                  const SizedBox(width: 8),
-                  Expanded(child: _buildSinglePhoto(photos[3]))
-                ],
-              ),
-            ],
-          ),
-
-          (photosCount > 4) ?
+      children: [
+        Column(
+          children: [
+            Row(
+              children: [
+                Expanded(child: _buildSinglePhoto(photos[0])),
+                const SizedBox(width: 8),
+                Expanded(child: _buildSinglePhoto(photos[1])),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(child: _buildSinglePhoto(photos[2])),
+                const SizedBox(width: 8),
+                Expanded(child: _buildSinglePhoto(photos[3])),
+              ],
+            ),
+          ],
+        ),
+        if (photosCount > 4)
           Positioned(
             right: 10,
             bottom: 10,
@@ -304,8 +308,8 @@ class _PhotobookDetailScreenState extends State<PhotobookDetailScreen> {
                 ),
               ),
             ),
-          ) : const SizedBox(),
-        ]
+          ),
+      ],
     );
   }
 
@@ -319,5 +323,20 @@ class _PhotobookDetailScreenState extends State<PhotobookDetailScreen> {
             duration: const Duration(milliseconds: 500), alignment: 0.1);
       }
     }
+  }
+
+  void _navigateToPhotoList(List<PhotoItem> photos) {
+    print(photos);
+
+    final path = Uri(
+      path: "${Routes.photobook.path}/${Routes.photobookImageList.path}",
+      queryParameters: {
+        "filePaths": photos.map((photo) => photo.path).join(','),
+      },
+    ).toString();
+
+    print(path);
+
+    GoRouter.of(context).push(path);
   }
 }

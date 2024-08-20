@@ -22,7 +22,6 @@ extension RoutesExtension on Routes {
         return 'local-restaurants';
       case Routes.categoryDetail:
         return 'category-detail';
-
       case Routes.areaFilter:
         return '/area-filter';
 
@@ -42,6 +41,10 @@ extension RoutesExtension on Routes {
         return 'detail';
       case Routes.photobookMap:
         return 'map';
+      case Routes.photobookImageList:
+        return 'image-list';
+      case Routes.photobookImageDetail:
+        return 'image-detail';
       case Routes.addPhotobook:
         return 'add';
       case Routes.addPhotobookSelectPeriod:

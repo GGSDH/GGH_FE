@@ -26,6 +26,7 @@ import 'package:gyeonggi_express/ui/photobook/add/add_photobook_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/add/add_photobook_select_period_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_card_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_detail_screen.dart';
+import 'package:gyeonggi_express/ui/photobook/photobook_image_list_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_map_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_result_screen.dart';
@@ -62,6 +63,8 @@ enum Routes {
   photobookCard,
   photobookDetail,
   photobookMap,
+  photobookImageList,
+  photobookImageDetail,
   addPhotobook,
   addPhotobookSelectPeriod,
   addPhotobookLoading,
@@ -241,7 +244,23 @@ enum Routes {
                                 photobookId:
                                     state.uri.queryParameters['photobookId'] ??
                                         '',
-                              ))
+                              )),
+                      GoRoute(
+                        path: Routes.photobookImageList.path,
+                        name: Routes.photobookImageList.name,
+                        parentNavigatorKey: _rootNavigatorKey,
+                        builder: (context, state) {
+                          final filePathsQuery = state.uri.queryParameters['filePaths'];
+                          final List<String> filePaths = (filePathsQuery != null && filePathsQuery.isNotEmpty)
+                              ? filePathsQuery
+                              .split(',')
+                              .where((path) => path.isNotEmpty) // Filter out any empty strings
+                              .toList()
+                              : [];
+
+                          return PhotobookImageListScreen(filePaths: filePaths);
+                        },
+                      )
                     ],
                   ),
                 ],

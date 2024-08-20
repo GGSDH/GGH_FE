@@ -94,7 +94,7 @@ class AreaFilterScreenState extends State<AreaFilterScreen> {
         shape : RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(100),
           side: BorderSide(
-            color: isSelected ? Colors.transparent : ColorStyles.gray600,
+            color: isSelected ? Colors.transparent : ColorStyles.gray200,
           ),
         ),
         label: Text(
@@ -103,7 +103,7 @@ class AreaFilterScreenState extends State<AreaFilterScreen> {
             color: isSelected ? Colors.white : ColorStyles.gray600
           )
         ),
-        backgroundColor: isSelected ? ColorStyles.gray900 : ColorStyles.grayWhite,
+        backgroundColor: isSelected ? ColorStyles.gray800 : ColorStyles.grayWhite,
       ),
     );
   }
