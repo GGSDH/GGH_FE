@@ -4,7 +4,8 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/router_observer.dart';
-import 'package:gyeonggi_express/ui/category/category_detail_screen.dart';
+import 'package:gyeonggi_express/ui/home/category_detail_bloc.dart';
+import 'package:gyeonggi_express/ui/home/category_detail_screen.dart';
 import 'package:gyeonggi_express/ui/component/app/app_bottom_navigation_bar.dart';
 import 'package:gyeonggi_express/ui/home/home_screen.dart';
 import 'package:gyeonggi_express/ui/home/local_restaruant_bloc.dart';
@@ -33,6 +34,7 @@ import 'package:gyeonggi_express/ui/splash/splash_screen.dart';
 import 'package:gyeonggi_express/ui/station/station_detail_screen.dart';
 
 import 'data/models/login_provider.dart';
+import 'data/models/trip_theme.dart';
 import 'data/repository/trip_repository.dart';
 
 enum Routes {
@@ -140,7 +142,23 @@ enum Routes {
                                       GetIt.instance<TripRepository>(),
                                 )..add(LocalRestaurantFetched()),
                                 child: const LocalRestaurantScreen(),
-                              ))
+                              )
+                      ),
+                      GoRoute(
+                        path: Routes.categoryDetail.path,
+                        name: Routes.categoryDetail.name,
+                        builder: (context, state) {
+                          final theme = state.uri.queryParameters['category'] ?? TripTheme.NATURAL.name;
+                          final category = TripTheme.fromJson(theme);
+
+                          return BlocProvider(
+                            create: (context) => CategoryDetailBloc(
+                              tripRepository: GetIt.instance<TripRepository>(),
+                            )..add(CategoryDetailFetched(tripTheme: category, sigunguCodes: [])),
+                            child: CategoryDetailScreen(category: category),
+                          );
+                        }
+                      ),
                     ]),
               ]),
               StatefulShellBranch(
@@ -282,14 +300,6 @@ enum Routes {
             path: Routes.recommendresult.path,
             name: Routes.recommendresult.name,
             builder: (context, state) => RecommendResultScreen()),
-        GoRoute(
-          path: Routes.categoryDetail.path,
-          name: Routes.categoryDetail.name,
-          builder: (context, state) {
-            final name = state.uri.queryParameters['name'] ?? '';
-            return CategoryDetailScreen(categoryName: name);
-          },
-        ),
         GoRoute(
             path: Routes.areaFilter.path,
             name: Routes.areaFilter.name,

@@ -20,9 +20,9 @@ extension RoutesExtension on Routes {
         return 'recommended-lanes';
       case Routes.localRestaurants:
         return 'local-restaurants';
-
       case Routes.categoryDetail:
-        return '/category-detail';
+        return 'category-detail';
+
       case Routes.areaFilter:
         return '/area-filter';
 

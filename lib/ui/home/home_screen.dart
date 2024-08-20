@@ -60,8 +60,8 @@ class HomeScreen extends StatelessWidget {
                           (category) {
                         GoRouter.of(context).push(
                             Uri(
-                              path: Routes.categoryDetail.path,
-                              queryParameters: { 'name': category },
+                              path: "${Routes.home.path}/${Routes.categoryDetail.path}",
+                              queryParameters: { 'category': TripTheme.toJson(category) },
                             ).toString()
                         );
                       },
@@ -190,7 +190,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCategories(Function (String category) onTapCategory) {
+  Widget _buildCategories(Function (TripTheme category) onTapCategory) {
     const categories = TripTheme.values;
 
     return SizedBox(
@@ -203,7 +203,7 @@ class HomeScreen extends StatelessWidget {
           for (final category in categories) ...[
             _buildCategoryItem(
                 category,
-                () { onTapCategory(category.title);
+                () { onTapCategory(category);
               }
             ),
             const SizedBox(width: 8)

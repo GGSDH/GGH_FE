@@ -9,15 +9,15 @@ part of 'tour_area_search_request.dart';
 TourAreaSearchRequest _$TourAreaSearchRequestFromJson(
         Map<String, dynamic> json) =>
     TourAreaSearchRequest(
-      sigunguCode: SigunguCode.fromJson(json['sigunguCode'] as String),
-      tripThemes: TourAreaSearchRequest._tripThemesFromJson(
-          json['tripThemeConstants'] as List),
+      sigunguCode: TourAreaSearchRequest._sigunguCodesFromJson(
+          json['sigunguCode'] as List),
+      tripTheme: TripTheme.fromJson(json['tripThemeConstant'] as String),
     );
 
 Map<String, dynamic> _$TourAreaSearchRequestToJson(
         TourAreaSearchRequest instance) =>
     <String, dynamic>{
-      'sigunguCode': SigunguCode.toJson(instance.sigunguCode),
-      'tripThemeConstants':
-          TourAreaSearchRequest._tripThemesToJson(instance.tripThemes),
+      'sigunguCode':
+          TourAreaSearchRequest._sigunguCodesToJson(instance.sigunguCode),
+      'tripThemeConstant': TripTheme.toJson(instance.tripTheme),
     };

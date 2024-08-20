@@ -7,26 +7,26 @@ part 'tour_area_search_request.g.dart';
 
 @JsonSerializable()
 class TourAreaSearchRequest {
-  @JsonKey(name: 'sigunguCode', fromJson: SigunguCode.fromJson, toJson: SigunguCode.toJson)
-  final SigunguCode sigunguCode;
+  @JsonKey(name: 'sigunguCode', fromJson: _sigunguCodesFromJson, toJson: _sigunguCodesToJson)
+  final List<SigunguCode> sigunguCode;
 
-  @JsonKey(name: 'tripThemeConstants', fromJson: _tripThemesFromJson, toJson: _tripThemesToJson)
-  final List<TripTheme> tripThemes;
+  @JsonKey(name: 'tripThemeConstant', fromJson: TripTheme.fromJson, toJson: TripTheme.toJson)
+  final TripTheme tripTheme;
 
   TourAreaSearchRequest({
     required this.sigunguCode,
-    required this.tripThemes,
+    required this.tripTheme,
   });
 
   factory TourAreaSearchRequest.fromJson(Map<String, dynamic> json) => _$TourAreaSearchRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$TourAreaSearchRequestToJson(this);
 
-  static List<TripTheme> _tripThemesFromJson(List<dynamic> jsonList) {
-    return jsonList.map((e) => TripTheme.fromJson(e as String)).toList();
+  static List<SigunguCode> _sigunguCodesFromJson(List<dynamic> jsonList) {
+    return jsonList.map((e) => SigunguCode.fromJson(e as String)).toList();
   }
 
-  static List<String> _tripThemesToJson(List<TripTheme> tripThemes) {
-    return tripThemes.map((e) => TripTheme.toJson(e)).toList();
+  static List<String> _sigunguCodesToJson(List<SigunguCode> sigunguCode) {
+    return sigunguCode.map((e) => SigunguCode.toJson(e)).toList();
   }
 }
