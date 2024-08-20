@@ -12,6 +12,7 @@ import 'package:gyeonggi_express/ui/home/category_detail_bloc.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../data/models/response/tour_area_response.dart';
+import '../../data/models/sigungu_code.dart';
 import '../../data/models/trip_theme.dart';
 import '../../routes.dart';
 
@@ -33,14 +34,14 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: _categories.length, vsync: this);
+    _tabController.index = _categories.indexOf(widget.category);
+    context.read<CategoryDetailBloc>().add(SelectCategory(widget.category));
+
     _tabController.addListener(() {
       if (_tabController.indexIsChanging) {
         final category = _categories[_tabController.index];
         context.read<CategoryDetailBloc>().add(
-          CategoryDetailFetched(
-            tripTheme: category,
-            sigunguCodes: [],
-          )
+            SelectCategory(category)
         );
       }
     });
@@ -157,8 +158,20 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen>
                                       ],
                                     ),
                                     ElevatedButton(
-                                      onPressed: () {
-                                        GoRouter.of(context).push(Routes.areaFilter.path);
+                                      onPressed: () async {
+                                        final result = await GoRouter.of(context).push<List<String>>(
+                                            Uri(
+                                              path: Routes.areaFilter.path,
+                                              queryParameters: {
+                                                'selectedAreas': state.selectedSigunguCodes.map((e) => SigunguCode.toJson(e)).join(','),
+                                              },
+                                            ).toString());
+
+                                        if (result != null) {
+                                          context.read<CategoryDetailBloc>().add(
+                                            SelectSigunguCodes(result.map((e) => SigunguCode.fromJson(e)).toList())
+                                          );
+                                        }
                                       },
                                       style: ElevatedButton.styleFrom(
                                         foregroundColor: Colors.black,
@@ -175,7 +188,7 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen>
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Text(
-                                            '지역 필터',
+                                            getSelectedAreaText(state.selectedSigunguCodes),
                                             style: TextStyles.bodyMedium.copyWith(
                                                 color: ColorStyles.gray900,
                                                 fontWeight: FontWeight.w400),
@@ -210,6 +223,16 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen>
         }
       ),
     );
+  }
+
+  String getSelectedAreaText(List<SigunguCode> selectedAreas) {
+    if (selectedAreas.isEmpty) {
+      return '지역';
+    } else if (selectedAreas.length == 1) {
+      return selectedAreas.first.value;
+    } else {
+      return '${selectedAreas.first.value} 외 ${selectedAreas.length - 1}';
+    }
   }
 }
 

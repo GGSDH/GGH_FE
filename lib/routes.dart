@@ -34,6 +34,7 @@ import 'package:gyeonggi_express/ui/splash/splash_screen.dart';
 import 'package:gyeonggi_express/ui/station/station_detail_screen.dart';
 
 import 'data/models/login_provider.dart';
+import 'data/models/sigungu_code.dart';
 import 'data/models/trip_theme.dart';
 import 'data/repository/trip_repository.dart';
 
@@ -154,7 +155,7 @@ enum Routes {
                           return BlocProvider(
                             create: (context) => CategoryDetailBloc(
                               tripRepository: GetIt.instance<TripRepository>(),
-                            )..add(CategoryDetailFetched(tripTheme: category, sigunguCodes: [])),
+                            ),
                             child: CategoryDetailScreen(category: category),
                           );
                         }
@@ -304,7 +305,21 @@ enum Routes {
             path: Routes.areaFilter.path,
             name: Routes.areaFilter.name,
             builder: (context, state) {
-              return const AreaFilterScreen();
+              final selectedAreasQuery = state.uri.queryParameters['selectedAreas'];
+              final List<SigunguCode> selectedAreas = (selectedAreasQuery != null && selectedAreasQuery.isNotEmpty)
+                  ? selectedAreasQuery
+                  .split(',')
+                  .where((e) => e.isNotEmpty) // Filter out any empty strings
+                  .map((e) {
+                try {
+                  return SigunguCode.fromJson(e);
+                } catch (e) {
+                  return SigunguCode.UNKNOWN;
+                }
+              }).toList()
+                  : [];
+
+              return AreaFilterScreen(initialSelectedAreas: selectedAreas);
             })
       ]);
 }

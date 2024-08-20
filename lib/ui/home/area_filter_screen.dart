@@ -8,16 +8,27 @@ import '../../themes/text_styles.dart';
 import '../component/app/app_action_bar.dart';
 
 class AreaFilterScreen extends StatefulWidget {
-  const AreaFilterScreen({super.key});
+  final List<SigunguCode> initialSelectedAreas;
+
+  const AreaFilterScreen({
+    super.key,
+    required this.initialSelectedAreas,
+  });
 
   @override
   AreaFilterScreenState createState() => AreaFilterScreenState();
 }
 
 class AreaFilterScreenState extends State<AreaFilterScreen> {
-  final Set<SigunguCode> _selectedAreas = <SigunguCode>{};
+  late Set<SigunguCode> _selectedAreas;
 
   final chips = SigunguCode.values.sublist(0, SigunguCode.values.length - 1);
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedAreas = widget.initialSelectedAreas.toSet();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +62,7 @@ class AreaFilterScreenState extends State<AreaFilterScreen> {
                child: AppButton(
                  text: '다음',
                  onPressed: () {
-
+                    GoRouter.of(context).pop(_selectedAreas.map((e) => SigunguCode.toJson(e)).toList());
                  },
                  isEnabled: _selectedAreas.isNotEmpty,
                ),
