@@ -45,8 +45,8 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware {
           behavior: HitTestBehavior.opaque,
           onTap: () => Navigator.of(context).pop(),
           child: DraggableScrollableSheet(
-            initialChildSize: 0.5,
-            minChildSize: 0.5,
+            initialChildSize: 0.3,
+            minChildSize: 0.3,
             maxChildSize: 0.8,
             snap: true,
             builder: (BuildContext context, ScrollController scrollController) {
@@ -59,30 +59,51 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware {
                   ),
                 ),
                 padding: const EdgeInsets.only(top: 10),
-                child: ListView.builder(
-                  controller: scrollController,
-                  itemCount: photobooks.length,
-                  itemBuilder: (context, index) {
-                    final photobook = photobooks[index];
-                    return PhotobookListItem(
-                      title: photobook.title,
-                      imageFilePath: photobook.photo,
-                      startDate: photobook.startDate,
-                      endDate: photobook.endDate,
-                      location: photobook.location,
-                      onTap: () {
-                        GoRouter.of(context).push(
-                          Uri(
-                              path: "${Routes.photobook.path}/${Routes.photobookCard.path}",
-                              queryParameters: { 'photobookId': "${photobook.id}" }
-                          ).toString()
-                        ).then((_) {
-                          onLoadPhotobooks();
-                        });
-                      },
-                    );
-                  },
-                ),
+                child: photobooks.isNotEmpty ?
+                  ListView.builder(
+                    controller: scrollController,
+                    itemCount: photobooks.length,
+                    itemBuilder: (context, index) {
+                      final photobook = photobooks[index];
+                      return PhotobookListItem(
+                        title: photobook.title,
+                        imageFilePath: photobook.photo,
+                        startDate: photobook.startDate,
+                        endDate: photobook.endDate,
+                        location: photobook.location,
+                        onTap: () {
+                          GoRouter.of(context).push(
+                            Uri(
+                                path: "${Routes.photobook.path}/${Routes.photobookCard.path}",
+                                queryParameters: { 'photobookId': "${photobook.id}" }
+                            ).toString()
+                          ).then((_) {
+                            onLoadPhotobooks();
+                          });
+                        },
+                      );
+                    },
+                  ) : Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        "assets/icons/ic_empty_photobook.svg",
+                        width: 60,
+                        height: 60,
+                        fit: BoxFit.fill,
+                      ),
+                      const SizedBox(height: 14),
+                      Text(
+                        "앗! 아직 만들어진 포토북이 없어요.",
+                        style: TextStyles.titleSmall.copyWith(
+                          color: ColorStyles.gray500,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  )
+                )
               );
             },
           ),
