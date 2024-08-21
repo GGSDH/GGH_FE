@@ -12,8 +12,6 @@ extension RoutesExtension on Routes {
       case Routes.onboardingComplete:
         return '/onboarding/complete';
 
-      case Routes.search:
-        return '/search';
       case Routes.home:
         return '/home';
       case Routes.popularDestinations:
@@ -26,6 +24,11 @@ extension RoutesExtension on Routes {
         return 'category-detail';
       case Routes.areaFilter:
         return '/area-filter';
+
+      case Routes.search:
+        return '/search';
+      case Routes.favorites:
+        return '/favorites';
 
       case Routes.stations:
         return '/stations';

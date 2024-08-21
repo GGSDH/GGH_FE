@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/router_observer.dart';
+import 'package:gyeonggi_express/ui/favorite/favorite_screen.dart';
 import 'package:gyeonggi_express/ui/home/category_detail_bloc.dart';
 import 'package:gyeonggi_express/ui/home/category_detail_screen.dart';
 import 'package:gyeonggi_express/ui/component/app/app_bottom_navigation_bar.dart';
@@ -41,8 +42,6 @@ import 'data/models/trip_theme.dart';
 import 'data/repository/trip_repository.dart';
 
 enum Routes {
-  search,
-
   splash,
   login,
 
@@ -58,6 +57,10 @@ enum Routes {
 
   stations,
   lanes,
+
+  search,
+
+  favorites,
 
   recommend,
   recommendresult,
@@ -81,7 +84,7 @@ enum Routes {
       GlobalKey<NavigatorState>();
 
   static final GoRouter config = GoRouter(
-      initialLocation: Routes.search.path,
+      initialLocation: Routes.favorites.path,
       observers: [RouterObserver()],
       navigatorKey: _rootNavigatorKey,
       routes: [
@@ -332,6 +335,11 @@ enum Routes {
           path: Routes.search.path,
           name: Routes.search.name,
           builder: (context, state) => const SearchScreen(),
+        ),
+        GoRoute(
+          path: Routes.favorites.path,
+          name: Routes.favorites.name,
+          builder: (context, state) => const FavoritesScreen(),
         ),
         GoRoute(
             path: Routes.areaFilter.path,
