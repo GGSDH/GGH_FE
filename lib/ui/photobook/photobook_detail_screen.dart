@@ -326,16 +326,12 @@ class _PhotobookDetailScreenState extends State<PhotobookDetailScreen> {
   }
 
   void _navigateToPhotoList(List<PhotoItem> photos) {
-    print(photos);
-
     final path = Uri(
       path: "${Routes.photobook.path}/${Routes.photobookImageList.path}",
       queryParameters: {
         "filePaths": photos.map((photo) => photo.path).join(','),
       },
     ).toString();
-
-    print(path);
 
     GoRouter.of(context).push(path);
   }
