@@ -155,7 +155,9 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware {
                                       mapControllerCompleter: _mapControllerCompleter,
                                       photobooks: state.photobooks,
                                       onAddPhotobook: () {
-                                        GoRouter.of(context).push("${Routes.photobook.path}/${Routes.addPhotobook.path}");
+                                        GoRouter.of(context).push("${Routes.photobook.path}/${Routes.addPhotobook.path}").then((_) {
+                                          context.read<PhotobookBloc>().add(PhotobookInitialize());
+                                        });
                                       },
                                       showPhotobookList: () => _showBottomSheet(
                                         state.photobooks,
