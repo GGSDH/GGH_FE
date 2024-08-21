@@ -31,6 +31,7 @@ import 'package:gyeonggi_express/ui/photobook/photobook_map_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_result_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_screen.dart';
+import 'package:gyeonggi_express/ui/search/search_screen.dart';
 import 'package:gyeonggi_express/ui/splash/splash_screen.dart';
 import 'package:gyeonggi_express/ui/station/station_detail_screen.dart';
 
@@ -40,6 +41,8 @@ import 'data/models/trip_theme.dart';
 import 'data/repository/trip_repository.dart';
 
 enum Routes {
+  search,
+
   splash,
   login,
 
@@ -78,7 +81,7 @@ enum Routes {
       GlobalKey<NavigatorState>();
 
   static final GoRouter config = GoRouter(
-      initialLocation: Routes.splash.path,
+      initialLocation: Routes.search.path,
       observers: [RouterObserver()],
       navigatorKey: _rootNavigatorKey,
       routes: [
@@ -146,23 +149,24 @@ enum Routes {
                                       GetIt.instance<TripRepository>(),
                                 )..add(LocalRestaurantFetched()),
                                 child: const LocalRestaurantScreen(),
-                              )
-                      ),
+                              )),
                       GoRoute(
-                        path: Routes.categoryDetail.path,
-                        name: Routes.categoryDetail.name,
-                        builder: (context, state) {
-                          final theme = state.uri.queryParameters['category'] ?? TripTheme.NATURAL.name;
-                          final category = TripTheme.fromJson(theme);
+                          path: Routes.categoryDetail.path,
+                          name: Routes.categoryDetail.name,
+                          builder: (context, state) {
+                            final theme =
+                                state.uri.queryParameters['category'] ??
+                                    TripTheme.NATURAL.name;
+                            final category = TripTheme.fromJson(theme);
 
-                          return BlocProvider(
-                            create: (context) => CategoryDetailBloc(
-                              tripRepository: GetIt.instance<TripRepository>(),
-                            ),
-                            child: CategoryDetailScreen(category: category),
-                          );
-                        }
-                      ),
+                            return BlocProvider(
+                              create: (context) => CategoryDetailBloc(
+                                tripRepository:
+                                    GetIt.instance<TripRepository>(),
+                              ),
+                              child: CategoryDetailScreen(category: category),
+                            );
+                          }),
                     ]),
               ]),
               StatefulShellBranch(
@@ -250,12 +254,16 @@ enum Routes {
                         name: Routes.photobookImageList.name,
                         parentNavigatorKey: _rootNavigatorKey,
                         builder: (context, state) {
-                          final filePathsQuery = state.uri.queryParameters['filePaths'];
-                          final List<String> filePaths = (filePathsQuery != null && filePathsQuery.isNotEmpty)
+                          final filePathsQuery =
+                              state.uri.queryParameters['filePaths'];
+                          final List<String> filePaths = (filePathsQuery !=
+                                      null &&
+                                  filePathsQuery.isNotEmpty)
                               ? filePathsQuery
-                              .split(',')
-                              .where((path) => path.isNotEmpty) // Filter out any empty strings
-                              .toList()
+                                  .split(',')
+                                  .where((path) => path
+                                      .isNotEmpty) // Filter out any empty strings
+                                  .toList()
                               : [];
 
                           return PhotobookImageListScreen(filePaths: filePaths);
@@ -321,22 +329,30 @@ enum Routes {
             name: Routes.recommendresult.name,
             builder: (context, state) => RecommendResultScreen()),
         GoRoute(
+          path: Routes.search.path,
+          name: Routes.search.name,
+          builder: (context, state) => const SearchScreen(),
+        ),
+        GoRoute(
             path: Routes.areaFilter.path,
             name: Routes.areaFilter.name,
             builder: (context, state) {
-              final selectedAreasQuery = state.uri.queryParameters['selectedAreas'];
-              final List<SigunguCode> selectedAreas = (selectedAreasQuery != null && selectedAreasQuery.isNotEmpty)
-                  ? selectedAreasQuery
-                  .split(',')
-                  .where((e) => e.isNotEmpty) // Filter out any empty strings
-                  .map((e) {
-                try {
-                  return SigunguCode.fromJson(e);
-                } catch (e) {
-                  return SigunguCode.UNKNOWN;
-                }
-              }).toList()
-                  : [];
+              final selectedAreasQuery =
+                  state.uri.queryParameters['selectedAreas'];
+              final List<SigunguCode> selectedAreas =
+                  (selectedAreasQuery != null && selectedAreasQuery.isNotEmpty)
+                      ? selectedAreasQuery
+                          .split(',')
+                          .where((e) =>
+                              e.isNotEmpty) // Filter out any empty strings
+                          .map((e) {
+                          try {
+                            return SigunguCode.fromJson(e);
+                          } catch (e) {
+                            return SigunguCode.UNKNOWN;
+                          }
+                        }).toList()
+                      : [];
 
               return AreaFilterScreen(initialSelectedAreas: selectedAreas);
             })

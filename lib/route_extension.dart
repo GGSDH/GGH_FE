@@ -12,6 +12,8 @@ extension RoutesExtension on Routes {
       case Routes.onboardingComplete:
         return '/onboarding/complete';
 
+      case Routes.search:
+        return '/search';
       case Routes.home:
         return '/home';
       case Routes.popularDestinations:
