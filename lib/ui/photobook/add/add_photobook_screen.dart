@@ -22,8 +22,6 @@ class AddPhotobookScreen extends StatelessWidget {
               onBackPressed: () {
                 GoRouter.of(context).pop();
               },
-              rightText: '',
-              menuItems: const [],
             ),
 
             Expanded(

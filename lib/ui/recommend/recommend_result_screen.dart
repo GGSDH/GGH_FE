@@ -137,7 +137,6 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                         onPressed: () {},
                       ),
                     ],
-                    rightText: "",
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(24, 4, 24, 20),

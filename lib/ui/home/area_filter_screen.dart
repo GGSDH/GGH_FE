@@ -40,8 +40,6 @@ class AreaFilterScreenState extends State<AreaFilterScreen> {
              AppActionBar(
                title: '지역 선택',
                onBackPressed: () => GoRouter.of(context).pop(),
-               rightText: '',
-               menuItems: const [],
              ),
              const SizedBox(height: 20),
              Expanded(

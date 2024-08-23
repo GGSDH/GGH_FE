@@ -73,9 +73,7 @@ class OnboardingScreenContent extends StatelessWidget {
     return Column(
       children: [
         AppActionBar(
-          rightText: "",
           onBackPressed: () { GoRouter.of(context).pop(); },
-          menuItems: const [],
         ),
         Expanded(
           child: Column(

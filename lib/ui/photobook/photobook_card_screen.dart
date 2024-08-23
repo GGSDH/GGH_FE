@@ -73,7 +73,6 @@ class _PhotobookCardScreenState extends State<PhotobookCardScreen> {
                     Column(
                       children: [
                         AppActionBar(
-                          rightText: '',
                           onBackPressed: () {
                             GoRouter.of(context).pop();
                           },

@@ -73,9 +73,7 @@ class _LocalRestaurantScreenState extends State<LocalRestaurantScreen> {
                   child: Column(
                     children: [
                       AppActionBar(
-                        rightText: "",
-                        onBackPressed: () => Navigator.pop(context),
-                        menuItems: const [],
+                        onBackPressed: () => GoRouter.of(context).pop(),
                         title: "지역 맛집",
                       ),
                       Padding(

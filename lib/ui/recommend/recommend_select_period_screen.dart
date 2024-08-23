@@ -43,7 +43,6 @@ class _RecommendSelectPeriodScreenState extends State<RecommendSelectPeriodScree
                     onBackPressed: () {
                       GoRouter.of(context).pop();
                     },
-                    menuItems: const [],
                   ),
 
                   Padding(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/themes/color_styles.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
 import 'package:gyeonggi_express/ui/component/%08blog/blog_list_item.dart';
@@ -111,24 +112,26 @@ class _StationDetailScreenState extends State<StationDetailScreen> {
             child: Column(
               children: [
                 AppActionBar(
-                    rightText: "",
-                    onBackPressed: () => {},
-                    menuItems: [
-                      ActionBarMenuItem(
-                          icon: SvgPicture.asset(
-                            "assets/icons/ic_map.svg",
-                            width: 24,
-                            height: 24,
-                          ),
-                          onPressed: () => print("map clicked")),
-                      ActionBarMenuItem(
-                          icon: SvgPicture.asset(
-                            "assets/icons/ic_heart.svg",
-                            width: 24,
-                            height: 24,
-                          ),
-                          onPressed: () => print("like clicked")),
-                    ]),
+                  onBackPressed: () => {
+                    GoRouter.of(context).pop()
+                  },
+                  menuItems: [
+                    ActionBarMenuItem(
+                        icon: SvgPicture.asset(
+                          "assets/icons/ic_map.svg",
+                          width: 24,
+                          height: 24,
+                        ),
+                        onPressed: () => print("map clicked")),
+                    ActionBarMenuItem(
+                        icon: SvgPicture.asset(
+                          "assets/icons/ic_heart.svg",
+                          width: 24,
+                          height: 24,
+                        ),
+                        onPressed: () => print("like clicked")),
+                  ]
+                ),
                 _imageViewer(),
                 _stationHeader(),
                 const Divider(

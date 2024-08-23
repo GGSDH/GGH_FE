@@ -31,8 +31,6 @@ class PhotobookImageListScreen extends StatelessWidget {
             AppActionBar(
               title: '전체 보기',
               onBackPressed: () => GoRouter.of(context).pop(),
-              rightText: '',
-              menuItems: const [],
             ),
             Expanded(
               child: GridView.builder(

@@ -91,7 +91,6 @@ class _AddPhotobookSelectPeriodScreenState extends State<AddPhotobookSelectPerio
                 GoRouter.of(context).pop();
               },
               rightText: '1/2',
-              menuItems: const [],
             ),
 
             const SizedBox(height: 40),

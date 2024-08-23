@@ -51,9 +51,7 @@ class RecommendedLaneScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         AppActionBar(
-                          rightText: "",
-                          onBackPressed: () => Navigator.pop(context),
-                          menuItems: const [],
+                          onBackPressed: () => GoRouter.of(context).pop(),
                           title: "좋아하실 만한 노선",
                         ),
                         Padding(

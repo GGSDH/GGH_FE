@@ -5,16 +5,16 @@ import 'package:gyeonggi_express/themes/text_styles.dart';
 
 class AppActionBar extends StatelessWidget {
   final String? title;
-  final String rightText;
+  final String? rightText;
   final VoidCallback onBackPressed;
-  final List<ActionBarMenuItem> menuItems;
+  final List<ActionBarMenuItem>? menuItems;
 
   const AppActionBar({
     super.key,
     this.title,
-    required this.rightText,
+    this.rightText,
     required this.onBackPressed,
-    required this.menuItems
+    this.menuItems
   });
 
   @override
@@ -54,28 +54,25 @@ class AppActionBar extends StatelessWidget {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (rightText.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(right: 16.0),
-                        child: Text(
-                          rightText,
-                          style: TextStyles.bodyLarge
-                              .copyWith(color: ColorStyles.gray400),
-                        ),
+                    if (rightText != null && rightText!.isNotEmpty)
+                      Text(
+                        rightText!,
+                        style: TextStyles.bodyLarge
+                            .copyWith(color: ColorStyles.gray400),
                       ),
-                    ...menuItems.map(
-                          (item) => Padding(
-                        padding: const EdgeInsets.only(left: 10),
-                        child: SizedBox(
+
+                    if (menuItems != null)
+                      ...menuItems!.map(
+                        (item) => Container(
+                          padding: const EdgeInsets.only(left: 10),
                           width: 24,
                           child: IconButton(
-                              icon: item.icon,
-                              onPressed: item.onPressed,
-                              padding: EdgeInsets.zero
+                            icon: item.icon,
+                            onPressed: item.onPressed,
+                            padding: EdgeInsets.zero
                           ),
                         ),
                       ),
-                    ),
                   ],
                 ),
               ],

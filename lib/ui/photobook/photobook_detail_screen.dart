@@ -66,7 +66,6 @@ class _PhotobookDetailScreenState extends State<PhotobookDetailScreen> {
                   child: Column(
                     children: [
                       AppActionBar(
-                        rightText: '',
                         onBackPressed: () => GoRouter.of(context).pop(),
                         menuItems: [
                           ActionBarMenuItem(

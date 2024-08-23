@@ -74,7 +74,6 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen>
                 child: Column(
                   children: [
                     AppActionBar(
-                      rightText: "",
                       onBackPressed: () => GoRouter.of(context).pop(),
                       menuItems: [
                         ActionBarMenuItem(

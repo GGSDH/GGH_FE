@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
 import 'package:gyeonggi_express/ui/component/app/app_action_bar.dart';
 
@@ -154,7 +155,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
           child: Column(
             children: [
               AppActionBar(
-                onBackPressed: () => Navigator.of(context).pop(),
+                onBackPressed: () => GoRouter.of(context).pop(),
                 menuItems: [
                   ActionBarMenuItem(
                     icon: SvgPicture.asset(

@@ -76,7 +76,6 @@ class AddPhotobookSelectThemeScreenContent extends StatelessWidget {
             AppActionBar(
               rightText: "2/2",
               onBackPressed: () { GoRouter.of(context).pop(); },
-              menuItems: const [],
             ),
             Expanded(
               child: Column(

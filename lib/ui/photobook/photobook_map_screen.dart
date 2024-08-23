@@ -56,9 +56,7 @@ class _PhotobookMapScreenState extends State<PhotobookMapScreen> {
                 child: Column(
                   children: [
                     AppActionBar(
-                      rightText: '',
                       onBackPressed: () => GoRouter.of(context).pop(),
-                      menuItems: const [],
                     ),
                     Expanded(
                       child: _MapSection(

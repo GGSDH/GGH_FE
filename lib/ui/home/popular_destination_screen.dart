@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/themes/color_styles.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
 import 'package:gyeonggi_express/ui/component/app/app_action_bar.dart';
@@ -35,9 +36,7 @@ class PopularDestinationScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       AppActionBar(
-                        rightText: "",
-                        onBackPressed: () => Navigator.pop(context),
-                        menuItems: const [],
+                        onBackPressed: () => GoRouter.of(context).pop(),
                         title: "인기 여행지 순위",
                       ),
                       Expanded(
