@@ -1,7 +1,11 @@
 import 'package:flutter/cupertino.dart';
+import 'package:go_router/go_router.dart';
+import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/themes/color_styles.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
 import 'package:gyeonggi_express/ui/component/app/app_button.dart';
+
+import '../../routes.dart';
 
 class RecommendScreen extends StatelessWidget {
   const RecommendScreen({super.key});
@@ -35,7 +39,9 @@ class RecommendScreen extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.only(bottom: 30, left: 20, right: 20),
-            child: AppButton(text: "AI 노선 추천 받기", onPressed: () => {}),
+            child: AppButton(text: "AI 노선 추천 받기", onPressed: () => {
+              GoRouter.of(context).push("${Routes.recommend.path}/${Routes.recommendSelectPeriod.path}")
+            }),
           ),
         ],
       ),

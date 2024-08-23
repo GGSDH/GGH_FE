@@ -36,8 +36,10 @@ extension RoutesExtension on Routes {
         return '/lanes';
       case Routes.recommend:
         return '/recommend';
-      case Routes.recommendresult:
-        return '/recommendresult';
+      case Routes.recommendSelectPeriod:
+        return 'select-period';
+      case Routes.recommendResult:
+        return 'result';
       case Routes.photobook:
         return '/photobook';
       case Routes.photobookCard:

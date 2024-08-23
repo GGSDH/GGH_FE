@@ -32,6 +32,7 @@ import 'package:gyeonggi_express/ui/photobook/photobook_map_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_result_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_screen.dart';
+import 'package:gyeonggi_express/ui/recommend/recommend_select_period_screen.dart';
 import 'package:gyeonggi_express/ui/search/search_screen.dart';
 import 'package:gyeonggi_express/ui/splash/splash_screen.dart';
 import 'package:gyeonggi_express/ui/station/station_detail_screen.dart';
@@ -63,7 +64,8 @@ enum Routes {
   favorites,
 
   recommend,
-  recommendresult,
+  recommendSelectPeriod,
+  recommendResult,
 
   photobook,
   photobookCard,
@@ -178,7 +180,21 @@ enum Routes {
                       path: Routes.recommend.path,
                       name: Routes.recommend.name,
                       builder: (context, state) => const RecommendScreen(),
-                      routes: const []),
+                      routes: [
+                        GoRoute(
+                          path: Routes.recommendSelectPeriod.path,
+                          name: Routes.recommendSelectPeriod.name,
+                          parentNavigatorKey: _rootNavigatorKey,
+                          builder: (context, state) => const RecommendSelectPeriodScreen(),
+                        ),
+                        GoRoute(
+                          path: Routes.recommendResult.path,
+                          name: Routes.recommendResult.name,
+                          parentNavigatorKey: _rootNavigatorKey,
+                          builder: (context, state) => RecommendResultScreen(),
+                        )
+                      ]
+                  ),
                 ],
               ),
               StatefulShellBranch(
@@ -327,10 +343,6 @@ enum Routes {
             path: Routes.lanes.path,
             name: Routes.lanes.name,
             builder: (context, state) => LaneDetailScreen()),
-        GoRoute(
-            path: Routes.recommendresult.path,
-            name: Routes.recommendresult.name,
-            builder: (context, state) => RecommendResultScreen()),
         GoRoute(
           path: Routes.search.path,
           name: Routes.search.name,
