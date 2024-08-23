@@ -99,14 +99,14 @@ class HomeBloc extends SideEffectBloc<HomeEvent, HomeState, HomeSideEffect> {
     }
 
     try {
-      final response = await _tripRepository.getRecommendedLanes();
+      final response = await _tripRepository.getRecommendedLanes([]);
 
       response.when(
         success: (data) {
           emit(
               state.copyWith(
                   isLoading: false,
-                  lanes: data
+                  lanes: data.sublist(0, 3)
               )
           );
         },
@@ -143,7 +143,7 @@ class HomeBloc extends SideEffectBloc<HomeEvent, HomeState, HomeSideEffect> {
     }
 
     try {
-      final response = await _tripRepository.getLocalRestaurants();
+      final response = await _tripRepository.getLocalRestaurants([]);
 
       response.when(
         success: (data) {

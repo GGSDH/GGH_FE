@@ -16,10 +16,10 @@ class TripRepositoryImpl implements TripRepository {
   TripRepositoryImpl(this._tripDataSource);
 
   @override
-  Future<ApiResult<List<Lane>>> getRecommendedLanes() => _tripDataSource.getRecommendedLanes();
+  Future<ApiResult<List<Lane>>> getRecommendedLanes(List<SigunguCode> sigunguCodes) => _tripDataSource.getRecommendedLanes(sigunguCodes);
 
   @override
-  Future<ApiResult<List<LocalRestaurant>>> getLocalRestaurants() => _tripDataSource.getLocalRestaurants();
+  Future<ApiResult<List<LocalRestaurant>>> getLocalRestaurants(List<SigunguCode> sigunguCodes) => _tripDataSource.getLocalRestaurants(sigunguCodes);
 
   @override
   Future<ApiResult<List<PopularDestination>>> getPopularDestinations() => _tripDataSource.getPopularDestinations();

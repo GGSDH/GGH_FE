@@ -66,7 +66,13 @@ class HomeScreen extends StatelessWidget {
                         );
                       },
                     ),
-                    _buildRecommendBody(userName: state.userName, lanes: state.lanes),
+                    _buildRecommendBody(
+                      userName: state.userName,
+                      lanes: state.lanes,
+                      onShowMore: () {
+                        GoRouter.of(context).push("${Routes.home.path}/${Routes.recommendedLanes.path}");
+                      }
+                    ),
                     _buildRestaurantBody(
                       localRestaurants: state.localRestaurants,
                       onShowMore: () {
@@ -243,6 +249,7 @@ class HomeScreen extends StatelessWidget {
   Widget _buildRecommendBody({
     required String userName,
     required List<Lane> lanes,
+    required VoidCallback onShowMore,
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20),
@@ -270,9 +277,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () {
-                    // Handle more tap
-                  },
+                  onTap: onShowMore,
                   child: Row(
                     children: [
                       Text(

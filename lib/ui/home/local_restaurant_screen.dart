@@ -2,9 +2,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
+import 'package:gyeonggi_express/route_extension.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../data/models/response/local_restaurant_response.dart';
+import '../../data/models/sigungu_code.dart';
+import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
 import '../component/app/app_action_bar.dart';
@@ -94,7 +98,21 @@ class _LocalRestaurantScreenState extends State<LocalRestaurantScreen> {
                               ],
                             ),
                             ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () async {
+                                final result = await GoRouter.of(context).push<List<String>>(
+                                    Uri(
+                                      path: Routes.areaFilter.path,
+                                      queryParameters: {
+                                        'selectedAreas': state.selectedSigunguCodes.map((e) => SigunguCode.toJson(e)).join(','),
+                                      },
+                                    ).toString());
+
+                                if (result != null) {
+                                  context.read<LocalRestaurantBloc>().add(
+                                      SelectSigunguCodes(result.map((e) => SigunguCode.fromJson(e)).toList())
+                                  );
+                                }
+                              },
                               style: ElevatedButton.styleFrom(
                                 foregroundColor: Colors.black,
                                 backgroundColor: Colors.white,
@@ -109,7 +127,7 @@ class _LocalRestaurantScreenState extends State<LocalRestaurantScreen> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(
-                                    '지역',
+                                    getSelectedAreaText(state.selectedSigunguCodes),
                                     style: TextStyles.bodyMedium.copyWith(
                                         color: ColorStyles.gray900,
                                         fontWeight: FontWeight.w400),
@@ -141,6 +159,16 @@ class _LocalRestaurantScreenState extends State<LocalRestaurantScreen> {
         },
       ),
     );
+  }
+
+  String getSelectedAreaText(List<SigunguCode> selectedAreas) {
+    if (selectedAreas.isEmpty) {
+      return '지역';
+    } else if (selectedAreas.length == 1) {
+      return selectedAreas.first.value;
+    } else {
+      return '${selectedAreas.first.value} 외 ${selectedAreas.length - 1}';
+    }
   }
 }
 

@@ -49,6 +49,7 @@ class LaneListItem extends StatelessWidget {
                     ),
                   ),
                 ),
+                const SizedBox(height: 8),
                 Text(
                   title,
                   style: TextStyles.titleLarge.copyWith(

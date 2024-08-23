@@ -8,9 +8,9 @@ import '../models/response/tour_area_response.dart';
 import '../models/trip_theme.dart';
 
 abstract class TripRepository {
-  Future<ApiResult<List<Lane>>> getRecommendedLanes();
+  Future<ApiResult<List<Lane>>> getRecommendedLanes(List<SigunguCode> sigunguCodes);
 
-  Future<ApiResult<List<LocalRestaurant>>> getLocalRestaurants();
+  Future<ApiResult<List<LocalRestaurant>>> getLocalRestaurants(List<SigunguCode> sigunguCodes);
 
   Future<ApiResult<List<PopularDestination>>> getPopularDestinations();
 
