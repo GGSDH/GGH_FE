@@ -33,6 +33,24 @@ class _AppFileImageState extends State<AppFileImage> {
     _loadImage();
   }
 
+  @override
+  void didUpdateWidget(AppFileImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Check if the imageFilePath has changed and reload the image
+    if (oldWidget.imageFilePath != widget.imageFilePath) {
+      _resetState();
+      _loadImage();
+    }
+  }
+
+  void _resetState() {
+    setState(() {
+      isLoading = true;
+      hasError = false;
+      resolvedFilePath = null;
+    });
+  }
+
   Future<void> _loadImage() async {
     try {
       final filePath = await widget.imageFilePath.getFilePath();
