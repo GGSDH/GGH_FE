@@ -1,6 +1,7 @@
 import 'package:gyeonggi_express/data/models/api_result.dart';
 import 'package:gyeonggi_express/data/models/request/add_photobook_request.dart';
 import 'package:gyeonggi_express/data/models/response/add_photobook_response.dart';
+import 'package:gyeonggi_express/data/models/response/random_photobook_response.dart';
 import 'package:gyeonggi_express/data/repository/photobook_repository.dart';
 
 import '../datasource/photobook_datasource.dart';
@@ -33,4 +34,7 @@ class PhotobookRepositoryImpl implements PhotobookRepository {
 
   @override
   Future<ApiResult<bool>> deletePhotobook(int photobookId) => _photobookDataSource.deletePhotobook(photobookId);
+
+  @override
+  Future<ApiResult<RandomPhotobookResponse>> getRandomPhotobook() => _photobookDataSource.getRandomPhotobook();
 }

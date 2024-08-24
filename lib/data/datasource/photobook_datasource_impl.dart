@@ -5,6 +5,7 @@ import 'package:gyeonggi_express/data/models/api_result.dart';
 import 'package:gyeonggi_express/data/models/request/add_photobook_request.dart';
 import 'package:gyeonggi_express/data/models/response/add_photobook_response.dart';
 import 'package:gyeonggi_express/data/models/response/photobook_detail_response.dart';
+import 'package:gyeonggi_express/data/models/response/random_photobook_response.dart';
 
 import '../models/response/photobook_list_response.dart';
 
@@ -59,6 +60,14 @@ class PhotobookDataSourceImpl implements PhotobookDataSource {
     return _dio.makeRequest<bool>(
       () => _dio.delete('v1/photobook/$photobookId'),
       (data) => true
+    );
+  }
+
+  @override
+  Future<ApiResult<RandomPhotobookResponse>> getRandomPhotobook() {
+    return _dio.makeRequest<RandomPhotobookResponse>(
+      () => _dio.get('v1/photo-ticket/random'),
+      (data) => RandomPhotobookResponse.fromJson(data as Map<String, dynamic>)
     );
   }
 

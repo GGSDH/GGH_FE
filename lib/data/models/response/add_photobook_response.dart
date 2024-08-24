@@ -101,11 +101,15 @@ class PhotoItem {
   @JsonKey(name: 'dateTime')
   final String dateTime;
 
+  @JsonKey(name: 'isPhototicket')
+  final bool isPhototicket;
+
   PhotoItem({
     required this.id,
     required this.path,
     this.location,
     required this.dateTime,
+    required this.isPhototicket
   });
 
   factory PhotoItem.fromJson(Map<String, dynamic> json) =>

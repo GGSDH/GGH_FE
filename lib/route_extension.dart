@@ -53,11 +53,13 @@ extension RoutesExtension on Routes {
       case Routes.photobookImageDetail:
         return 'image-detail';
       case Routes.addPhotobook:
-        return 'add';
+        return 'add-photobook';
       case Routes.addPhotobookSelectPeriod:
         return 'select-period';
       case Routes.addPhotobookLoading:
         return 'loading';
+      case Routes.addPhotoTicket:
+        return 'add-photo-ticket';
 
       case Routes.myPage:
         return '/mypage';

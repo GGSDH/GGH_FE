@@ -76,6 +76,7 @@ PhotoItem _$PhotoItemFromJson(Map<String, dynamic> json) => PhotoItem(
           ? null
           : LocationItem.fromJson(json['location'] as Map<String, dynamic>),
       dateTime: json['dateTime'] as String,
+      isPhototicket: json['isPhototicket'] as bool,
     );
 
 Map<String, dynamic> _$PhotoItemToJson(PhotoItem instance) => <String, dynamic>{
@@ -83,6 +84,7 @@ Map<String, dynamic> _$PhotoItemToJson(PhotoItem instance) => <String, dynamic>{
       'path': instance.path,
       'location': instance.location?.toJson(),
       'dateTime': instance.dateTime,
+      'isPhototicket': instance.isPhototicket,
     };
 
 LocationItem _$LocationItemFromJson(Map<String, dynamic> json) => LocationItem(

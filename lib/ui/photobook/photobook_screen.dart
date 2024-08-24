@@ -7,10 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/route_extension.dart';
-import 'package:gyeonggi_express/ui/component/app/app_file_image.dart';
-import 'package:gyeonggi_express/ui/component/app/app_image_plaeholder.dart';
 import 'package:gyeonggi_express/ui/component/map/map_marker.dart';
-import 'package:gyeonggi_express/ui/ext/file_path_extension.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_bloc.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
@@ -20,6 +17,7 @@ import '../../data/repository/photobook_repository.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
+import '../component/photo_ticket_item.dart';
 import '../component/photobook/photobook_list_item.dart';
 
 
@@ -138,39 +136,41 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware {
             if (state.isLoading) {
               return const Center(child: CircularProgressIndicator());
             } else {
-              return Material(
-                color: Colors.white,
-                child: DefaultTabController(
-                  length: 2,
-                  child: SafeArea(
-                    child: Stack(
-                        children: [
-                          Column(
-                            children: [
-                              const _TabBarSection(),
-                              Expanded(
-                                child: TabBarView(
-                                  children: [
-                                    _PhotobookSection(
-                                      mapControllerCompleter: _mapControllerCompleter,
-                                      photobooks: state.photobooks,
-                                      onAddPhotobook: () {
-                                        GoRouter.of(context).push("${Routes.photobook.path}/${Routes.addPhotobook.path}").then((_) {
-                                          context.read<PhotobookBloc>().add(PhotobookInitialize());
-                                        });
-                                      },
-                                      showPhotobookList: () => _showBottomSheet(
-                                        state.photobooks,
-                                        () => context.read<PhotobookBloc>().add(PhotobookInitialize())
+              return Scaffold(
+                body: Material(
+                  color: Colors.white,
+                  child: DefaultTabController(
+                    length: 2,
+                    child: SafeArea(
+                      child: Stack(
+                          children: [
+                            Column(
+                              children: [
+                                const _TabBarSection(),
+                                Expanded(
+                                  child: TabBarView(
+                                    children: [
+                                      _PhotobookSection(
+                                        mapControllerCompleter: _mapControllerCompleter,
+                                        photobooks: state.photobooks,
+                                        onAddPhotobook: () {
+                                          GoRouter.of(context).push("${Routes.photobook.path}/${Routes.addPhotobook.path}").then((_) {
+                                            context.read<PhotobookBloc>().add(PhotobookInitialize());
+                                          });
+                                        },
+                                        showPhotobookList: () => _showBottomSheet(
+                                          state.photobooks,
+                                          () => context.read<PhotobookBloc>().add(PhotobookInitialize())
+                                        ),
                                       ),
-                                    ),
-                                    _PhotoTicketSection(),
-                                  ],
+                                      _PhotoTicketSection(),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ]
+                              ],
+                            ),
+                          ]
+                      ),
                     ),
                   ),
                 ),
@@ -356,17 +356,20 @@ class _PhotoTicketSection extends StatelessWidget {
           offset: const Offset(0, -28),
           child: Center(
             child: AspectRatio(
-              aspectRatio: 1,
+              aspectRatio: 0.9,
               child: PageView.builder(
                 controller: _controller,
                 itemCount: 5,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: PhotoTicketItem(
-                      day: index + 1,
-                      date: "8월 ${index + 1}일",
-                      title: "너무 신나는 경기행 해커톤",
+                    child: (index == 4) ?
+                      const AddPhotoTicketItem() :
+                    PhotoTicketItem(
+                      title: '제목',
+                      filePath: '',
+                      startDate: DateTime.now(),
+                      endDate: DateTime.now().add(const Duration(days: 3)),
                       location: "각자의 집",
                     ),
                   );
@@ -380,180 +383,150 @@ class _PhotoTicketSection extends StatelessWidget {
   }
 }
 
-class PhotoTicketItem extends StatelessWidget {
+class AddPhotoTicketItem extends StatelessWidget {
 
-  const PhotoTicketItem({
-    super.key,
-    required this.day,
-    required this.date,
-    required this.title,
-    required this.location,
-  });
-
-  final int day;
-  final String date;
-  final String title;
-  final String location;
+  const AddPhotoTicketItem({ super.key });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(10), // Add padding to avoid clipping
       child: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 28),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: ColorStyles.gray300,
-                  width: 1,
-                ),
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: [
-                  BoxShadow(
-                    color: ColorStyles.gray300.withOpacity(0.5),
-                    blurRadius: 6,
-                    offset: const Offset(6, 6),
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 28),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(
+                    color: ColorStyles.gray300,
+                    width: 1,
                   ),
-                ],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(18),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Day $day",
-                          style: const TextStyle(
-                            color: ColorStyles.gray900,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const Spacer(),
-                        Text(
-                          date,
-                          style: TextStyles.titleMedium.copyWith(
-                            color: ColorStyles.gray500,
-                          )
-                        )
-                      ]
-                    ),
-                    const SizedBox(height: 15),
-
-                    Expanded(
-                      child: Image.asset(
-                        "assets/images/img_dummy_place.png",
-                        width: double.infinity,
-                        height: 120,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-
-                    const SizedBox(height: 15),
-
-                    Text(
-                      title,
-                      style: TextStyles.titleSmall.copyWith(
-                        color: ColorStyles.gray900,
-                      ),
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset(
-                          "assets/icons/ic_map_pin.svg",
-                          width: 14,
-                          height: 14,
-                          colorFilter: const ColorFilter.mode(
-                            ColorStyles.gray600,
-                            BlendMode.srcIn,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          location,
-                          style: TextStyles.bodyMedium.copyWith(
-                            color: ColorStyles.gray800,
-                          ),
-                        ),
-                      ],
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: ColorStyles.gray300.withOpacity(0.5),
+                      blurRadius: 6,
+                      offset: const Offset(6, 6),
                     ),
                   ],
                 ),
-              ),
-            ),
-          ),
+                child: Padding(
+                  padding: const EdgeInsets.all(18),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              '',
+                              style: TextStyle(
+                                color: ColorStyles.grayWhite,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const Spacer(),
+                            Text(
+                              '',
+                              style: TextStyles.titleMedium.copyWith(
+                                color: ColorStyles.gray500,
+                              )
+                            )
+                          ]
+                      ),
+                      const SizedBox(height: 15),
 
-          Positioned(
-            left: 0,
-            right: 7,
-            child: Center(
-              child: CustomPaint(
-                size: const Size(25, 40),
-                painter: OffsetRectanglePainter(
-                  color: ColorStyles.primary
-                )
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            GoRouter.of(context).push("${Routes.photobook.path}/${Routes.addPhotoTicket.path}");
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            decoration: const BoxDecoration(
+                              color: ColorStyles.gray100,
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "포토티켓으로,\n여행의 소중한 순간을 📸",
+                                  style: TextStyles.titleMedium.copyWith(
+                                    color: ColorStyles.gray700
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 12),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: ColorStyles.gray800,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(
+                                    "포토티켓 만들기",
+                                    style: TextStyles.titleXSmall.copyWith(
+                                      color: ColorStyles.grayWhite
+                                    )
+                                  )
+                                )
+                              ],
+                            ),
+                          ),
+                        )
+                      ),
+
+                      const SizedBox(height: 15),
+
+                      Text(
+                        '',
+                        style: TextStyles.titleSmall.copyWith(
+                          color: ColorStyles.gray900,
+                        ),
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SvgPicture.asset(
+                            "assets/icons/ic_map_pin.svg",
+                            width: 14,
+                            height: 14,
+                            colorFilter: const ColorFilter.mode(
+                              ColorStyles.grayWhite,
+                              BlendMode.srcIn,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '',
+                            style: TextStyles.bodyMedium.copyWith(
+                              color: ColorStyles.gray800,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
-          )
-        ]
+
+            Positioned(
+              left: 0,
+              right: 7,
+              child: Center(
+                child: CustomPaint(
+                    size: const Size(25, 40),
+                    painter: OffsetRectanglePainter(
+                        color: ColorStyles.primary
+                    )
+                ),
+              ),
+            )
+          ]
       ),
     );
-  }
-}
-
-class OffsetRectanglePainter extends CustomPainter {
-  OffsetRectanglePainter({required this.color});
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = ColorStyles.primary
-      ..style = PaintingStyle.fill;
-
-    const radius = Radius.circular(4);  // Set radius to 4
-
-    final path = Path()
-      ..moveTo(0 + radius.x, 0) // Top left corner
-      ..lineTo(size.width - radius.x, 0) // Top right corner
-      ..arcToPoint(
-        Offset(size.width, radius.y),
-        radius: radius,
-        clockwise: true,
-      )
-      ..lineTo(size.width + 7, size.height - radius.y) // Bottom right side
-      ..arcToPoint(
-        Offset(size.width + 7 - radius.x, size.height),
-        radius: radius,
-        clockwise: true,
-      )
-      ..lineTo(7 + radius.x, size.height) // Bottom left side
-      ..arcToPoint(
-        Offset(7, size.height - radius.y),
-        radius: radius,
-        clockwise: true,
-      )
-      ..lineTo(0, radius.y) // Left side
-      ..arcToPoint(
-        Offset(0 + radius.x, 0),
-        radius: radius,
-        clockwise: true,
-      )
-      ..close();
-
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
   }
 }

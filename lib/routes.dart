@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:gyeonggi_express/data/repository/photobook_repository.dart';
 import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/router_observer.dart';
 import 'package:gyeonggi_express/ui/favorite/favorite_screen.dart';
@@ -25,6 +26,8 @@ import 'package:gyeonggi_express/ui/onboarding/onboarding_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/add/add_photobook_loading_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/add/add_photobook_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/add/add_photobook_select_period_screen.dart';
+import 'package:gyeonggi_express/ui/photobook/phototicket/add_photo_ticket_bloc.dart';
+import 'package:gyeonggi_express/ui/photobook/phototicket/add_photo_ticket_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_card_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_detail_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_image_list_screen.dart';
@@ -73,9 +76,12 @@ enum Routes {
   photobookMap,
   photobookImageList,
   photobookImageDetail,
+
   addPhotobook,
   addPhotobookSelectPeriod,
   addPhotobookLoading,
+
+  addPhotoTicket,
 
   myPage,
   myPageSetting,
@@ -235,8 +241,20 @@ enum Routes {
                                   endDate: endDate,
                                   title: title,
                                 );
-                              })
+                              }),
                         ],
+                      ),
+                      GoRoute(
+                          path: Routes.addPhotoTicket.path,
+                          name: Routes.addPhotoTicket.name,
+                          parentNavigatorKey: _rootNavigatorKey,
+                          builder: (context, state) {
+                            return BlocProvider(
+                              create: (context) => AddPhotoTicketBloc(
+                                photobookRepository: GetIt.instance<PhotobookRepository>(),
+                              )..add(AddPhotoTicketInitialize()),
+                              child: const AddPhotoTicketScreen());
+                          }
                       ),
                       GoRoute(
                           path: Routes.photobookCard.path,
@@ -287,9 +305,9 @@ enum Routes {
 
                           return PhotobookImageListScreen(filePaths: filePaths);
                         },
-                      )
+                      ),
                     ],
-                  ),
+                  )
                 ],
               ),
               StatefulShellBranch(
