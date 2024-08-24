@@ -36,7 +36,6 @@ class _AppFileImageState extends State<AppFileImage> {
   @override
   void didUpdateWidget(AppFileImage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Check if the imageFilePath has changed and reload the image
     if (oldWidget.imageFilePath != widget.imageFilePath) {
       _resetState();
       _loadImage();

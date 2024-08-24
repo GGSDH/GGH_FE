@@ -23,9 +23,7 @@ class _AddPhotoTicketScreenState extends State<AddPhotoTicketScreen> {
 
   void _startAutoChangeIndex(BuildContext context) {
     _timer = Timer.periodic(const Duration(milliseconds: 300), (_) {
-      context.read<AddPhotoTicketBloc>().add(
-        AddPhotoTicketIndexChanged(),
-      );
+      context.read<AddPhotoTicketBloc>().add(AddPhotoTicketIndexChanged());
     });
   }
 
@@ -82,7 +80,7 @@ class _AddPhotoTicketScreenState extends State<AddPhotoTicketScreen> {
                         children: [
                           Text(
                             state.isChoosing
-                                ? "손을 떼면\n여행자의 소중한 수간으로 선택돼요"
+                                ? "손을 떼면\n여행자의 소중한 순간으로 선택돼요"
                                 : "사진을 꾹 눌러\n여행의 소중한 순간을 포착하세요",
                             style: TextStyles.title2ExtraLarge.copyWith(
                               color: ColorStyles.gray900,
@@ -103,17 +101,22 @@ class _AddPhotoTicketScreenState extends State<AddPhotoTicketScreen> {
                               width: screenWidth * 0.7,
                               child: AspectRatio(
                                 aspectRatio: 0.7,
-                                child: PhotoTicketItem(
-                                  title: state.title,
-                                  filePath: (state.selectedPhotoIndex >= 0 &&
-                                      state.selectedPhotoIndex <
-                                          state.photos.length)
-                                      ? state.photos[state.selectedPhotoIndex]
-                                      .path
-                                      : '',
-                                  startDate: state.startDate,
-                                  endDate: state.endDate,
-                                  location: state.location,
+                                child: Stack(
+                                  children: state.photos.asMap().entries.map((entry) {
+                                    int index = entry.key;
+                                    var photo = entry.value;
+                                    return AnimatedOpacity(
+                                      opacity: index == state.selectedPhotoIndex ? 1.0 : 0.0,
+                                      duration: const Duration(milliseconds: 300),
+                                      child: PhotoTicketItem(
+                                        title: state.title,
+                                        filePath: photo.path,
+                                        startDate: state.startDate,
+                                        endDate: state.endDate,
+                                        location: state.location,
+                                      ),
+                                    );
+                                  }).toList(),
                                 ),
                               ),
                             ),
