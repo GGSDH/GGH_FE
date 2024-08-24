@@ -65,7 +65,7 @@ class AppActionBar extends StatelessWidget {
                       ...menuItems!.map(
                         (item) => Container(
                           padding: const EdgeInsets.only(left: 10),
-                          width: 24,
+                          width: 34,
                           child: IconButton(
                             icon: item.icon,
                             onPressed: item.onPressed,
