@@ -12,7 +12,11 @@ Photobook _$PhotobookFromJson(Map<String, dynamic> json) => Photobook(
       startDate: json['startDate'] as String,
       endDate: json['endDate'] as String,
       photo: json['photo'] as String,
-      location: json['location'] as String,
+      location: LocationItem.fromJson(json['location'] as Map<String, dynamic>),
+      photoTicketImage: json['photoTicketImage'] == null
+          ? null
+          : PhotoItem.fromJson(
+              json['photoTicketImage'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$PhotobookToJson(Photobook instance) => <String, dynamic>{
@@ -21,5 +25,6 @@ Map<String, dynamic> _$PhotobookToJson(Photobook instance) => <String, dynamic>{
       'startDate': instance.startDate,
       'endDate': instance.endDate,
       'photo': instance.photo,
-      'location': instance.location,
+      'location': instance.location.toJson(),
+      'photoTicketImage': instance.photoTicketImage?.toJson(),
     };

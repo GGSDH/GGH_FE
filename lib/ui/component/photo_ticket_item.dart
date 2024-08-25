@@ -26,8 +26,6 @@ class PhotoTicketItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('filePath: $filePath');
-
     return Padding(
       padding: const EdgeInsets.all(10), // Add padding to avoid clipping
       child: Stack(

@@ -17,6 +17,7 @@ import '../../data/repository/photobook_repository.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
+import '../../util/naver_map_util.dart';
 import '../component/photo_ticket_item.dart';
 import '../component/photobook/photobook_list_item.dart';
 
@@ -68,7 +69,7 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware {
                         imageFilePath: photobook.photo,
                         startDate: photobook.startDate,
                         endDate: photobook.endDate,
-                        location: photobook.location,
+                        location: photobook.location.name ?? '',
                         onTap: () {
                           GoRouter.of(context).push(
                             Uri(
@@ -254,42 +255,7 @@ class _PhotobookSection extends StatelessWidget {
                 mapControllerCompleter.complete(controller);
             }
 
-            for (var photobook in photobooks) {
-              try {
-                // 이미지 파일을 불러오고 NOverlayImage를 비동기적으로 생성
-                final overlayImage = await NOverlayImage.fromWidget(
-                  context: context,
-                  widget: MapMarker(filePath: photobook.photo),
-                  size: const Size(48, 70)
-                );
-
-                // NMarker 생성
-                final photobookMarker = NMarker(
-                  id: "${photobook.id}",
-                  position: NLatLng(37.745, 127.058),  // photobook의 좌표 사용
-                  icon: overlayImage,
-                );
-
-                // 마커 추가
-                controller.addOverlay(photobookMarker);
-              } catch (e) {
-                // 예외 처리
-                print("Failed to create overlay image for marker: $e");
-
-                // 기본 마커 추가
-                final errorMarker = NMarker(
-                  id: "${photobook.id}",
-                  position: NLatLng(37.745, 127.058),  // photobook의 좌표 사용
-                  icon: await NOverlayImage.fromWidget(
-                    context: context,
-                    widget: MapMarker(filePath: photobook.photo),
-                    size: const Size(48, 70)
-                  ),
-                );
-
-                controller.addOverlay(errorMarker);
-              };
-            }
+            await NaverMapUtil.addMarkers(controller, photobooks, context);
           },
           forceGesture: true,
         ),

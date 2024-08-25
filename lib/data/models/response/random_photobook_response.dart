@@ -12,11 +12,11 @@ class RandomPhotobookResponse {
   @JsonKey(name: 'title')
   final String title;
 
-  @JsonKey(name: 'startDateTime')
-  final String startDateTime;
+  @JsonKey(name: 'startDate')
+  final String startDate;
 
-  @JsonKey(name: 'endDateTime')
-  final String endDateTime;
+  @JsonKey(name: 'endDate')
+  final String endDate;
 
   @JsonKey(name: 'photos')
   final List<PhotoItem> photos;
@@ -24,13 +24,21 @@ class RandomPhotobookResponse {
   @JsonKey(name: 'dailyPhotoGroups')
   final List<DailyPhotoGroup> dailyPhotoGroups;
 
+  @JsonKey(name: 'location')
+  final LocationItem location;
+
+  @JsonKey(name: 'photoTicketImage')
+  final PhotoItem? photoTicketImage;
+
   RandomPhotobookResponse({
     required this.id,
     required this.title,
-    required this.startDateTime,
-    required this.endDateTime,
+    required this.startDate,
+    required this.endDate,
     required this.photos,
     required this.dailyPhotoGroups,
+    required this.location,
+    required this.photoTicketImage,
   });
 
   factory RandomPhotobookResponse.fromJson(Map<String, dynamic> json) =>
