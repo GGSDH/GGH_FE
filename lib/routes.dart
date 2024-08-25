@@ -149,7 +149,8 @@ enum Routes {
                       GoRoute(
                         path: Routes.recommendedLanes.path,
                         name: Routes.recommendedLanes.name,
-                        builder: (context, state) => RecommendedLaneScreen(),
+                        builder: (context, state) =>
+                            const RecommendedLaneScreen(),
                       ),
                       GoRoute(
                           path: Routes.localRestaurants.path,
@@ -191,7 +192,8 @@ enum Routes {
                           path: Routes.recommendSelectPeriod.path,
                           name: Routes.recommendSelectPeriod.name,
                           parentNavigatorKey: _rootNavigatorKey,
-                          builder: (context, state) => const RecommendSelectPeriodScreen(),
+                          builder: (context, state) =>
+                              const RecommendSelectPeriodScreen(),
                         ),
                         GoRoute(
                           path: Routes.recommendResult.path,
@@ -199,8 +201,7 @@ enum Routes {
                           parentNavigatorKey: _rootNavigatorKey,
                           builder: (context, state) => RecommendResultScreen(),
                         )
-                      ]
-                  ),
+                      ]),
                 ],
               ),
               StatefulShellBranch(
@@ -250,12 +251,12 @@ enum Routes {
                           parentNavigatorKey: _rootNavigatorKey,
                           builder: (context, state) {
                             return BlocProvider(
-                              create: (context) => AddPhotoTicketBloc(
-                                photobookRepository: GetIt.instance<PhotobookRepository>(),
-                              )..add(AddPhotoTicketInitialize()),
-                              child: const AddPhotoTicketScreen());
-                          }
-                      ),
+                                create: (context) => AddPhotoTicketBloc(
+                                      photobookRepository:
+                                          GetIt.instance<PhotobookRepository>(),
+                                    )..add(AddPhotoTicketInitialize()),
+                                child: const AddPhotoTicketScreen());
+                          }),
                       GoRoute(
                           path: Routes.photobookCard.path,
                           name: Routes.photobookCard.name,
@@ -354,9 +355,16 @@ enum Routes {
               ),
             ]),
         GoRoute(
-            path: Routes.stations.path,
+            path: '${Routes.stations.path}/:stationId',
             name: Routes.stations.name,
-            builder: (context, state) => StationDetailScreen()),
+            builder: (context, state) {
+              final stationId =
+                  int.tryParse(state.pathParameters['stationId'] ?? '');
+              if (stationId == null) {
+                return const Text('Invalid station ID');
+              }
+              return StationDetailScreen(stationId: stationId);
+            }),
         GoRoute(
             path: Routes.lanes.path,
             name: Routes.lanes.name,
