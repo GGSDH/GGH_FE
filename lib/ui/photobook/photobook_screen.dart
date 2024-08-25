@@ -6,14 +6,14 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:gyeonggi_express/data/models/response/photo_ticket_response.dart';
 import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/ui/component/map/map_marker.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_bloc.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../constants.dart';
-import '../../data/models/response/photobook_list_response.dart';
+import '../../data/models/response/photo_ticket_response.dart';
+import '../../data/models/response/photobook_response.dart';
 import '../../data/repository/photobook_repository.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
@@ -34,7 +34,7 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware {
   final Completer<NaverMapController> _mapControllerCompleter = Completer<NaverMapController>();
 
   void _showBottomSheet(
-    List<Photobook> photobooks,
+    List<PhotobookResponse> photobooks,
     Function onLoadPhotobooks
   ) {
     showBottomSheet(
@@ -67,10 +67,10 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware {
                       final photobook = photobooks[index];
                       return PhotobookListItem(
                         title: photobook.title,
-                        imageFilePath: photobook.photo,
+                        imageFilePath: photobook.mainPhoto?.path ?? '',
                         startDate: photobook.startDate,
                         endDate: photobook.endDate,
-                        location: photobook.location.name ?? '',
+                        location: photobook.location?.name ?? '',
                         onTap: () {
                           GoRouter.of(context).push(
                             Uri(
@@ -233,7 +233,7 @@ class _PhotobookSection extends StatelessWidget {
   });
 
   final Completer<NaverMapController> mapControllerCompleter;
-  final List<Photobook> photobooks;
+  final List<PhotobookResponse> photobooks;
   final VoidCallback onAddPhotobook;
   final VoidCallback showPhotobookList;
 
@@ -337,11 +337,11 @@ class _PhotoTicketSection extends StatelessWidget {
                     child: (index == photoTickets.length) ?
                       const AddPhotoTicketItem() :
                     PhotoTicketItem(
-                      title: photoTickets[index].photoBook.title,
-                      filePath: photoTickets[index].photoTicket.path,
-                      startDate: DateTime.parse(photoTickets[index].photoBook.startDate),
-                      endDate: DateTime.parse(photoTickets[index].photoBook.endDate),
-                      location: photoTickets[index].photoTicket.location.name ?? '',
+                      title: photoTickets[index].photobook.title,
+                      filePath: photoTickets[index].photo.path,
+                      startDate: DateTime.parse(photoTickets[index].photobook.startDate),
+                      endDate: DateTime.parse(photoTickets[index].photobook.endDate),
+                      location: photoTickets[index].photo.location?.name ?? '',
                     ),
                   );
                 },

@@ -91,6 +91,8 @@ class _PhotobookCardScreenState extends State<PhotobookCardScreen> {
                           ],
                         ),
                         const SizedBox(height: 4),
+
+                        state.dominantLocationCity != null && state.dominantLocationCity!.isNotEmpty  ?
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                           decoration: BoxDecoration(
@@ -98,12 +100,13 @@ class _PhotobookCardScreenState extends State<PhotobookCardScreen> {
                             borderRadius: BorderRadius.circular(100),
                           ),
                           child: Text(
-                            state.dominantLocationCity,
+                            state.dominantLocationCity!,
                             style: TextStyles.bodyMedium.copyWith(
                               color: ColorStyles.primary,
                             ),
                           )
-                        ),
+                        ) : const SizedBox(height: 32),
+
                         const SizedBox(height: 14),
                         Text(
                           state.title,
@@ -113,7 +116,8 @@ class _PhotobookCardScreenState extends State<PhotobookCardScreen> {
                         Text(
                           formatDates(state.startDate, state.endDate),
                           style: TextStyles.bodyLarge.copyWith(
-                              color: ColorStyles.gray500),
+                            color: ColorStyles.gray500,
+                          ),
                         ),
                         const SizedBox(height: 40),
                         Expanded(

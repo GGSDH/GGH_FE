@@ -1,13 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gyeonggi_express/data/models/response/photo_ticket_response.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
-import '../../data/models/response/photobook_list_response.dart';
+import '../../data/models/response/photo_ticket_response.dart';
+import '../../data/models/response/photobook_response.dart';
 import '../../data/repository/photobook_repository.dart';
 
 final class PhotobookState {
   final bool isLoading;
-  final List<Photobook> photobooks;
+  final List<PhotobookResponse> photobooks;
   final List<PhotoTicketResponse> photoTickets;
 
   PhotobookState({
@@ -26,7 +26,7 @@ final class PhotobookState {
 
   PhotobookState copyWith({
     bool? isLoading,
-    List<Photobook>? photobooks,
+    List<PhotobookResponse>? photobooks,
     List<PhotoTicketResponse>? photoTickets,
   }) {
     return PhotobookState(
@@ -42,7 +42,7 @@ final class PhotobookInitialize extends PhotobookEvent { }
 
 sealed class PhotobookSideEffect { }
 final class PhotobookShowBottomSheet extends PhotobookSideEffect {
-  final List<Photobook> photobooks;
+  final List<PhotobookResponse> photobooks;
 
   PhotobookShowBottomSheet(this.photobooks);
 }
@@ -106,6 +106,9 @@ class PhotobookBloc extends SideEffectBloc<PhotobookEvent, PhotobookState, Photo
             );
           },
           apiError: (errorMessage, errorCode) {
+            print('load phototickets');
+            print('errorMessage: $errorMessage, errorCode: $errorCode');
+
             emit(state.copyWith(isLoading: false));
             produceSideEffect(PhotobookShowError(errorMessage));
           }

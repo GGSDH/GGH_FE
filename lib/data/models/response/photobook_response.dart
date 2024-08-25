@@ -1,9 +1,9 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'add_photobook_response.g.dart';
+part 'photobook_response.g.dart';
 
 @JsonSerializable()
-class AddPhotobookResponse {
+class PhotobookResponse {
   @JsonKey(name: 'id')
   final int id;
 
@@ -16,21 +16,37 @@ class AddPhotobookResponse {
   @JsonKey(name: 'endDate')
   final String endDate;
 
-  @JsonKey(name: 'dailyPhotoGroup')
+  @JsonKey(name: 'dailyPhotoGroup', defaultValue: [])
   final List<DailyPhotoGroup> dailyPhotoGroup;
 
-  AddPhotobookResponse({
+  @JsonKey(name: 'photos', defaultValue: [])
+  final List<PhotoItem> photos;
+
+  @JsonKey(name: 'mainPhoto')
+  final PhotoItem? mainPhoto;
+
+  @JsonKey(name: 'location')
+  final LocationItem? location;
+
+  @JsonKey(name: 'photoTicketImage')
+  final PhotoItem? photoTicketImage;
+
+  PhotobookResponse({
     required this.id,
     required this.title,
     required this.startDate,
     required this.endDate,
-    required this.dailyPhotoGroup
+    required this.dailyPhotoGroup,
+    required this.photos,
+    this.mainPhoto,
+    this.location,
+    this.photoTicketImage,
   });
 
-  factory AddPhotobookResponse.fromJson(Map<String, dynamic> json) =>
-      _$AddPhotobookResponseFromJson(json);
+  factory PhotobookResponse.fromJson(Map<String, dynamic> json) =>
+      _$PhotobookResponseFromJson(json);
 
-  Map<String, dynamic> toJson() => _$AddPhotobookResponseToJson(this);
+  Map<String, dynamic> toJson() => _$PhotobookResponseToJson(this);
 }
 
 @JsonSerializable()
@@ -109,21 +125,20 @@ class PhotoItem {
     required this.path,
     this.location,
     required this.dateTime,
-    required this.isPhototicket
+    required this.isPhototicket,
   });
 
   factory PhotoItem.fromJson(Map<String, dynamic> json) =>
       _$PhotoItemFromJson(json);
-
   Map<String, dynamic> toJson() => _$PhotoItemToJson(this);
 }
 
 @JsonSerializable()
 class LocationItem {
-  @JsonKey(name: 'lat')
+  @JsonKey(name: 'lat', defaultValue: 0.0)
   final double lat;
 
-  @JsonKey(name: 'lon')
+  @JsonKey(name: 'lon', defaultValue: 0.0)
   final double lon;
 
   @JsonKey(name: 'name')

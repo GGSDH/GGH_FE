@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:gyeonggi_express/ui/ext/file_path_extension.dart';
-import '../data/models/response/photobook_list_response.dart';
+import '../data/models/response/photobook_response.dart';
 import '../themes/color_styles.dart';
 import '../ui/component/app/app_image_plaeholder.dart';
 import '../ui/photobook/photobook_detail_bloc.dart';
@@ -17,7 +17,7 @@ class NaverMapUtil {
 
     for (var photobook in photobookDetailCards) {
       if (photobook.location?.lat != null && photobook.location?.lon != null) {
-        final currentLocation = NLatLng(photobook.location!.lat, photobook.location!.lon);
+        final currentLocation = NLatLng(photobook.location!.lat!, photobook.location!.lon!);
         pathCoords.add(currentLocation);
 
         try {
@@ -55,17 +55,17 @@ class NaverMapUtil {
 
   static Future<void> addMarkers(
     NaverMapController controller,
-    List<Photobook> photobooks,
+    List<PhotobookResponse> photobooks,
     BuildContext context,
   ) async {
     for (var photobook in photobooks) {
       if (photobook.location?.lat != null && photobook.location?.lon != null) {
         final currentLocation = NLatLng(
-          photobook.location!.lat, photobook.location!.lon,
+          photobook.location!.lat!, photobook.location!.lon!,
         );
 
         try {
-          final overlayImage = await _createOverlayImage(photobook.photo, context);
+          final overlayImage = await _createOverlayImage(photobook.mainPhoto?.path ?? '', context);
           final photobookMarker = NMarker(
             id: "${photobook.id}",
             position: currentLocation,

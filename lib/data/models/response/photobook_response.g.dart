@@ -1,25 +1,38 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'add_photobook_response.dart';
+part of 'photobook_response.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-AddPhotobookResponse _$AddPhotobookResponseFromJson(
-        Map<String, dynamic> json) =>
-    AddPhotobookResponse(
+PhotobookResponse _$PhotobookResponseFromJson(Map<String, dynamic> json) =>
+    PhotobookResponse(
       id: (json['id'] as num).toInt(),
       title: json['title'] as String,
       startDate: json['startDate'] as String,
       endDate: json['endDate'] as String,
-      dailyPhotoGroup: (json['dailyPhotoGroup'] as List<dynamic>)
-          .map((e) => DailyPhotoGroup.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      dailyPhotoGroup: (json['dailyPhotoGroup'] as List<dynamic>?)
+              ?.map((e) => DailyPhotoGroup.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+      photos: (json['photos'] as List<dynamic>?)
+              ?.map((e) => PhotoItem.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+      mainPhoto: json['mainPhoto'] == null
+          ? null
+          : PhotoItem.fromJson(json['mainPhoto'] as Map<String, dynamic>),
+      location: json['location'] == null
+          ? null
+          : LocationItem.fromJson(json['location'] as Map<String, dynamic>),
+      photoTicketImage: json['photoTicketImage'] == null
+          ? null
+          : PhotoItem.fromJson(
+              json['photoTicketImage'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$AddPhotobookResponseToJson(
-        AddPhotobookResponse instance) =>
+Map<String, dynamic> _$PhotobookResponseToJson(PhotobookResponse instance) =>
     <String, dynamic>{
       'id': instance.id,
       'title': instance.title,
@@ -27,6 +40,10 @@ Map<String, dynamic> _$AddPhotobookResponseToJson(
       'endDate': instance.endDate,
       'dailyPhotoGroup':
           instance.dailyPhotoGroup.map((e) => e.toJson()).toList(),
+      'photos': instance.photos.map((e) => e.toJson()).toList(),
+      'mainPhoto': instance.mainPhoto?.toJson(),
+      'location': instance.location?.toJson(),
+      'photoTicketImage': instance.photoTicketImage?.toJson(),
     };
 
 DailyPhotoGroup _$DailyPhotoGroupFromJson(Map<String, dynamic> json) =>
@@ -90,8 +107,8 @@ Map<String, dynamic> _$PhotoItemToJson(PhotoItem instance) => <String, dynamic>{
     };
 
 LocationItem _$LocationItemFromJson(Map<String, dynamic> json) => LocationItem(
-      lat: (json['lat'] as num).toDouble(),
-      lon: (json['lon'] as num).toDouble(),
+      lat: (json['lat'] as num?)?.toDouble() ?? 0.0,
+      lon: (json['lon'] as num?)?.toDouble() ?? 0.0,
       name: json['name'] as String?,
       city: json['city'] as String?,
     );

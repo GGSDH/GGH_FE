@@ -1,10 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gyeonggi_express/data/repository/photobook_repository.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
-import '../../../data/models/response/add_photobook_response.dart';
+import '../../../data/models/response/photobook_response.dart';
 
 final class AddPhotoTicketState {
   final bool isLoading;
@@ -117,16 +115,16 @@ class AddPhotoTicketBloc extends SideEffectBloc<AddPhotoTicketEvent, AddPhotoTic
       final response = await _photobookRepository.getRandomPhotobook();
 
       response.when(
-        success: (photobook) {
+        success: (data) {
           emit(state.copyWith(
             isLoading: false,
-            title: photobook.title,
-            photos: photobook.photos,
+            title: data.title,
+            photos: data.photos,
             selectedPhotoIndex: 0,
-            startDate: DateTime.parse(photobook.startDate),
-            endDate: DateTime.parse(photobook.endDate),
-            period: "${photobook.startDate} ~ ${photobook.endDate}",
-            location: getMostFrequentLocationName(photobook.photos),
+            startDate: DateTime.parse(data.startDate),
+            endDate: DateTime.parse(data.endDate),
+            period: "${data.startDate} ~ ${data.endDate}",
+            location: data.location?.name ?? '',
           ));
         },
         apiError: (errorMessage, errorCode) {

@@ -3,12 +3,9 @@ import 'package:gyeonggi_express/data/datasource/photobook_datasource.dart';
 import 'package:gyeonggi_express/data/ext/dio_extensions.dart';
 import 'package:gyeonggi_express/data/models/api_result.dart';
 import 'package:gyeonggi_express/data/models/request/add_photobook_request.dart';
-import 'package:gyeonggi_express/data/models/response/add_photobook_response.dart';
-import 'package:gyeonggi_express/data/models/response/photobook_detail_response.dart';
-import 'package:gyeonggi_express/data/models/response/random_photobook_response.dart';
+import 'package:gyeonggi_express/data/models/response/photobook_response.dart';
 
 import '../models/response/photo_ticket_response.dart';
-import '../models/response/photobook_list_response.dart';
 
 class PhotobookDataSourceImpl implements PhotobookDataSource {
   final Dio _dio;
@@ -16,17 +13,17 @@ class PhotobookDataSourceImpl implements PhotobookDataSource {
   PhotobookDataSourceImpl(this._dio);
 
   @override
-  Future<ApiResult<List<Photobook>>> getPhotobooks() {
-    return _dio.makeRequest<List<Photobook>>(
+  Future<ApiResult<List<PhotobookResponse>>> getPhotobooks() {
+    return _dio.makeRequest<List<PhotobookResponse>>(
       () => _dio.get('v1/photobook'),
       (data) =>
       (data as List).map((e) =>
-          Photobook.fromJson(e as Map<String, dynamic>)).toList()
+          PhotobookResponse.fromJson(e as Map<String, dynamic>)).toList()
     );
   }
 
   @override
-  Future<ApiResult<AddPhotobookResponse>> addPhotobook({
+  Future<ApiResult<PhotobookResponse>> addPhotobook({
     required String title,
     required String startDate,
     required String endDate,
@@ -39,20 +36,20 @@ class PhotobookDataSourceImpl implements PhotobookDataSource {
       photos: photos
     );
 
-    return _dio.makeRequest<AddPhotobookResponse>(
+    return _dio.makeRequest<PhotobookResponse>(
       () => _dio.post(
         'v1/photobook',
         data: addPhotobookRequest.toJson(),
       ),
-      (data) => AddPhotobookResponse.fromJson(data as Map<String, dynamic>)
+      (data) => PhotobookResponse.fromJson(data as Map<String, dynamic>)
     );
   }
 
   @override
-  Future<ApiResult<PhotobookDetailResponse>> getPhotobookDetail(int photobookId) {
-    return _dio.makeRequest<PhotobookDetailResponse>(
+  Future<ApiResult<PhotobookResponse>> getPhotobookDetail(int photobookId) {
+    return _dio.makeRequest<PhotobookResponse>(
       () => _dio.get('v1/photobook/$photobookId'),
-      (data) => PhotobookDetailResponse.fromJson(data as Map<String, dynamic>)
+      (data) => PhotobookResponse.fromJson(data as Map<String, dynamic>)
     );
   }
 
@@ -65,10 +62,10 @@ class PhotobookDataSourceImpl implements PhotobookDataSource {
   }
 
   @override
-  Future<ApiResult<RandomPhotobookResponse>> getRandomPhotobook() {
-    return _dio.makeRequest<RandomPhotobookResponse>(
+  Future<ApiResult<PhotobookResponse>> getRandomPhotobook() {
+    return _dio.makeRequest<PhotobookResponse>(
       () => _dio.get('v1/photo-ticket/random'),
-      (data) => RandomPhotobookResponse.fromJson(data as Map<String, dynamic>)
+      (data) => PhotobookResponse.fromJson(data as Map<String, dynamic>)
     );
   }
 

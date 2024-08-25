@@ -9,7 +9,7 @@ import 'package:gyeonggi_express/ui/component/app/app_image_plaeholder.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_detail_bloc.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
-import '../../data/models/response/add_photobook_response.dart';
+import '../../data/models/response/photobook_response.dart';
 import '../../data/repository/photobook_repository.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
