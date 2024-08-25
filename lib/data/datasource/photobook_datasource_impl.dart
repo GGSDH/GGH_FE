@@ -7,6 +7,7 @@ import 'package:gyeonggi_express/data/models/response/add_photobook_response.dar
 import 'package:gyeonggi_express/data/models/response/photobook_detail_response.dart';
 import 'package:gyeonggi_express/data/models/response/random_photobook_response.dart';
 
+import '../models/response/photo_ticket_response.dart';
 import '../models/response/photobook_list_response.dart';
 
 class PhotobookDataSourceImpl implements PhotobookDataSource {
@@ -68,6 +69,16 @@ class PhotobookDataSourceImpl implements PhotobookDataSource {
     return _dio.makeRequest<RandomPhotobookResponse>(
       () => _dio.get('v1/photo-ticket/random'),
       (data) => RandomPhotobookResponse.fromJson(data as Map<String, dynamic>)
+    );
+  }
+
+  @override
+  Future<ApiResult<List<PhotoTicketResponse>>> getPhotoTickets() {
+    return _dio.makeRequest<List<PhotoTicketResponse>>(
+      () => _dio.get('v1/photo-ticket'),
+      (data) =>
+      (data as List).map((e) =>
+          PhotoTicketResponse.fromJson(e as Map<String, dynamic>)).toList()
     );
   }
 

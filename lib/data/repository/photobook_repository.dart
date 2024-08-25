@@ -4,6 +4,7 @@ import 'package:gyeonggi_express/data/models/response/random_photobook_response.
 import '../models/api_result.dart';
 import '../models/request/add_photobook_request.dart';
 import '../models/response/add_photobook_response.dart';
+import '../models/response/photo_ticket_response.dart';
 import '../models/response/photobook_list_response.dart';
 
 abstract class PhotobookRepository {
@@ -21,4 +22,6 @@ abstract class PhotobookRepository {
   Future<ApiResult<bool>> deletePhotobook(int photobookId);
 
   Future<ApiResult<RandomPhotobookResponse>> getRandomPhotobook();
+
+  Future<ApiResult<List<PhotoTicketResponse>>> getPhotoTickets();
 }

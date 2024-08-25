@@ -6,6 +6,7 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:gyeonggi_express/data/models/response/photo_ticket_response.dart';
 import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/ui/component/map/map_marker.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_bloc.dart';
@@ -17,6 +18,7 @@ import '../../data/repository/photobook_repository.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
+import '../../util/naver_map_util.dart';
 import '../component/photo_ticket_item.dart';
 import '../component/photobook/photobook_list_item.dart';
 
@@ -68,7 +70,7 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware {
                         imageFilePath: photobook.photo,
                         startDate: photobook.startDate,
                         endDate: photobook.endDate,
-                        location: photobook.location,
+                        location: photobook.location.name ?? '',
                         onTap: () {
                           GoRouter.of(context).push(
                             Uri(
@@ -163,7 +165,7 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware {
                                           () => context.read<PhotobookBloc>().add(PhotobookInitialize())
                                         ),
                                       ),
-                                      _PhotoTicketSection(),
+                                      _PhotoTicketSection(photoTickets: state.photoTickets),
                                     ],
                                   ),
                                 ),
@@ -254,42 +256,7 @@ class _PhotobookSection extends StatelessWidget {
                 mapControllerCompleter.complete(controller);
             }
 
-            for (var photobook in photobooks) {
-              try {
-                // 이미지 파일을 불러오고 NOverlayImage를 비동기적으로 생성
-                final overlayImage = await NOverlayImage.fromWidget(
-                  context: context,
-                  widget: MapMarker(filePath: photobook.photo),
-                  size: const Size(48, 70)
-                );
-
-                // NMarker 생성
-                final photobookMarker = NMarker(
-                  id: "${photobook.id}",
-                  position: NLatLng(37.745, 127.058),  // photobook의 좌표 사용
-                  icon: overlayImage,
-                );
-
-                // 마커 추가
-                controller.addOverlay(photobookMarker);
-              } catch (e) {
-                // 예외 처리
-                print("Failed to create overlay image for marker: $e");
-
-                // 기본 마커 추가
-                final errorMarker = NMarker(
-                  id: "${photobook.id}",
-                  position: NLatLng(37.745, 127.058),  // photobook의 좌표 사용
-                  icon: await NOverlayImage.fromWidget(
-                    context: context,
-                    widget: MapMarker(filePath: photobook.photo),
-                    size: const Size(48, 70)
-                  ),
-                );
-
-                controller.addOverlay(errorMarker);
-              };
-            }
+            await NaverMapUtil.addMarkers(controller, photobooks, context);
           },
           forceGesture: true,
         ),
@@ -336,7 +303,11 @@ class _PhotobookSection extends StatelessWidget {
 }
 
 class _PhotoTicketSection extends StatelessWidget {
-  _PhotoTicketSection();
+  final List<PhotoTicketResponse> photoTickets;
+
+  _PhotoTicketSection({
+    required this.photoTickets,
+  });
 
   final PageController _controller = PageController(viewportFraction: 0.8);
 
@@ -359,18 +330,18 @@ class _PhotoTicketSection extends StatelessWidget {
               aspectRatio: 0.9,
               child: PageView.builder(
                 controller: _controller,
-                itemCount: 5,
+                itemCount: photoTickets.length + 1,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: (index == 4) ?
+                    child: (index == photoTickets.length) ?
                       const AddPhotoTicketItem() :
                     PhotoTicketItem(
-                      title: '제목',
-                      filePath: '',
-                      startDate: DateTime.now(),
-                      endDate: DateTime.now().add(const Duration(days: 3)),
-                      location: "각자의 집",
+                      title: photoTickets[index].photoBook.title,
+                      filePath: photoTickets[index].photoTicket.path,
+                      startDate: DateTime.parse(photoTickets[index].photoBook.startDate),
+                      endDate: DateTime.parse(photoTickets[index].photoBook.endDate),
+                      location: photoTickets[index].photoTicket.location.name ?? '',
                     ),
                   );
                 },

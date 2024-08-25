@@ -1,4 +1,7 @@
+import 'package:gyeonggi_express/data/models/response/photo_ticket_response.dart';
 import 'package:json_annotation/json_annotation.dart';
+
+import 'add_photobook_response.dart';
 
 part 'photobook_list_response.g.dart';
 
@@ -20,7 +23,10 @@ class Photobook {
   final String photo;
 
   @JsonKey(name: 'location')
-  final String location;
+  final LocationItem location;
+
+  @JsonKey(name: 'photoTicketImage')
+  final PhotoTicket? photoTicketImage;
 
   Photobook({
     required this.id,
@@ -29,6 +35,7 @@ class Photobook {
     required this.endDate,
     required this.photo,
     required this.location,
+    required this.photoTicketImage,
   });
 
   factory Photobook.fromJson(Map<String, dynamic> json) =>

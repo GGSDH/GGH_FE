@@ -57,6 +57,20 @@ class _AddPhotoTicketScreenState extends State<AddPhotoTicketScreen> {
               child: SafeArea(
                 child: Stack(
                   children: [
+                    Positioned.fill(
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.white,
+                              ColorStyles.primaryLight,
+                            ],
+                          ),
+                        ),
+                      )
+                    ),
                     Positioned(
                       bottom: -100,
                       child: SvgPicture.asset(

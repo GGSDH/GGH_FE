@@ -123,9 +123,9 @@ class AddPhotoTicketBloc extends SideEffectBloc<AddPhotoTicketEvent, AddPhotoTic
             title: photobook.title,
             photos: photobook.photos,
             selectedPhotoIndex: 0,
-            startDate: DateTime.parse(photobook.startDateTime),
-            endDate: DateTime.parse(photobook.endDateTime),
-            period: "${photobook.startDateTime} ~ ${photobook.endDateTime}",
+            startDate: DateTime.parse(photobook.startDate),
+            endDate: DateTime.parse(photobook.endDate),
+            period: "${photobook.startDate} ~ ${photobook.endDate}",
             location: getMostFrequentLocationName(photobook.photos),
           ));
         },
