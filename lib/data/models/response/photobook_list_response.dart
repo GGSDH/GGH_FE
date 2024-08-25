@@ -1,3 +1,4 @@
+import 'package:gyeonggi_express/data/models/response/photo_ticket_response.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'add_photobook_response.dart';
@@ -25,7 +26,7 @@ class Photobook {
   final LocationItem location;
 
   @JsonKey(name: 'photoTicketImage')
-  final PhotoItem? photoTicketImage;
+  final PhotoTicket? photoTicketImage;
 
   Photobook({
     required this.id,

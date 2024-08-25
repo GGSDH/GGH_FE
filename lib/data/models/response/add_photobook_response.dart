@@ -41,7 +41,7 @@ class DailyPhotoGroup {
   @JsonKey(name: 'dateTime')
   final String dateTime;
 
-  @JsonKey(name: 'hourlyPhotoGroups')
+  @JsonKey(name: 'hourlyPhotoGroups', defaultValue: [])
   final List<HourlyPhotoGroup> hourlyPhotoGroups;
 
   DailyPhotoGroup({
@@ -61,7 +61,7 @@ class HourlyPhotoGroup {
   @JsonKey(name: 'dateTime')
   final String dateTime;
 
-  @JsonKey(name: 'photos')
+  @JsonKey(name: 'photos', defaultValue: [])
   final List<PhotoItem> photos;
 
   @JsonKey(name: 'photosCount')

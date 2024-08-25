@@ -6,6 +6,7 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:gyeonggi_express/data/models/response/photo_ticket_response.dart';
 import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/ui/component/map/map_marker.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_bloc.dart';
@@ -164,7 +165,7 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware {
                                           () => context.read<PhotobookBloc>().add(PhotobookInitialize())
                                         ),
                                       ),
-                                      _PhotoTicketSection(),
+                                      _PhotoTicketSection(photoTickets: state.photoTickets),
                                     ],
                                   ),
                                 ),
@@ -302,7 +303,11 @@ class _PhotobookSection extends StatelessWidget {
 }
 
 class _PhotoTicketSection extends StatelessWidget {
-  _PhotoTicketSection();
+  final List<PhotoTicketResponse> photoTickets;
+
+  _PhotoTicketSection({
+    required this.photoTickets,
+  });
 
   final PageController _controller = PageController(viewportFraction: 0.8);
 
@@ -325,18 +330,18 @@ class _PhotoTicketSection extends StatelessWidget {
               aspectRatio: 0.9,
               child: PageView.builder(
                 controller: _controller,
-                itemCount: 5,
+                itemCount: photoTickets.length + 1,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: (index == 4) ?
+                    child: (index == photoTickets.length) ?
                       const AddPhotoTicketItem() :
                     PhotoTicketItem(
-                      title: '제목',
-                      filePath: '',
-                      startDate: DateTime.now(),
-                      endDate: DateTime.now().add(const Duration(days: 3)),
-                      location: "각자의 집",
+                      title: photoTickets[index].photoBook.title,
+                      filePath: photoTickets[index].photoTicket.path,
+                      startDate: DateTime.parse(photoTickets[index].photoBook.startDate),
+                      endDate: DateTime.parse(photoTickets[index].photoBook.endDate),
+                      location: photoTickets[index].photoTicket.location.name ?? '',
                     ),
                   );
                 },

@@ -5,6 +5,7 @@ import 'package:gyeonggi_express/data/models/response/random_photobook_response.
 import 'package:gyeonggi_express/data/repository/photobook_repository.dart';
 
 import '../datasource/photobook_datasource.dart';
+import '../models/response/photo_ticket_response.dart';
 import '../models/response/photobook_detail_response.dart';
 import '../models/response/photobook_list_response.dart';
 
@@ -37,4 +38,7 @@ class PhotobookRepositoryImpl implements PhotobookRepository {
 
   @override
   Future<ApiResult<RandomPhotobookResponse>> getRandomPhotobook() => _photobookDataSource.getRandomPhotobook();
+
+  @override
+  Future<ApiResult<List<PhotoTicketResponse>>> getPhotoTickets() => _photobookDataSource.getPhotoTickets();
 }

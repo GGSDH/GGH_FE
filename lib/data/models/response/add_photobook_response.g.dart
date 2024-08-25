@@ -33,9 +33,10 @@ DailyPhotoGroup _$DailyPhotoGroupFromJson(Map<String, dynamic> json) =>
     DailyPhotoGroup(
       day: (json['day'] as num).toInt(),
       dateTime: json['dateTime'] as String,
-      hourlyPhotoGroups: (json['hourlyPhotoGroups'] as List<dynamic>)
-          .map((e) => HourlyPhotoGroup.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      hourlyPhotoGroups: (json['hourlyPhotoGroups'] as List<dynamic>?)
+              ?.map((e) => HourlyPhotoGroup.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
     );
 
 Map<String, dynamic> _$DailyPhotoGroupToJson(DailyPhotoGroup instance) =>
@@ -49,9 +50,10 @@ Map<String, dynamic> _$DailyPhotoGroupToJson(DailyPhotoGroup instance) =>
 HourlyPhotoGroup _$HourlyPhotoGroupFromJson(Map<String, dynamic> json) =>
     HourlyPhotoGroup(
       dateTime: json['dateTime'] as String,
-      photos: (json['photos'] as List<dynamic>)
-          .map((e) => PhotoItem.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      photos: (json['photos'] as List<dynamic>?)
+              ?.map((e) => PhotoItem.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
       photosCount: (json['photosCount'] as num).toInt(),
       localizedTime: json['localizedTime'] as String,
       dominantLocation: json['dominantLocation'] == null

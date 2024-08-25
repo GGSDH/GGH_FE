@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gyeonggi_express/data/models/response/photo_ticket_response.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../data/models/response/photobook_list_response.dart';
@@ -7,26 +8,31 @@ import '../../data/repository/photobook_repository.dart';
 final class PhotobookState {
   final bool isLoading;
   final List<Photobook> photobooks;
+  final List<PhotoTicketResponse> photoTickets;
 
   PhotobookState({
     required this.isLoading,
     required this.photobooks,
+    required this.photoTickets,
   });
 
   factory PhotobookState.initial() {
     return PhotobookState(
       isLoading: false,
       photobooks: [],
+      photoTickets: []
     );
   }
 
   PhotobookState copyWith({
     bool? isLoading,
     List<Photobook>? photobooks,
+    List<PhotoTicketResponse>? photoTickets,
   }) {
     return PhotobookState(
       isLoading: isLoading ?? this.isLoading,
       photobooks: photobooks ?? this.photobooks,
+      photoTickets: photoTickets ?? this.photoTickets,
     );
   }
 }
@@ -79,6 +85,30 @@ class PhotobookBloc extends SideEffectBloc<PhotobookEvent, PhotobookState, Photo
           emit(state.copyWith(isLoading: false));
           produceSideEffect(PhotobookShowError(errorMessage));
         }
+      );
+    } catch (e) {
+      emit(state.copyWith(isLoading: false));
+      produceSideEffect(PhotobookShowError(e.toString()));
+    }
+
+    emit(state.copyWith(isLoading: true));
+
+    try {
+      final response = await _photobookRepository.getPhotoTickets();
+
+      response.when(
+          success: (data) {
+            emit(
+                state.copyWith(
+                  isLoading: false,
+                  photoTickets: data,
+                )
+            );
+          },
+          apiError: (errorMessage, errorCode) {
+            emit(state.copyWith(isLoading: false));
+            produceSideEffect(PhotobookShowError(errorMessage));
+          }
       );
     } catch (e) {
       emit(state.copyWith(isLoading: false));

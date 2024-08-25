@@ -15,7 +15,7 @@ Photobook _$PhotobookFromJson(Map<String, dynamic> json) => Photobook(
       location: LocationItem.fromJson(json['location'] as Map<String, dynamic>),
       photoTicketImage: json['photoTicketImage'] == null
           ? null
-          : PhotoItem.fromJson(
+          : PhotoTicket.fromJson(
               json['photoTicketImage'] as Map<String, dynamic>),
     );
 
