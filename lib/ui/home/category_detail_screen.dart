@@ -11,7 +11,6 @@ import 'package:gyeonggi_express/ui/component/app/app_image_plaeholder.dart';
 import 'package:gyeonggi_express/ui/home/category_detail_bloc.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
-import '../../data/models/response/tour_area_response.dart';
 import '../../data/models/sigungu_code.dart';
 import '../../data/models/trip_theme.dart';
 import '../../routes.dart';
@@ -119,8 +118,7 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen>
                             padding: const EdgeInsets.symmetric(
                                 vertical: 12, horizontal: 16),
                             child: Text(category.title),
-                          ))
-                              .toList(),
+                          )).toList(),
                           indicator: const UnderlineTabIndicator(
                             borderSide:
                             BorderSide(width: 1.0, color: ColorStyles.gray900),
@@ -149,7 +147,7 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen>
                                         const SizedBox(
                                           width: 4,
                                         ),
-                                        Text('${state.tourAreas.length}개',
+                                        Text('${state.totalCount}개',
                                             style: TextStyles.titleSmall.copyWith(
                                               color: ColorStyles.gray900,
                                               fontWeight: FontWeight.w600,
@@ -205,9 +203,7 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen>
                                 ),
                               ),
                               Expanded(
-                                child: state.isLoading ?
-                                const Center(child: CircularProgressIndicator()) :
-                                CategoryItemList(items: state.tourAreas),
+                                child: CategoryItemList(state: state),
                               ),
                             ],
                           );
@@ -236,113 +232,121 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen>
 }
 
 class CategoryItemList extends StatelessWidget {
-  final List<TourArea> items;
+  final CategoryDetailState state;
 
-  const CategoryItemList({super.key, required this.items});
+  const CategoryItemList({super.key, required this.state});
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: items.length,
+      itemCount: state.hasReachedMax ? state.tourAreas.length : state.tourAreas.length + 1,
       itemBuilder: (context, index) {
-        final item = items[index];
-        return Container(
-          padding: const EdgeInsets.all(20),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+        if (index >= state.tourAreas.length) {
+          context.read<CategoryDetailBloc>().add(LoadMoreTourAreas());
+          return const Center(child: CircularProgressIndicator());
+        } else {
+          final item = state.tourAreas[index];
+
+          return Container(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 12),
+                      Text(
+                        item.name,
+                        style: TextStyles.titleLarge.copyWith(
+                          color: ColorStyles.gray900,
+                        ),
+                      ),
+                      Text(
+                        '',
+                        style: TextStyles.bodyLarge.copyWith(
+                          color: ColorStyles.gray800,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          SvgPicture.asset(
+                            item.likedByMe
+                                ? "assets/icons/ic_heart_filled.svg"
+                                : "assets/icons/ic_heart.svg",
+                            width: 18,
+                            height: 18,
+                          ),
+                          const SizedBox(width: 1),
+                          Text(
+                            item.likeCount.toString(),
+                            style: TextStyles.bodyXSmall.copyWith(
+                                color: ColorStyles.gray500,
+                                fontWeight: FontWeight.w400),
+                          ),
+                          const SizedBox(width: 4),
+                          Text("|",
+                              style: TextStyles.bodyMedium.copyWith(
+                                  color: ColorStyles.gray300,
+                                  fontWeight: FontWeight.w400)),
+                          const SizedBox(width: 4),
+                          Text(
+                            item.sigungu.value,
+                            style: TextStyles.bodyMedium.copyWith(
+                                color: ColorStyles.gray500,
+                                fontWeight: FontWeight.w400),
+                          ),
+                          const SizedBox(width: 4),
+                          Text("|",
+                              style: TextStyles.bodyMedium.copyWith(
+                                  color: ColorStyles.gray300,
+                                  fontWeight: FontWeight.w400)),
+                          const SizedBox(width: 4),
+                          Text(
+                            item.contentType.value,
+                            style: TextStyles.bodyMedium.copyWith(
+                                color: ColorStyles.gray500,
+                                fontWeight: FontWeight.w400),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Stack(
                   children: [
-                    const SizedBox(height: 12),
-                    Text(
-                      item.name,
-                      style: TextStyles.titleLarge.copyWith(
-                        color: ColorStyles.gray900,
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: CachedNetworkImage(
+                        imageUrl: item.image ?? "",
+                        placeholder: (context, url) =>
+                        const AppImagePlaceholder(width: 104, height: 104),
+                        errorWidget: (context, url, error) =>
+                        const AppImagePlaceholder(width: 104, height: 104),
+                        width: 104,
+                        height: 104,
+                        fit: BoxFit.cover,
                       ),
                     ),
-                    Text(
-                      '',
-                      style: TextStyles.bodyLarge.copyWith(
-                        color: ColorStyles.gray800,
+                    Positioned(
+                      right: 10,
+                      top: 10,
+                      child: SvgPicture.asset(
+                        item.likedByMe
+                            ? "assets/icons/ic_heart_filled.svg"
+                            : "assets/icons/ic_heart_white.svg",
+                        width: 24,
+                        height: 24,
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        SvgPicture.asset(
-                          item.likedByMe
-                              ? "assets/icons/ic_heart_filled.svg"
-                              : "assets/icons/ic_heart.svg",
-                          width: 18,
-                          height: 18,
-                        ),
-                        const SizedBox(width: 1),
-                        Text(
-                          item.likeCount.toString(),
-                          style: TextStyles.bodyXSmall.copyWith(
-                              color: ColorStyles.gray500,
-                              fontWeight: FontWeight.w400),
-                        ),
-                        const SizedBox(width: 4),
-                        Text("|",
-                            style: TextStyles.bodyMedium.copyWith(
-                                color: ColorStyles.gray300,
-                                fontWeight: FontWeight.w400)),
-                        const SizedBox(width: 4),
-                        Text(
-                          item.sigungu.value,
-                          style: TextStyles.bodyMedium.copyWith(
-                              color: ColorStyles.gray500,
-                              fontWeight: FontWeight.w400),
-                        ),
-                        const SizedBox(width: 4),
-                        Text("|",
-                            style: TextStyles.bodyMedium.copyWith(
-                                color: ColorStyles.gray300,
-                                fontWeight: FontWeight.w400)),
-                        const SizedBox(width: 4),
-                        Text(
-                          item.contentType.value,
-                          style: TextStyles.bodyMedium.copyWith(
-                              color: ColorStyles.gray500,
-                              fontWeight: FontWeight.w400),
-                        )
-                      ],
                     ),
                   ],
                 ),
-              ),
-              Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child: CachedNetworkImage(
-                      imageUrl: item.image ?? "",
-                      placeholder: (context, url) => const AppImagePlaceholder(width: 104, height: 104),
-                      errorWidget: (context, url, error) => const AppImagePlaceholder(width: 104, height: 104),
-                      width: 104,
-                      height: 104,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  Positioned(
-                    right: 10,
-                    top: 10,
-                    child: SvgPicture.asset(
-                      item.likedByMe
-                          ? "assets/icons/ic_heart_filled.svg"
-                          : "assets/icons/ic_heart_white.svg",
-                      width: 24,
-                      height: 24,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
+              ],
+            ),
+          );
+        }
+      }
     );
   }
 }

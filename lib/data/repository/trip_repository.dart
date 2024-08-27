@@ -4,7 +4,7 @@ import '../models/api_result.dart';
 import '../models/response/lane_response.dart';
 import '../models/response/local_restaurant_response.dart';
 import '../models/response/popular_destination_response.dart';
-import '../models/response/tour_area_response.dart';
+import '../models/response/tour_area_pagination_response.dart';
 import '../models/trip_theme.dart';
 
 abstract class TripRepository {
@@ -14,5 +14,10 @@ abstract class TripRepository {
 
   Future<ApiResult<List<PopularDestination>>> getPopularDestinations();
 
-  Future<ApiResult<List<TourArea>>> getTourAreas(List<SigunguCode> sigunguCodes, TripTheme tripTheme);
+  Future<ApiResult<TourAreaPaginationResponse>> getTourAreas({
+    required List<SigunguCode> sigunguCodes,
+    required TripTheme tripTheme,
+    required int page,
+    int size = 20
+  });
 }

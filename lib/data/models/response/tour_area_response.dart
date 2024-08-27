@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:gyeonggi_express/data/models/tour_content_type.dart';
 import 'package:json_annotation/json_annotation.dart';
 import '../sigungu_code.dart';

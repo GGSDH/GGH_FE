@@ -4,7 +4,7 @@ import 'package:gyeonggi_express/data/ext/dio_extensions.dart';
 import 'package:gyeonggi_express/data/models/api_result.dart';
 import 'package:gyeonggi_express/data/models/response/local_restaurant_response.dart';
 import 'package:gyeonggi_express/data/models/response/popular_destination_response.dart';
-import 'package:gyeonggi_express/data/models/response/tour_area_response.dart';
+import 'package:gyeonggi_express/data/models/response/tour_area_pagination_response.dart';
 import 'package:gyeonggi_express/data/models/sigungu_code.dart';
 
 import '../models/request/tour_area_search_request.dart';
@@ -54,12 +54,14 @@ class TripDataSourceImpl implements TripDataSource {
   }
 
   @override
-  Future<ApiResult<List<TourArea>>> getTourAreas(TourAreaSearchRequest request) {
-    return _dio.makeRequest<List<TourArea>>(
+  Future<ApiResult<TourAreaPaginationResponse>> getTourAreas({
+    required TourAreaSearchRequest request,
+    required int page,
+    int size = 20
+  }) {
+    return _dio.makeRequest<TourAreaPaginationResponse>(
       () => _dio.get('v1/tour-area/search', data: request.toJson()),
-      (data) =>
-      (data as List).map((e) =>
-          TourArea.fromJson(e as Map<String, dynamic>)).toList()
+      (data) => TourAreaPaginationResponse.fromJson(data as Map<String, dynamic>)
     );
   }
 }
