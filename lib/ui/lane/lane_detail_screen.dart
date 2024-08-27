@@ -1,146 +1,58 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:gyeonggi_express/data/models/response/lane_detail_response.dart';
+import 'package:gyeonggi_express/data/models/response/lane_tour_area_response.dart';
+import 'package:gyeonggi_express/data/repository/lane_repository.dart';
+import 'package:gyeonggi_express/themes/color_styles.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
 import 'package:gyeonggi_express/ui/component/app/app_action_bar.dart';
+import 'package:gyeonggi_express/ui/lane/lane_detail_bloc.dart';
 
-import '../../themes/color_styles.dart';
+class LaneDetailScreen extends StatelessWidget {
+  final int laneId;
 
-// Lane Data 클래스 정의
-class LaneData {
-  final String category;
-  final String name;
-  final String description;
-  final List<DayData> days;
-
-  LaneData({
-    required this.category,
-    required this.name,
-    required this.description,
-    required this.days,
-  });
-}
-
-class DayData {
-  final String date;
-  final List<PlaceData> places;
-
-  DayData({required this.date, required this.places});
-}
-
-class PlaceData {
-  final String name;
-  final String region;
-  final String category;
-  final int likeCount;
-  final List<String> imageUrls;
-
-  PlaceData({
-    required this.name,
-    required this.region,
-    required this.category,
-    required this.likeCount,
-    required this.imageUrls,
-  });
-}
-
-class LaneDetailScreen extends StatefulWidget {
-  final LaneData laneData = LaneData(
-    category: '경기도 여행',
-    name: '경기도 3일 완전정복 코스',
-    description: '경기도의 주요 명소를 3일간 둘러보는 알찬 여행 코스',
-    days: [
-      DayData(
-        date: '2024.12.31',
-        places: [
-          PlaceData(
-            name: '수원화성',
-            region: '수원시',
-            category: '역사유적',
-            likeCount: 1234,
-            imageUrls: [
-              'https://picsum.photos/seed/suwon1/800/800',
-              'https://picsum.photos/seed/suwon2/800/800',
-              'https://picsum.photos/seed/suwon3/800/800',
-            ],
-          ),
-          PlaceData(
-            name: '행궁동 카페거리',
-            region: '수원시',
-            category: '카페',
-            likeCount: 987,
-            imageUrls: [
-              'https://picsum.photos/seed/cafe1/800/800',
-              'https://picsum.photos/seed/cafe2/800/800',
-            ],
-          ),
-        ],
-      ),
-      DayData(
-        date: '2025.01.01',
-        places: [
-          PlaceData(
-            name: '에버랜드',
-            region: '용인시',
-            category: '테마파크',
-            likeCount: 5678,
-            imageUrls: [
-              'https://picsum.photos/seed/everland1/800/800',
-              'https://picsum.photos/seed/everland2/800/800',
-              'https://picsum.photos/seed/everland3/800/800',
-            ],
-          ),
-          PlaceData(
-            name: '한국민속촌',
-            region: '용인시',
-            category: '문화체험',
-            likeCount: 3456,
-            imageUrls: [
-              'https://picsum.photos/seed/folk1/800/800',
-              'https://picsum.photos/seed/folk2/800/800',
-            ],
-          ),
-        ],
-      ),
-      DayData(
-        date: '2025.01.02',
-        places: [
-          PlaceData(
-            name: '쁘띠프랑스',
-            region: '가평군',
-            category: '테마파크',
-            likeCount: 2345,
-            imageUrls: [
-              'https://picsum.photos/seed/france1/800/800',
-              'https://picsum.photos/seed/france2/800/800',
-            ],
-          ),
-          PlaceData(
-            name: '남이섬',
-            region: '가평군',
-            category: '자연/관광',
-            likeCount: 4567,
-            imageUrls: [
-              'https://picsum.photos/seed/nami1/800/800',
-              'https://picsum.photos/seed/nami2/800/800',
-              'https://picsum.photos/seed/nami3/800/800',
-            ],
-          ),
-        ],
-      ),
-    ],
-  );
-
-  LaneDetailScreen({super.key});
+  const LaneDetailScreen({super.key, required this.laneId});
 
   @override
-  _LaneDetailScreenState createState() => _LaneDetailScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => LaneDetailBloc(
+        GetIt.instance<LaneRepository>(),
+      )..add(FetchLaneDetail(laneId)),
+      child: Scaffold(
+        body: BlocBuilder<LaneDetailBloc, LaneDetailState>(
+          builder: (context, state) {
+            if (state is LaneDetailLoading) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is LaneDetailLoaded) {
+              return LaneDetailView(laneDetail: state.laneDetail);
+            } else if (state is LaneDetailError) {
+              return Center(child: Text('Error: ${state.message}'));
+            }
+            return const Center(child: Text('Select a lane to view details'));
+          },
+        ),
+      ),
+    );
+  }
 }
 
-class _LaneDetailScreenState extends State<LaneDetailScreen> {
+class LaneDetailView extends StatefulWidget {
+  final LaneDetail laneDetail;
+
+  const LaneDetailView({super.key, required this.laneDetail});
+
+  @override
+  State<StatefulWidget> createState() => _LaneDetailViewState();
+}
+
+class _LaneDetailViewState extends State<LaneDetailView> {
   final Completer<NaverMapController> _mapControllerCompleter =
       Completer<NaverMapController>();
   int _selectedDayIndex = 0;
@@ -202,8 +114,8 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
               Expanded(
                 child: TabBarView(
                   children: [
-                    _laneCourseWidget(widget.laneData),
-                    _mapViewWidget(),
+                    _laneCourseWidget(widget.laneDetail),
+                    _mapViewWidget(widget.laneDetail),
                   ],
                 ),
               ),
@@ -214,7 +126,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
     );
   }
 
-  Widget _mapViewWidget() {
+  Widget _mapViewWidget(LaneDetail laneDetail) {
     return Stack(
       children: [
         _NaverMapSection(mapControllerCompleter: _mapControllerCompleter),
@@ -222,13 +134,13 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
           left: 0,
           right: 0,
           bottom: 0,
-          child: _buildBottomSheetLikeView(),
+          child: _buildBottomSheetLikeView(laneDetail),
         ),
       ],
     );
   }
 
-  Widget _buildBottomSheetLikeView() {
+  Widget _buildBottomSheetLikeView(LaneDetail laneDetail) {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         return Container(
@@ -277,9 +189,10 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
-                        children: widget.laneData.days[_selectedDayIndex].places
-                            .map(
-                                (place) => _placeDetailItemInBottomSheet(place))
+                        children: widget.laneDetail
+                            .getTourAreasByDay(_selectedDayIndex + 1)
+                            .map((tourArea) =>
+                                _placeDetailItemInBottomSheet(tourArea))
                             .toList(),
                       ),
                     )
@@ -322,7 +235,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: ListView.builder(
                     shrinkWrap: true,
-                    itemCount: widget.laneData.days.length,
+                    itemCount: widget.laneDetail.getDaysWithTourAreas().length,
                     itemBuilder: (context, idx) {
                       bool isSelected = idx == _selectedDayIndex;
                       return Padding(
@@ -364,8 +277,6 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
     );
   }
 
-  // _placeDetailItemInBottomSheet, _laneCourseWidget, _lanePlace, _laneHeader 메서드들은 이전과 동일
-
   Widget _laneHeader() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -383,7 +294,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
               borderRadius: BorderRadius.circular(100),
             ),
             child: Text(
-              widget.laneData.category,
+              widget.laneDetail.laneName,
               style: TextStyles.titleXSmall.copyWith(
                 color: const Color(0xFFFBB12C),
                 fontWeight: FontWeight.w600,
@@ -393,14 +304,14 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
         ),
         const SizedBox(height: 14),
         Text(
-          widget.laneData.name,
+          widget.laneDetail.laneName,
           style: TextStyles.title2ExtraLarge.copyWith(
             fontWeight: FontWeight.w600,
             color: ColorStyles.gray900,
           ),
         ),
         Text(
-          widget.laneData.description,
+          widget.laneDetail.laneName,
           style: TextStyles.bodyLarge.copyWith(
             fontWeight: FontWeight.w400,
             color: ColorStyles.gray500,
@@ -427,7 +338,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
     );
   }
 
-  Widget _lanePlace(PlaceData place) {
+  Widget _lanePlace(LaneTourArea laneTourArea) {
     return Padding(
       padding: const EdgeInsets.only(left: 20),
       child: IntrinsicHeight(
@@ -460,7 +371,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(place.name,
+                  Text(laneTourArea.tourAreaName,
                       style: TextStyles.titleMedium.copyWith(
                           fontWeight: FontWeight.w600,
                           color: ColorStyles.gray800)),
@@ -471,7 +382,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                       Expanded(
                         child: Row(
                           children: [
-                            Text(place.region,
+                            Text(laneTourArea.tourAreaName,
                                 style: TextStyles.bodyMedium.copyWith(
                                     color: ColorStyles.gray500,
                                     fontWeight: FontWeight.w400)),
@@ -481,7 +392,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                                     color: ColorStyles.gray300,
                                     fontWeight: FontWeight.w400)),
                             const SizedBox(width: 4),
-                            Text(place.category,
+                            Text(laneTourArea.tourAreaName,
                                 style: TextStyles.bodyMedium.copyWith(
                                     color: ColorStyles.gray500,
                                     fontWeight: FontWeight.w400)),
@@ -494,7 +405,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                         height: 18,
                       ),
                       const SizedBox(width: 2),
-                      Text(place.likeCount.toString(),
+                      Text(laneTourArea.likeCnt.toString(),
                           style: TextStyles.bodyXSmall.copyWith(
                               color: ColorStyles.gray600,
                               fontWeight: FontWeight.w400)),
@@ -505,20 +416,51 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                      children: place.imageUrls
-                          .map((url) => Padding(
-                                padding: const EdgeInsets.only(right: 10),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: Image.network(
-                                    url,
-                                    fit: BoxFit.cover,
+                      children: [
+                        if (laneTourArea.image.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Image.network(
+                                laneTourArea.image,
+                                fit: BoxFit.cover,
+                                height: 150,
+                                width: 240,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
                                     height: 150,
                                     width: 240,
-                                  ),
-                                ),
-                              ))
-                          .toList(),
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey,
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: const Center(
+                                      child: Icon(Icons.image_not_supported,
+                                          color: Colors.white60),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          )
+                        else
+                          Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: Container(
+                              height: 150,
+                              width: 240,
+                              decoration: BoxDecoration(
+                                color: Colors.grey,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: const Center(
+                                child: Icon(Icons.image_not_supported,
+                                    color: Colors.white60),
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -531,7 +473,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
     );
   }
 
-  Widget _placeDetailItemInBottomSheet(PlaceData place) {
+  Widget _placeDetailItemInBottomSheet(LaneTourArea laneTourArea) {
     return SizedBox(
       width: 300,
       child: Column(
@@ -562,15 +504,25 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: Image.network(
-                  place.imageUrls.first,
-                  fit: BoxFit.cover,
-                  height: 80,
-                  width: 80,
-                ),
-              ),
+              (laneTourArea.image.isNotEmpty)
+                  ? Image.network(
+                      laneTourArea.image,
+                      fit: BoxFit.cover,
+                      height: 80,
+                      width: 80,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          height: 80,
+                          width: 80,
+                          color: Colors.grey,
+                        );
+                      },
+                    )
+                  : Container(
+                      height: 80,
+                      width: 80,
+                      color: Colors.grey,
+                    ),
               Expanded(
                 child: Padding(
                   padding:
@@ -579,7 +531,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        place.name,
+                        laneTourArea.tourAreaName,
                         style: TextStyles.titleMedium.copyWith(
                             fontWeight: FontWeight.w600,
                             color: ColorStyles.gray800),
@@ -588,7 +540,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                         children: [
                           Expanded(
                             child: Text(
-                              "${place.region} | ${place.category}",
+                              laneTourArea.tourAreaName,
                               style: TextStyles.bodyMedium.copyWith(
                                   color: ColorStyles.gray500,
                                   fontWeight: FontWeight.w400),
@@ -605,7 +557,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                             height: 18,
                           ),
                           const SizedBox(width: 2),
-                          Text(place.likeCount.toString(),
+                          Text(laneTourArea.likeCnt.toString(),
                               style: TextStyles.bodyXSmall.copyWith(
                                   color: ColorStyles.gray600,
                                   fontWeight: FontWeight.w400))
@@ -622,7 +574,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
     );
   }
 
-  Widget _laneCourseWidget(LaneData laneData) {
+  Widget _laneCourseWidget(LaneDetail laneData) {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         return SingleChildScrollView(
@@ -633,32 +585,39 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
             ),
             child: IntrinsicHeight(
               child: Column(
-                children: laneData.days
-                    .expand((day) => [
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(20, 20, 20, 14),
-                            child: Row(children: [
-                              Text(
-                                "Day ${laneData.days.indexOf(day) + 1}",
-                                style: TextStyles.titleLarge.copyWith(
-                                    color: ColorStyles.gray900,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                day.date,
-                                style: TextStyles.bodyLarge.copyWith(
-                                    color: ColorStyles.gray500,
-                                    fontWeight: FontWeight.w400),
-                              ),
-                            ]),
-                          ),
-                          ...day.places.expand((place) => [
-                                _lanePlace(place),
-                                if (day.places.last != place) _laneDivider(),
-                              ]),
-                        ])
-                    .toList(),
+                children: laneData.getDaysWithTourAreas().expand((day) {
+                  List<Widget> dayWidgets = [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 14),
+                      child: Row(children: [
+                        Text(
+                          "Day $day",
+                          style: TextStyles.titleLarge.copyWith(
+                              color: ColorStyles.gray900,
+                              fontWeight: FontWeight.w600),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          "",
+                          style: TextStyles.bodyLarge.copyWith(
+                              color: ColorStyles.gray500,
+                              fontWeight: FontWeight.w400),
+                        ),
+                      ]),
+                    ),
+                  ];
+
+                  List<LaneTourArea> tourAreas =
+                      laneData.getTourAreasByDay(day);
+                  dayWidgets.addAll(
+                      tourAreas.map((place) => _lanePlace(place)).toList());
+
+                  for (int i = 0; i < tourAreas.length - 1; i++) {
+                    dayWidgets.add(_laneDivider());
+                  }
+
+                  return dayWidgets;
+                }).toList(),
               ),
             ),
           ),
