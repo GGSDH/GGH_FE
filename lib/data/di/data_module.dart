@@ -1,6 +1,8 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:gyeonggi_express/data/datasource/auth_datasource.dart';
+import 'package:gyeonggi_express/data/datasource/lane_datasource.dart';
+import 'package:gyeonggi_express/data/datasource/lane_datasource_impl.dart';
 import 'package:gyeonggi_express/data/datasource/photobook_datasource.dart';
 import 'package:gyeonggi_express/data/datasource/tour_area_datasource.dart';
 import 'package:gyeonggi_express/data/datasource/tour_area_datasource_impl.dart';
@@ -8,6 +10,8 @@ import 'package:gyeonggi_express/data/datasource/trip_datasource.dart';
 import 'package:gyeonggi_express/data/dio_client.dart';
 import 'package:gyeonggi_express/data/repository/auth_repository.dart';
 import 'package:gyeonggi_express/data/repository/auth_repository_impl.dart';
+import 'package:gyeonggi_express/data/repository/lane_repository.dart';
+import 'package:gyeonggi_express/data/repository/lane_repository_impl.dart';
 import 'package:gyeonggi_express/data/repository/photobook_repository.dart';
 import 'package:gyeonggi_express/data/repository/tour_area_repository.dart';
 import 'package:gyeonggi_express/data/repository/tour_area_repository_impl.dart';
@@ -41,4 +45,8 @@ void setupLocator() {
       () => TourAreaDataSourceImpl(getIt<DioClient>().dio));
   getIt.registerLazySingleton<TourAreaRepository>(
       () => TourAreaRepositoryImpl(getIt<TourAreaDataSource>()));
+  getIt.registerLazySingleton<LaneDatasource>(
+      () => LaneDatasourceImpl(getIt<DioClient>().dio));
+  getIt.registerLazySingleton<LaneRepository>(
+      (() => LaneRepositoryImpl(getIt<LaneDatasource>())));
 }

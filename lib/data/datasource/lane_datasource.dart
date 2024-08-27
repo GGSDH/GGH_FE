@@ -1,0 +1,6 @@
+import 'package:gyeonggi_express/data/models/api_result.dart';
+import 'package:gyeonggi_express/data/models/response/lane_detail_response.dart';
+
+abstract class LaneDatasource {
+  Future<ApiResult<LaneDetail>> getLaneDetail(int laneId);
+}
