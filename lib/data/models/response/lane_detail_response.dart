@@ -33,7 +33,7 @@ class LaneDetail {
       _$LaneDetailFromJson(json);
   Map<String, dynamic> toJson() => _$LaneDetailToJson(this);
 
-  List<LaneTourArea> getTourAreasByDay(int day) {
+  List<TourAreaSummary> getTourAreasByDay(int day) {
     List<LaneSpecificResponse> responsesForDay =
         laneSpecificResponses.where((response) => response.day == day).toList();
     if (responsesForDay.isEmpty) {
@@ -41,7 +41,7 @@ class LaneDetail {
     }
     responsesForDay.sort((a, b) => a.sequence.compareTo(b.sequence));
 
-    List<LaneTourArea> tourAreas =
+    List<TourAreaSummary> tourAreas =
         responsesForDay.map((response) => response.tourAreaResponse).toList();
 
     return tourAreas;

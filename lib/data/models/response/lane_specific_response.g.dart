@@ -11,7 +11,7 @@ LaneSpecificResponse _$LaneSpecificResponseFromJson(
     LaneSpecificResponse(
       sequence: (json['sequence'] as num).toInt(),
       laneName: json['laneName'] as String,
-      tourAreaResponse: LaneTourArea.fromJson(
+      tourAreaResponse: TourAreaSummary.fromJson(
           json['tourAreaResponse'] as Map<String, dynamic>),
       day: (json['day'] as num).toInt(),
     );

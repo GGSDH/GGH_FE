@@ -338,7 +338,7 @@ class _LaneDetailViewState extends State<LaneDetailView> {
     );
   }
 
-  Widget _lanePlace(LaneTourArea laneTourArea) {
+  Widget _lanePlace(TourAreaSummary laneTourArea) {
     return Padding(
       padding: const EdgeInsets.only(left: 20),
       child: IntrinsicHeight(
@@ -473,7 +473,7 @@ class _LaneDetailViewState extends State<LaneDetailView> {
     );
   }
 
-  Widget _placeDetailItemInBottomSheet(LaneTourArea laneTourArea) {
+  Widget _placeDetailItemInBottomSheet(TourAreaSummary laneTourArea) {
     return SizedBox(
       width: 300,
       child: Column(
@@ -607,7 +607,7 @@ class _LaneDetailViewState extends State<LaneDetailView> {
                     ),
                   ];
 
-                  List<LaneTourArea> tourAreas =
+                  List<TourAreaSummary> tourAreas =
                       laneData.getTourAreasByDay(day);
                   dayWidgets.addAll(
                       tourAreas.map((place) => _lanePlace(place)).toList());

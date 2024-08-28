@@ -1,9 +1,9 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'lane_tour_area_response.g.dart';
+part 'tour_area_summary_response.g.dart';
 
 @JsonSerializable()
-class LaneTourArea {
+class TourAreaSummary {
   @JsonKey(name: 'tourAreaId')
   final int tourAreaId;
 
@@ -25,7 +25,7 @@ class LaneTourArea {
   @JsonKey(name: 'likedByMe')
   final bool likedByMe;
 
-  LaneTourArea({
+  TourAreaSummary({
     required this.tourAreaId,
     required this.tourAreaName,
     required this.latitude,
@@ -35,7 +35,7 @@ class LaneTourArea {
     required this.likedByMe,
   });
 
-  factory LaneTourArea.fromJson(Map<String, dynamic> json) =>
-      _$LaneTourAreaFromJson(json);
-  Map<String, dynamic> toJson() => _$LaneTourAreaToJson(this);
+  factory TourAreaSummary.fromJson(Map<String, dynamic> json) =>
+      _$TourAreaSummaryFromJson(json);
+  Map<String, dynamic> toJson() => _$TourAreaSummaryToJson(this);
 }
