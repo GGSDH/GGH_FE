@@ -80,11 +80,6 @@ final class SelectPhotoTicket extends SelectPhotoTicketEvent {
 }
 
 sealed class SelectPhotoTicketSideEffect {}
-final class SelectPhotoTicketComplete extends SelectPhotoTicketSideEffect {
-  final int photoTicketId;
-
-  SelectPhotoTicketComplete(this.photoTicketId);
-}
 final class SelectPhotoTicketShowError extends SelectPhotoTicketSideEffect {
   final String message;
 
@@ -102,7 +97,6 @@ class SelectPhotoTicketBloc extends SideEffectBloc<SelectPhotoTicketEvent, Selec
     on<SelectPhotoTicketIndexChanged>(_onSelectPhotoTicketIndexChanged);
     on<SelectPhotoTicketPressStart>(_onPressStart);
     on<SelectPhotoTicketPressEnd>(_onPressEnd);
-    on<SelectPhotoTicket>(_onSelectPhotoTicket);
   }
 
   void _onInitialize(
@@ -158,13 +152,6 @@ class SelectPhotoTicketBloc extends SideEffectBloc<SelectPhotoTicketEvent, Selec
     Emitter<SelectPhotoTicketState> emit,
   ) {
     emit(state.copyWith(isChoosing: false));
-  }
-
-  void _onSelectPhotoTicket(
-    SelectPhotoTicket event,
-    Emitter<SelectPhotoTicketState> emit,
-  ) async {
-
   }
 
   String? getMostFrequentLocationName(List<PhotoItem> photos) {

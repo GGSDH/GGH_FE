@@ -39,9 +39,7 @@ class _SelectPhotoTicketScreenState extends State<SelectPhotoTicketScreen> {
 
     return BlocSideEffectListener<SelectPhotoTicketBloc, SelectPhotoTicketSideEffect>(
       listener: (context, sideEffect) {
-        if (sideEffect is SelectPhotoTicketComplete) {
-          GoRouter.of(context).pop();
-        } else if (sideEffect is SelectPhotoTicketShowError) {
+        if (sideEffect is SelectPhotoTicketShowError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(sideEffect.message)),
           );
@@ -125,7 +123,11 @@ class _SelectPhotoTicketScreenState extends State<SelectPhotoTicketScreen> {
                                 },
                               ).toString();
 
-                              GoRouter.of(context).push(path);
+                              GoRouter.of(context).push(path).then((result) {
+                                if (result != null) {
+                                  GoRouter.of(context).pop(true);
+                                }
+                              });
                             },
                             child: SizedBox(
                               width: screenWidth * 0.7,

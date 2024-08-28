@@ -4,17 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/route_extension.dart';
-import 'package:gyeonggi_express/ui/component/map/map_marker.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_bloc.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../constants.dart';
 import '../../data/models/response/photo_ticket_response.dart';
 import '../../data/models/response/photobook_response.dart';
-import '../../data/repository/photobook_repository.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
@@ -30,8 +27,15 @@ class PhotobookScreen extends StatefulWidget {
   _PhotobookScreenState createState() => _PhotobookScreenState();
 }
 
-class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware {
+class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware, TickerProviderStateMixin {
   final Completer<NaverMapController> _mapControllerCompleter = Completer<NaverMapController>();
+  late final TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
 
   void _showBottomSheet(
     List<PhotobookResponse> photobooks,
@@ -114,83 +118,85 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => PhotobookBloc(
-        photobookRepository: GetIt.instance.get<PhotobookRepository>(),
-      )..add(PhotobookInitialize()),
-      child: BlocSideEffectListener<PhotobookBloc, PhotobookSideEffect>(
-        listener: (context, sideEffect) {
-          if (sideEffect is PhotobookShowError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(sideEffect.message),
-              ),
-            );
-          } else if (sideEffect is PhotobookShowBottomSheet) {
-            _showBottomSheet(
-              sideEffect.photobooks,
-              () => context.read<PhotobookBloc>().add(PhotobookInitialize())
-            );
-          }
-        },
-        child: BlocBuilder<PhotobookBloc, PhotobookState>(
-          builder: (context, state) {
-            if (state.isLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else {
-              return Scaffold(
-                body: Material(
-                  color: Colors.white,
-                  child: DefaultTabController(
-                    length: 2,
-                    child: SafeArea(
-                      child: Stack(
+    return BlocSideEffectListener<PhotobookBloc, PhotobookSideEffect>(
+      listener: (context, sideEffect) {
+        if (sideEffect is PhotobookShowError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(sideEffect.message),
+            ),
+          );
+        } else if (sideEffect is PhotobookShowBottomSheet) {
+          _showBottomSheet(
+            sideEffect.photobooks,
+            () => context.read<PhotobookBloc>().add(FetchPhotoTickets())
+          );
+        }
+      },
+      child: BlocBuilder<PhotobookBloc, PhotobookState>(
+        builder: (context, state) {
+          return Scaffold(
+            body: Material(
+              color: Colors.white,
+              child: DefaultTabController(
+                length: 2,
+                child: SafeArea(
+                  child: Stack(
+                      children: [
+                        Column(
                           children: [
-                            Column(
-                              children: [
-                                const _TabBarSection(),
-                                Expanded(
-                                  child: TabBarView(
-                                    children: [
-                                      _PhotobookSection(
-                                        mapControllerCompleter: _mapControllerCompleter,
-                                        photobooks: state.photobooks,
-                                        onAddPhotobook: () {
-                                          GoRouter.of(context).push("${Routes.photobook.path}/${Routes.addPhotobook.path}").then((_) {
-                                            context.read<PhotobookBloc>().add(PhotobookInitialize());
-                                          });
-                                        },
-                                        showPhotobookList: () => _showBottomSheet(
-                                          state.photobooks,
-                                          () => context.read<PhotobookBloc>().add(PhotobookInitialize())
-                                        ),
-                                      ),
-                                      _PhotoTicketSection(photoTickets: state.photoTickets),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                            _TabBarSection(
+                              tabController: _tabController
                             ),
-                          ]
-                      ),
-                    ),
+                            Expanded(
+                              child: TabBarView(
+                                controller: _tabController,
+                                children: [
+                                  _PhotobookSection(
+                                    mapControllerCompleter: _mapControllerCompleter,
+                                    photobooks: state.photobooks,
+                                    onAddPhotobook: () {
+                                      GoRouter.of(context).push("${Routes.photobook.path}/${Routes.addPhotobook.path}").then((_) {
+                                        context.read<PhotobookBloc>().add(FetchPhotobooks());
+                                      });
+                                    },
+                                    showPhotobookList: () => _showBottomSheet(
+                                      state.photobooks,
+                                      () => context.read<PhotobookBloc>().add(FetchPhotoTickets())
+                                    ),
+                                  ),
+                                  _PhotoTicketSection(
+                                    photoTickets: state.photoTickets,
+                                    tabController: _tabController
+                                  )
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ]
                   ),
                 ),
-              );
-            }
-          }
-        ),
+              ),
+            ),
+          );
+        }
       ),
     );
   }
 }
 
 class _TabBarSection extends StatelessWidget {
-  const _TabBarSection();
+  final TabController tabController;
+
+  const _TabBarSection({
+    required this.tabController,
+  });
 
   @override
   Widget build(BuildContext context) {
     return TabBar(
+      controller: tabController,
       indicator: const BoxDecoration(
         border: Border(
           bottom: BorderSide(
@@ -304,9 +310,11 @@ class _PhotobookSection extends StatelessWidget {
 
 class _PhotoTicketSection extends StatelessWidget {
   final List<PhotoTicketResponse> photoTickets;
+  final TabController tabController;
 
   _PhotoTicketSection({
     required this.photoTickets,
+    required this.tabController,
   });
 
   final PageController _controller = PageController(viewportFraction: 0.8);
@@ -335,7 +343,18 @@ class _PhotoTicketSection extends StatelessWidget {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: (index == photoTickets.length) ?
-                      const AddPhotoTicketItem() :
+                      AddPhotoTicketItem(
+                        onTap: () {
+                          GoRouter.of(context).push("${Routes.photobook.path}/${Routes.selectPhotoTicket.path}").then((result) {
+                            print('result : $result');
+
+                            if (result == true) {
+                              context.read<PhotobookBloc>().add(FetchPhotoTickets());
+                              tabController.animateTo(1);
+                            }
+                          });
+                        }
+                      ) :
                     PhotoTicketItem(
                       title: photoTickets[index].photobook.title,
                       filePath: photoTickets[index].photo.path,
@@ -355,8 +374,12 @@ class _PhotoTicketSection extends StatelessWidget {
 }
 
 class AddPhotoTicketItem extends StatelessWidget {
+  final VoidCallback onTap;
 
-  const AddPhotoTicketItem({ super.key });
+  const AddPhotoTicketItem({
+    super.key,
+    required this.onTap
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -411,11 +434,7 @@ class AddPhotoTicketItem extends StatelessWidget {
 
                       Expanded(
                         child: GestureDetector(
-                          onTap: () {
-                            GoRouter.of(context).push("${Routes.photobook.path}/${Routes.selectPhotoTicket.path}").then((_) {
-                              context.read<PhotobookBloc>().add(PhotobookInitialize());
-                            });
-                          },
+                          onTap: onTap,
                           child: Container(
                             alignment: Alignment.center,
                             decoration: const BoxDecoration(

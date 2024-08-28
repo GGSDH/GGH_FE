@@ -38,7 +38,8 @@ final class PhotobookState {
 }
 
 sealed class PhotobookEvent { }
-final class PhotobookInitialize extends PhotobookEvent { }
+final class FetchPhotobooks extends PhotobookEvent { }
+final class FetchPhotoTickets extends PhotobookEvent { }
 
 sealed class PhotobookSideEffect { }
 final class PhotobookShowBottomSheet extends PhotobookSideEffect {
@@ -59,11 +60,12 @@ class PhotobookBloc extends SideEffectBloc<PhotobookEvent, PhotobookState, Photo
     required PhotobookRepository photobookRepository,
   }) : _photobookRepository = photobookRepository,
        super(PhotobookState.initial()) {
-    on<PhotobookInitialize>(_onPhotobookInitialize);
+    on<FetchPhotobooks>(_onFetchPhotobooks);
+    on<FetchPhotoTickets>(_onFetchPhotoTickets);
   }
 
-  void _onPhotobookInitialize(
-    PhotobookInitialize event,
+  void _onFetchPhotobooks(
+    FetchPhotobooks event,
     Emitter<PhotobookState> emit
   ) async {
     emit(state.copyWith(isLoading: true));
@@ -72,25 +74,30 @@ class PhotobookBloc extends SideEffectBloc<PhotobookEvent, PhotobookState, Photo
       final response = await _photobookRepository.getPhotobooks();
 
       response.when(
-        success: (data) {
-          emit(
-            state.copyWith(
-              isLoading: false,
-              photobooks: data,
-            )
-          );
-          produceSideEffect(PhotobookShowBottomSheet(state.photobooks));
-        },
-        apiError: (errorMessage, errorCode) {
-          emit(state.copyWith(isLoading: false));
-          produceSideEffect(PhotobookShowError(errorMessage));
-        }
+          success: (data) {
+            emit(
+                state.copyWith(
+                  isLoading: false,
+                  photobooks: data,
+                )
+            );
+            produceSideEffect(PhotobookShowBottomSheet(state.photobooks));
+          },
+          apiError: (errorMessage, errorCode) {
+            emit(state.copyWith(isLoading: false));
+            produceSideEffect(PhotobookShowError(errorMessage));
+          }
       );
     } catch (e) {
       emit(state.copyWith(isLoading: false));
       produceSideEffect(PhotobookShowError(e.toString()));
     }
+  }
 
+  void _onFetchPhotoTickets(
+    FetchPhotoTickets event,
+    Emitter<PhotobookState> emit
+  ) async {
     emit(state.copyWith(isLoading: true));
 
     try {
@@ -106,9 +113,6 @@ class PhotobookBloc extends SideEffectBloc<PhotobookEvent, PhotobookState, Photo
             );
           },
           apiError: (errorMessage, errorCode) {
-            print('load phototickets');
-            print('errorMessage: $errorMessage, errorCode: $errorCode');
-
             emit(state.copyWith(isLoading: false));
             produceSideEffect(PhotobookShowError(errorMessage));
           }

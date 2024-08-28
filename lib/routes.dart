@@ -26,6 +26,7 @@ import 'package:gyeonggi_express/ui/onboarding/onboarding_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/add/add_photobook_loading_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/add/add_photobook_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/add/add_photobook_select_period_screen.dart';
+import 'package:gyeonggi_express/ui/photobook/photobook_bloc.dart';
 import 'package:gyeonggi_express/ui/photobook/phototicket/add_photo_ticket_bloc.dart';
 import 'package:gyeonggi_express/ui/photobook/phototicket/select_photo_ticket_bloc.dart';
 import 'package:gyeonggi_express/ui/photobook/phototicket/add_photo_ticket_screen.dart';
@@ -95,7 +96,7 @@ enum Routes {
       GlobalKey<NavigatorState>();
 
   static final GoRouter config = GoRouter(
-      initialLocation: Routes.search.path,
+      initialLocation: Routes.splash.path,
       observers: [RouterObserver()],
       navigatorKey: _rootNavigatorKey,
       routes: [
@@ -212,8 +213,12 @@ enum Routes {
                   GoRoute(
                     path: Routes.photobook.path,
                     name: Routes.photobook.name,
-                    builder: (context, state) =>
-                        const Scaffold(body: PhotobookScreen()),
+                    builder: (context, state) => BlocProvider(
+                      create: (context) => PhotobookBloc(
+                        photobookRepository: GetIt.instance<PhotobookRepository>(),
+                      )..add(FetchPhotobooks())..add(FetchPhotoTickets()),
+                      child: const Scaffold(body: PhotobookScreen())
+                    ),
                     routes: [
                       GoRoute(
                         path: Routes.addPhotobook.path,
