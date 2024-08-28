@@ -1,12 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'lane_tour_area_response.dart';
+part of 'tour_area_summary_response.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-LaneTourArea _$LaneTourAreaFromJson(Map<String, dynamic> json) => LaneTourArea(
+TourAreaSummary _$TourAreaSummaryFromJson(Map<String, dynamic> json) =>
+    TourAreaSummary(
       tourAreaId: (json['tourAreaId'] as num).toInt(),
       tourAreaName: json['tourAreaName'] as String,
       latitude: (json['latitude'] as num).toDouble(),
@@ -16,7 +17,7 @@ LaneTourArea _$LaneTourAreaFromJson(Map<String, dynamic> json) => LaneTourArea(
       likedByMe: json['likedByMe'] as bool,
     );
 
-Map<String, dynamic> _$LaneTourAreaToJson(LaneTourArea instance) =>
+Map<String, dynamic> _$TourAreaSummaryToJson(TourAreaSummary instance) =>
     <String, dynamic>{
       'tourAreaId': instance.tourAreaId,
       'tourAreaName': instance.tourAreaName,

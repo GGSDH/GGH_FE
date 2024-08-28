@@ -95,7 +95,7 @@ enum Routes {
       GlobalKey<NavigatorState>();
 
   static final GoRouter config = GoRouter(
-      initialLocation: Routes.splash.path,
+      initialLocation: Routes.search.path,
       observers: [RouterObserver()],
       navigatorKey: _rootNavigatorKey,
       routes: [
@@ -408,9 +408,15 @@ enum Routes {
               return StationDetailScreen(stationId: stationId);
             }),
         GoRoute(
-            path: Routes.lanes.path,
+            path: '${Routes.lanes.path}/:laneId',
             name: Routes.lanes.name,
-            builder: (context, state) => LaneDetailScreen()),
+            builder: (context, state) {
+              final laneId = int.tryParse(state.pathParameters['laneId'] ?? '');
+              if (laneId == null) {
+                return const Text('Invalid lane ID');
+              }
+              return LaneDetailScreen(laneId: laneId);
+            }),
         GoRoute(
           path: Routes.search.path,
           name: Routes.search.name,

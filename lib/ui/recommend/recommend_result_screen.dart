@@ -9,6 +9,43 @@ import 'package:gyeonggi_express/ui/lane/lane_detail_screen.dart';
 
 import '../../themes/color_styles.dart';
 
+class LaneData {
+  final String category;
+  final String name;
+  final String description;
+  final List<DayData> days;
+
+  LaneData({
+    required this.category,
+    required this.name,
+    required this.description,
+    required this.days,
+  });
+}
+
+class DayData {
+  final String date;
+  final List<PlaceData> places;
+
+  DayData({required this.date, required this.places});
+}
+
+class PlaceData {
+  final String name;
+  final String region;
+  final String category;
+  final int likeCount;
+  final List<String> imageUrls;
+
+  PlaceData({
+    required this.name,
+    required this.region,
+    required this.category,
+    required this.likeCount,
+    required this.imageUrls,
+  });
+}
+
 class RecommendResultScreen extends StatefulWidget {
   final LaneData laneData = LaneData(
     category: '경기도 여행',
@@ -253,7 +290,8 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
-                        children: widget.laneData.days[_selectedDayIndex].places
+                        children: widget
+                            .laneData.days[_selectedDayIndex + 1].places
                             .map(
                                 (place) => _placeDetailItemInBottomSheet(place))
                             .toList(),

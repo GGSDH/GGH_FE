@@ -1,107 +1,52 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get_it/get_it.dart';
+import 'package:gyeonggi_express/data/models/response/lane_response.dart';
+import 'package:gyeonggi_express/data/models/response/tour_area_summary_response.dart';
+import 'package:gyeonggi_express/data/repository/favorite_repository.dart';
 import 'package:gyeonggi_express/themes/color_styles.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
-import 'package:gyeonggi_express/ui/component/app/app_action_bar.dart';
 import 'package:gyeonggi_express/ui/component/lane/lane_list_item.dart';
 import 'package:gyeonggi_express/ui/component/place/place_list_item.dart';
+import 'package:gyeonggi_express/ui/favorite/favorite_bloc.dart';
 
-class FavoritesScreen extends StatefulWidget {
+class FavoritesScreen extends StatelessWidget {
   const FavoritesScreen({super.key});
 
   @override
-  _FavoritesScreenState createState() => _FavoritesScreenState();
-}
-
-class _FavoritesScreenState extends State<FavoritesScreen> {
-  final List<Map<String, dynamic>> laneList = [
-    {
-      "category": "국내여행",
-      "title": "제주도 힐링 여행",
-      "description": "아름다운 해변과 오름을 따라 떠나는 4일간의 여정",
-      "image": "https://picsum.photos/seed/jeju/200/300",
-      "period": "4일",
-      "likeCount": 1500,
-      "isLiked": true,
-    },
-    {
-      "category": "해외여행",
-      "title": "유럽 문화 탐방",
-      "description": "파리, 로마, 바르셀로나를 아우르는 2주 일정",
-      "image": "https://picsum.photos/seed/europe/200/300",
-      "period": "14일",
-      "likeCount": 2300,
-      "isLiked": false,
-    },
-    {
-      "category": "국내여행",
-      "title": "부산 맛집 투어",
-      "description": "부산의 명물 먹거리를 찾아 떠나는 맛있는 여행",
-      "image": "https://picsum.photos/seed/busan/200/300",
-      "period": "3일",
-      "likeCount": 980,
-      "isLiked": true,
-    },
-  ];
-
-  final List<Map<String, dynamic>> placeList = [
-    {
-      "name": "경복궁",
-      "description": "조선시대의 대표적인 궁궐, 서울의 중심에서 역사를 만나다",
-      "image": "https://picsum.photos/seed/gyeongbokgung/200/300",
-      "likeCount": 3200,
-      "likedByMe": true,
-      "sigunguValue": "서울특별시 종로구",
-    },
-    {
-      "name": "해운대 해수욕장",
-      "description": "부산의 상징, 아름다운 해변과 현대적인 도시의 조화",
-      "image": "https://picsum.photos/seed/haeundae/200/300",
-      "likeCount": 2800,
-      "likedByMe": false,
-      "sigunguValue": "부산광역시 해운대구",
-    },
-    {
-      "name": "설악산 국립공원",
-      "description": "한국의 아름다운 산세, 사계절 모두 매력적인 국립공원",
-      "image": "https://picsum.photos/seed/seoraksan/200/300",
-      "likeCount": 1900,
-      "likedByMe": true,
-      "sigunguValue": "강원도 속초시",
-    },
-  ];
-
-  // final List<Map<String, dynamic>> laneList = [];
-  // final List<Map<String, dynamic>> placeList = [];
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: DefaultTabController(
-          length: 2,
-          child: Column(
-            children: [
-              const TabBar(
-                tabs: [
-                  Tab(text: '노선'),
-                  Tab(text: '역'),
-                ],
-                indicatorColor: ColorStyles.gray900,
-                indicatorWeight: 1,
-                indicatorSize: TabBarIndicatorSize.tab,
-                labelColor: Colors.black,
-                unselectedLabelColor: ColorStyles.gray400,
-              ),
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    _buildContent(isLaneTab: true),
-                    _buildContent(isLaneTab: false),
+    return BlocProvider(
+      create: (context) =>
+          FavoritesBloc(repository: GetIt.instance<FavoriteRepository>())
+            ..add(LoadFavorites()),
+      child: Scaffold(
+        body: SafeArea(
+          child: DefaultTabController(
+            length: 2,
+            child: Column(
+              children: [
+                const TabBar(
+                  tabs: [
+                    Tab(text: '노선'),
+                    Tab(text: '역'),
                   ],
+                  indicatorColor: ColorStyles.gray900,
+                  indicatorWeight: 1,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  labelColor: Colors.black,
+                  unselectedLabelColor: ColorStyles.gray400,
                 ),
-              ),
-            ],
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      _buildContent(isLaneTab: true),
+                      _buildContent(isLaneTab: false),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -109,33 +54,46 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   }
 
   Widget _buildContent({required bool isLaneTab}) {
-    final List items = isLaneTab ? laneList : placeList;
-    if (items.isEmpty) {
-      return _buildEmptyState(isLaneTab);
-    }
-    return ListView.builder(
-      itemCount: items.length,
-      itemBuilder: (context, index) {
-        if (isLaneTab) {
-          return LaneListItem(
-            category: items[index]['category'],
-            title: items[index]['title'],
-            description: items[index]['description'],
-            image: items[index]['image'],
-            period: items[index]['period'],
-            likeCount: items[index]['likeCount'],
-            isLiked: items[index]['isLiked'],
+    return BlocBuilder<FavoritesBloc, FavoritesState>(
+      builder: (context, state) {
+        if (state is FavoritesLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is FavoritesLoaded) {
+          final items = isLaneTab ? state.lanes : state.tourAreas;
+          if (items.isEmpty) {
+            return _buildEmptyState(isLaneTab);
+          }
+          return ListView.builder(
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              if (isLaneTab) {
+                final lane = items[index] as Lane;
+                return LaneListItem(
+                  category: lane.category.name,
+                  title: lane.laneName,
+                  description: '',
+                  image: lane.image,
+                  period: '',
+                  likeCount: lane.likeCount,
+                  isLiked: true,
+                );
+              } else {
+                final tourArea = items[index] as TourAreaSummary;
+                return PlaceListItem(
+                  name: tourArea.tourAreaName,
+                  description: '',
+                  image: tourArea.image,
+                  likeCount: tourArea.likeCnt,
+                  likedByMe: tourArea.likedByMe,
+                  sigunguValue: '',
+                );
+              }
+            },
           );
-        } else {
-          return PlaceListItem(
-            name: items[index]['name'],
-            description: items[index]['description'],
-            image: items[index]['image'],
-            likeCount: items[index]['likeCount'],
-            likedByMe: items[index]['likedByMe'],
-            sigunguValue: items[index]['sigunguValue'],
-          );
+        } else if (state is FavoritesError) {
+          return Center(child: Text('Error: ${state.message}'));
         }
+        return const Center(child: Text('Unknown state'));
       },
     );
   }
