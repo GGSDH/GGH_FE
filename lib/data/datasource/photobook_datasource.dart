@@ -23,4 +23,6 @@ abstract class PhotobookDataSource {
 
   Future<ApiResult<List<PhotoTicketResponse>>> getPhotoTickets();
 
+  Future<ApiResult<PhotoTicketResponse>> addPhotoTicket(String photoId);
+
 }

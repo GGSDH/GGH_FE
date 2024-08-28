@@ -79,4 +79,15 @@ class PhotobookDataSourceImpl implements PhotobookDataSource {
     );
   }
 
+  @override
+  Future<ApiResult<PhotoTicketResponse>> addPhotoTicket(String photoId) {
+    // URL에 photoId를 포함하여 요청
+    final String url = 'v1/photo-ticket/$photoId/save';
+
+    return _dio.makeRequest<PhotoTicketResponse>(
+          () => _dio.post(url),
+          (data) => PhotoTicketResponse.fromJson(data as Map<String, dynamic>),
+    );
+  }
+
 }

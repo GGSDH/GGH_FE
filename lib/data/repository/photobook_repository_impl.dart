@@ -38,4 +38,7 @@ class PhotobookRepositoryImpl implements PhotobookRepository {
 
   @override
   Future<ApiResult<List<PhotoTicketResponse>>> getPhotoTickets() => _photobookDataSource.getPhotoTickets();
+
+  @override
+  Future<ApiResult<PhotoTicketResponse>> addPhotoTicket(String photoId) => _photobookDataSource.addPhotoTicket(photoId);
 }

@@ -412,7 +412,9 @@ class AddPhotoTicketItem extends StatelessWidget {
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            GoRouter.of(context).push("${Routes.photobook.path}/${Routes.addPhotoTicket.path}");
+                            GoRouter.of(context).push("${Routes.photobook.path}/${Routes.selectPhotoTicket.path}").then((_) {
+                              context.read<PhotobookBloc>().add(PhotobookInitialize());
+                            });
                           },
                           child: Container(
                             alignment: Alignment.center,

@@ -27,7 +27,9 @@ import 'package:gyeonggi_express/ui/photobook/add/add_photobook_loading_screen.d
 import 'package:gyeonggi_express/ui/photobook/add/add_photobook_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/add/add_photobook_select_period_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/phototicket/add_photo_ticket_bloc.dart';
+import 'package:gyeonggi_express/ui/photobook/phototicket/select_photo_ticket_bloc.dart';
 import 'package:gyeonggi_express/ui/photobook/phototicket/add_photo_ticket_screen.dart';
+import 'package:gyeonggi_express/ui/photobook/phototicket/select_photo_ticket_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_card_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_detail_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_image_list_screen.dart';
@@ -81,6 +83,7 @@ enum Routes {
   addPhotobookSelectPeriod,
   addPhotobookLoading,
 
+  selectPhotoTicket,
   addPhotoTicket,
 
   myPage,
@@ -246,17 +249,56 @@ enum Routes {
                         ],
                       ),
                       GoRoute(
-                          path: Routes.addPhotoTicket.path,
-                          name: Routes.addPhotoTicket.name,
+                          path: Routes.selectPhotoTicket.path,
+                          name: Routes.selectPhotoTicket.name,
                           parentNavigatorKey: _rootNavigatorKey,
                           builder: (context, state) {
                             return BlocProvider(
-                                create: (context) => AddPhotoTicketBloc(
+                                create: (context) => SelectPhotoTicketBloc(
                                       photobookRepository:
                                           GetIt.instance<PhotobookRepository>(),
-                                    )..add(AddPhotoTicketInitialize()),
-                                child: const AddPhotoTicketScreen());
-                          }),
+                                    )..add(SelectPhotoTicketInitialize()),
+                                child: const SelectPhotoTicketScreen());
+                          },
+                          routes: [
+                            GoRoute(
+                              path: Routes.addPhotoTicket.path,
+                              name: Routes.addPhotoTicket.name,
+                              parentNavigatorKey: _rootNavigatorKey,
+                              builder: (context, state) {
+                                final title =
+                                    state.uri.queryParameters['title'] ?? '';
+                                final startDate =
+                                    state.uri.queryParameters['startDate'] ??
+                                        '';
+                                final endDate =
+                                    state.uri.queryParameters['endDate'] ?? '';
+                                final location =
+                                    state.uri.queryParameters['location'] ?? '';
+                                final selectedPhotoPath =
+                                    state.uri.queryParameters['selectedPhotoPath'] ?? '';
+                                final selectedPhotoId =
+                                    state.uri.queryParameters['selectedPhotoId'] ?? '';
+
+                                return BlocProvider(
+                                  create: (context) => AddPhotoTicketBloc(
+                                    photobookRepository:
+                                        GetIt.instance<PhotobookRepository>(),
+                                  )..add(AddPhotoTicketInitialize(
+                                      title,
+                                      startDate,
+                                      endDate,
+                                      location,
+                                      selectedPhotoPath,
+                                      selectedPhotoId,
+                                    )
+                                  ),
+                                  child: const AddPhotoTicketScreen(),
+                                );
+                              },
+                            )
+                          ]
+                      ),
                       GoRoute(
                           path: Routes.photobookCard.path,
                           name: Routes.photobookCard.name,

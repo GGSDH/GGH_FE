@@ -1,35 +1,19 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:gyeonggi_express/ui/component/app/app_action_bar.dart';
-import 'package:gyeonggi_express/ui/component/photo_ticket_item.dart';
-import 'package:gyeonggi_express/ui/photobook/phototicket/add_photo_ticket_bloc.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../../themes/color_styles.dart';
 import '../../../themes/text_styles.dart';
+import '../../component/app/app_action_bar.dart';
+import '../../component/app/app_button.dart';
+import '../../component/photo_ticket_item.dart';
+import 'add_photo_ticket_bloc.dart';
 
-class AddPhotoTicketScreen extends StatefulWidget {
-  const AddPhotoTicketScreen({super.key});
+class AddPhotoTicketScreen extends StatelessWidget {
 
-  @override
-  _AddPhotoTicketScreenState createState() => _AddPhotoTicketScreenState();
-}
-
-class _AddPhotoTicketScreenState extends State<AddPhotoTicketScreen> {
-  Timer? _timer;
-
-  void _startAutoChangeIndex(BuildContext context) {
-    _timer = Timer.periodic(const Duration(milliseconds: 300), (_) {
-      context.read<AddPhotoTicketBloc>().add(AddPhotoTicketIndexChanged());
-    });
-  }
-
-  void _stopAutoChangeIndex() {
-    _timer?.cancel();
-  }
+  const AddPhotoTicketScreen({ super.key });
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +21,7 @@ class _AddPhotoTicketScreenState extends State<AddPhotoTicketScreen> {
 
     return BlocSideEffectListener<AddPhotoTicketBloc, AddPhotoTicketSideEffect>(
       listener: (context, sideEffect) {
-        if (sideEffect is AddPhotoTicketComplete) {
+        if (sideEffect is UploadPhotoTicketComplete) {
           GoRouter.of(context).pop();
         } else if (sideEffect is AddPhotoTicketShowError) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -57,20 +41,6 @@ class _AddPhotoTicketScreenState extends State<AddPhotoTicketScreen> {
               child: SafeArea(
                 child: Stack(
                   children: [
-                    Positioned.fill(
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.white,
-                              ColorStyles.primaryLight,
-                            ],
-                          ),
-                        ),
-                      )
-                    ),
                     Positioned(
                       bottom: -100,
                       child: SvgPicture.asset(
@@ -93,51 +63,50 @@ class _AddPhotoTicketScreenState extends State<AddPhotoTicketScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            state.isChoosing
-                                ? "손을 떼면\n여행자의 소중한 순간으로 선택돼요"
-                                : "사진을 꾹 눌러\n여행의 소중한 순간을 포착하세요",
+                            "짜잔, 소중한 추억이예요",
                             style: TextStyles.title2ExtraLarge.copyWith(
                               color: ColorStyles.gray900,
                             ),
                             textAlign: TextAlign.center,
                           ),
-                          const SizedBox(height: 54),
-                          GestureDetector(
-                            onLongPress: () {
-                              context.read<AddPhotoTicketBloc>().add(AddPhotoTicketPressStart());
-                              _startAutoChangeIndex(context);
-                            },
-                            onLongPressUp: () {
-                              context.read<AddPhotoTicketBloc>().add(AddPhotoTicketPressEnd());
-                              _stopAutoChangeIndex();
-                            },
-                            child: SizedBox(
-                              width: screenWidth * 0.7,
-                              child: AspectRatio(
-                                aspectRatio: 0.7,
-                                child: Stack(
-                                  children: state.photos.asMap().entries.map((entry) {
-                                    int index = entry.key;
-                                    var photo = entry.value;
-                                    return AnimatedOpacity(
-                                      opacity: index == state.selectedPhotoIndex ? 1.0 : 0.0,
-                                      duration: const Duration(milliseconds: 300),
-                                      child: PhotoTicketItem(
-                                        title: state.title,
-                                        filePath: photo.path,
-                                        startDate: state.startDate,
-                                        endDate: state.endDate,
-                                        location: state.location,
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "이 사진을 포토티켓으로 남길 것인가요?",
+                            style: TextStyles.bodyLarge.copyWith(
+                              color: ColorStyles.gray500,
+                            )
+                          ),
+                          const SizedBox(height: 32),
+                          SizedBox(
+                            width: screenWidth * 0.7,
+                            child: AspectRatio(
+                              aspectRatio: 0.7,
+                              child: PhotoTicketItem(
+                                title: state.title,
+                                filePath: state.selectedPhotoPath,
+                                startDate: state.startDate.isNotEmpty ? DateTime.parse(state.startDate) : null,
+                                endDate: state.endDate.isNotEmpty ? DateTime.parse(state.endDate) : null,
+                                location: state.location,
                               ),
-                            ),
+                            )
                           ),
                         ],
                       ),
                     ),
+                    Positioned(
+                      bottom: 0,
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        padding: const EdgeInsets.all(14),
+                        child: AppButton(
+                          text: '포토티켓 발행',
+                          onPressed: () {
+                            context.read<AddPhotoTicketBloc>().add(UploadPhotoTicket(state.selectedPhotoId));
+                          },
+                          isEnabled: state.selectedPhotoId.isNotEmpty
+                        ),
+                      ),
+                    )
                   ],
                 ),
               ),
@@ -147,10 +116,5 @@ class _AddPhotoTicketScreenState extends State<AddPhotoTicketScreen> {
       ),
     );
   }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
 }
+

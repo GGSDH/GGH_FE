@@ -20,4 +20,6 @@ abstract class PhotobookRepository {
   Future<ApiResult<PhotobookResponse>> getRandomPhotobook();
 
   Future<ApiResult<List<PhotoTicketResponse>>> getPhotoTickets();
+
+  Future<ApiResult<PhotoTicketResponse>> addPhotoTicket(String photoId);
 }

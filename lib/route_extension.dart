@@ -58,8 +58,10 @@ extension RoutesExtension on Routes {
         return 'select-period';
       case Routes.addPhotobookLoading:
         return 'loading';
+      case Routes.selectPhotoTicket:
+        return 'select-photo-ticket';
       case Routes.addPhotoTicket:
-        return 'add-photo-ticket';
+        return 'add';
 
       case Routes.myPage:
         return '/mypage';
