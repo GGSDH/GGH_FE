@@ -1,49 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
+import 'package:gyeonggi_express/data/models/response/keyword_search_result_response.dart';
+import 'package:gyeonggi_express/data/models/response/popular_keyword_response.dart';
 import 'package:gyeonggi_express/themes/color_styles.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
+import 'package:gyeonggi_express/ui/search/search_bloc.dart';
 
-class SearchScreen extends StatefulWidget {
+import '../../data/repository/search_repository.dart';
+
+class SearchScreen extends StatelessWidget {
   const SearchScreen({super.key});
 
   @override
-  _SearchScreenState createState() => _SearchScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => SearchBloc(GetIt.instance<SearchRepository>())
+        ..add(FetchPopularKeywords()),
+      child: const SearchScreenContent(),
+    );
+  }
 }
 
-class _SearchScreenState extends State<SearchScreen> {
+class SearchScreenContent extends StatefulWidget {
+  const SearchScreenContent({super.key});
+
+  @override
+  _SearchScreenContentState createState() => _SearchScreenContentState();
+}
+
+class _SearchScreenContentState extends State<SearchScreenContent> {
   final TextEditingController _searchController = TextEditingController();
-  bool _isTyping = false;
-  bool _showResults = false;
-  bool _hasResults = true;
-
-  void onChanged(String value) {
-    setState(() {
-      _isTyping = value.isNotEmpty;
-      _showResults = false;
-    });
-  }
-
-  void onSubmitted(String value) {
-    setState(() {
-      _isTyping = false;
-      _showResults = value.isNotEmpty;
-      _hasResults = value.isNotEmpty;
-    });
-  }
-
-  void clearSearch() {
-    setState(() {
-      _searchController.clear();
-      _isTyping = false;
-      _showResults = false;
-      _hasResults = true;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Material(
       child: Scaffold(
+        resizeToAvoidBottomInset: false, // 키보드가 올라올 때 화면 크기 조정 방지
         body: SafeArea(
           child: Column(
             children: [
@@ -61,10 +55,19 @@ class _SearchScreenState extends State<SearchScreen> {
                     Expanded(
                       child: SearchBar(
                         controller: _searchController,
-                        onChanged: onChanged,
-                        onSubmitted: onSubmitted,
-                        showCloseButton: _showResults,
-                        onClearSearch: clearSearch,
+                        onSubmitted: (value) {
+                          if (value.isNotEmpty) {
+                            context
+                                .read<SearchBloc>()
+                                .add(PerformSearch(value));
+                          }
+                        },
+                        onClearSearch: () {
+                          _searchController.clear();
+                          context
+                              .read<SearchBloc>()
+                              .add(FetchPopularKeywords());
+                        },
                       ),
                     ),
                   ],
@@ -72,15 +75,29 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
               Expanded(
                 child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      if (_searchController.text.isEmpty && !_isTyping)
-                        PopularSearchTerms(),
-                      if (_isTyping) const TypingIndicator(),
-                      if (_showResults && _hasResults)
-                        SearchResults(searchTerm: _searchController.text),
-                      if (_showResults && !_hasResults) const NoSearchResults(),
-                    ],
+                  // 스크롤 가능하게 만듦
+                  child: BlocBuilder<SearchBloc, SearchState>(
+                    builder: (context, state) {
+                      if (state is SearchLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (state is PopularKeywordsLoaded) {
+                        return PopularSearchTerms(
+                          keywords: state.keywords,
+                          onKeywordTap: (keyword) {
+                            _searchController.text = keyword;
+                            context
+                                .read<SearchBloc>()
+                                .add(PerformSearch(keyword));
+                          },
+                        );
+                      } else if (state is SearchResultsLoaded) {
+                        return SearchResults(results: state.results);
+                      } else if (state is SearchError) {
+                        return Center(child: Text(state.message));
+                      } else {
+                        return const SizedBox.shrink();
+                      }
+                    },
                   ),
                 ),
               ),
@@ -92,47 +109,43 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 }
 
-class NoSearchResults extends StatelessWidget {
-  const NoSearchResults({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(height: 80),
-        SvgPicture.asset(
-          "assets/icons/ic_search_typing.svg",
-          width: 80,
-          height: 80,
-        ),
-        const SizedBox(height: 14),
-        Text(
-          "검색 결과가 없습니다.",
-          style: TextStyles.titleLarge.copyWith(
-            color: ColorStyles.gray800,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class SearchBar extends StatelessWidget {
+class SearchBar extends StatefulWidget {
   final TextEditingController controller;
-  final Function(String) onChanged;
   final Function(String) onSubmitted;
-  final bool showCloseButton;
   final VoidCallback onClearSearch;
 
   const SearchBar({
     super.key,
     required this.controller,
-    required this.onChanged,
     required this.onSubmitted,
-    required this.showCloseButton,
     required this.onClearSearch,
   });
+
+  @override
+  _SearchBarState createState() => _SearchBarState();
+}
+
+class _SearchBarState extends State<SearchBar> {
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Scrollable.ensureVisible(context,
+              alignment: 0.0, duration: const Duration(milliseconds: 300));
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -154,10 +167,10 @@ class SearchBar extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: TextFormField(
-              controller: controller,
+              controller: widget.controller,
+              focusNode: _focusNode,
               style: TextStyles.bodyMedium,
-              onChanged: onChanged,
-              onFieldSubmitted: onSubmitted,
+              onFieldSubmitted: widget.onSubmitted,
               decoration: const InputDecoration(
                 hintText: "검색어를 입력해주세요",
                 hintStyle: TextStyle(color: Colors.grey),
@@ -167,15 +180,14 @@ class SearchBar extends StatelessWidget {
               ),
             ),
           ),
-          if (showCloseButton)
-            GestureDetector(
-              onTap: onClearSearch,
-              child: SvgPicture.asset(
-                'assets/icons/ic_close_textfield.svg',
-                width: 20,
-                height: 20,
-              ),
+          GestureDetector(
+            onTap: widget.onClearSearch,
+            child: SvgPicture.asset(
+              'assets/icons/ic_close_textfield.svg',
+              width: 20,
+              height: 20,
             ),
+          ),
         ],
       ),
     );
@@ -183,20 +195,14 @@ class SearchBar extends StatelessWidget {
 }
 
 class PopularSearchTerms extends StatelessWidget {
-  PopularSearchTerms({super.key});
+  final List<PopularKeyword> keywords;
+  final Function(String) onKeywordTap;
 
-  final List<String> popularKeywords = [
-    "경기도",
-    "버스",
-    "지하철",
-    "택시",
-    "공항버스",
-    "경기도 관광",
-    "경기도 축제",
-    "경기도 맛집",
-    "경기도 박물관",
-    "경기도 놀이공원"
-  ];
+  const PopularSearchTerms({
+    super.key,
+    required this.keywords,
+    required this.onKeywordTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -214,18 +220,19 @@ class PopularSearchTerms extends StatelessWidget {
             children: [
               Expanded(
                 child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "지금,",
-                        style: TextStyles.headlineXSmall,
-                      ),
-                      Text(
-                        "인기 검색어",
-                        style: TextStyles.headlineXSmall
-                            .copyWith(fontWeight: FontWeight.w400),
-                      ),
-                    ]),
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "지금,",
+                      style: TextStyles.headlineXSmall,
+                    ),
+                    Text(
+                      "인기 검색어",
+                      style: TextStyles.headlineXSmall
+                          .copyWith(fontWeight: FontWeight.w400),
+                    ),
+                  ],
+                ),
               ),
               Text("오늘 $updateTime 기준", style: TextStyles.bodyXSmall),
             ],
@@ -234,31 +241,35 @@ class PopularSearchTerms extends StatelessWidget {
         ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: popularKeywords.length,
+          itemCount: keywords.length,
           itemBuilder: (context, index) {
-            return Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 24,
-                    child: Text(
-                      "${index + 1}",
-                      style: TextStyles.titleLarge.copyWith(
-                        color: ColorStyles.primary,
-                        fontWeight: FontWeight.bold,
+            return InkWell(
+              onTap: () => onKeywordTap(keywords[index].keyword),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0, vertical: 16.0),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 24,
+                      child: Text(
+                        "${index + 1}",
+                        style: TextStyles.titleLarge.copyWith(
+                          color: ColorStyles.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    popularKeywords[index],
-                    style: TextStyles.bodyLarge.copyWith(
+                    const SizedBox(width: 12),
+                    Text(
+                      keywords[index].keyword,
+                      style: TextStyles.bodyLarge.copyWith(
                         color: ColorStyles.gray900,
-                        fontWeight: FontWeight.w400),
-                  ),
-                ],
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           },
@@ -268,57 +279,10 @@ class PopularSearchTerms extends StatelessWidget {
   }
 }
 
-class TypingIndicator extends StatelessWidget {
-  const TypingIndicator({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(height: 80),
-        SvgPicture.asset(
-          "assets/icons/ic_search_typing.svg",
-          width: 80,
-          height: 80,
-        ),
-        const SizedBox(height: 14),
-        Text(
-          "검색어를 입력 중입니다...",
-          style: TextStyles.titleLarge.copyWith(
-              color: ColorStyles.gray800, fontWeight: FontWeight.w700),
-        ),
-      ],
-    );
-  }
-}
-
 class SearchResults extends StatelessWidget {
-  final String searchTerm;
+  final List<KeywordSearchResult> results;
 
-  SearchResults({super.key, required this.searchTerm});
-
-  final List<Map<String, String>> results = [
-    {
-      "title": "너랑나랑",
-      "subtitle": "관광명소 ∙ 서울 종로구",
-    },
-    {
-      "title": "서울 테마파크",
-      "subtitle": "관광명소 ∙ 서울 종로구",
-    },
-    {
-      "title": "경복궁",
-      "subtitle": "역사유적 ∙ 서울 종로구",
-    },
-    {
-      "title": "남산서울타워",
-      "subtitle": "랜드마크 ∙ 서울 용산구",
-    },
-    {
-      "title": "북촌한옥마을",
-      "subtitle": "전통마을 ∙ 서울 종로구",
-    },
-  ];
+  const SearchResults({super.key, required this.results});
 
   @override
   Widget build(BuildContext context) {
@@ -333,6 +297,7 @@ class SearchResults extends StatelessWidget {
             itemCount: results.length,
             separatorBuilder: (context, index) => const SizedBox(height: 20),
             itemBuilder: (context, index) {
+              final result = results[index];
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -357,13 +322,13 @@ class SearchResults extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          results[index]["title"]!,
+                          result.name,
                           style: TextStyles.titleMedium
                               .copyWith(fontWeight: FontWeight.w600),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          results[index]["subtitle"]!,
+                          "${result.tripThemeConstants} · ${result.sigunguCode}",
                           style: TextStyles.bodySmall
                               .copyWith(color: ColorStyles.gray600),
                         ),

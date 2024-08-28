@@ -1,5 +1,5 @@
 import 'package:gyeonggi_express/data/models/response/lane_specific_response.dart';
-import 'package:gyeonggi_express/data/models/response/lane_tour_area_response.dart';
+import 'package:gyeonggi_express/data/models/response/tour_area_summary_response.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'lane_detail_response.g.dart';

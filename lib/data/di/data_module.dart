@@ -6,6 +6,8 @@ import 'package:gyeonggi_express/data/datasource/favorite_datasource_impl.dart';
 import 'package:gyeonggi_express/data/datasource/lane_datasource.dart';
 import 'package:gyeonggi_express/data/datasource/lane_datasource_impl.dart';
 import 'package:gyeonggi_express/data/datasource/photobook_datasource.dart';
+import 'package:gyeonggi_express/data/datasource/search_datasource.dart';
+import 'package:gyeonggi_express/data/datasource/search_datasource_impl.dart';
 import 'package:gyeonggi_express/data/datasource/tour_area_datasource.dart';
 import 'package:gyeonggi_express/data/datasource/tour_area_datasource_impl.dart';
 import 'package:gyeonggi_express/data/datasource/trip_datasource.dart';
@@ -17,6 +19,8 @@ import 'package:gyeonggi_express/data/repository/favorite_repository_impl.dart';
 import 'package:gyeonggi_express/data/repository/lane_repository.dart';
 import 'package:gyeonggi_express/data/repository/lane_repository_impl.dart';
 import 'package:gyeonggi_express/data/repository/photobook_repository.dart';
+import 'package:gyeonggi_express/data/repository/search_repository.dart';
+import 'package:gyeonggi_express/data/repository/search_repository_impl.dart';
 import 'package:gyeonggi_express/data/repository/tour_area_repository.dart';
 import 'package:gyeonggi_express/data/repository/tour_area_repository_impl.dart';
 import 'package:gyeonggi_express/data/repository/trip_repository.dart';
@@ -57,4 +61,8 @@ void setupLocator() {
       () => FavoriteDatasourceImpl(getIt<DioClient>().dio));
   getIt.registerLazySingleton<FavoriteRepository>(
       (() => FavoriteRepositoryImpl(getIt<FavoriteDataSource>())));
+  getIt.registerLazySingleton<SearchDatasource>(
+      () => SearchDatasourceImpl(getIt<DioClient>().dio));
+  getIt.registerLazySingleton<SearchRepository>(
+      (() => SearchRepositoryImpl(getIt<SearchDatasource>())));
 }

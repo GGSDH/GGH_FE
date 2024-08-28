@@ -7,7 +7,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/data/models/response/lane_detail_response.dart';
-import 'package:gyeonggi_express/data/models/response/lane_tour_area_response.dart';
+import 'package:gyeonggi_express/data/models/response/tour_area_summary_response.dart';
 import 'package:gyeonggi_express/data/repository/lane_repository.dart';
 import 'package:gyeonggi_express/themes/color_styles.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';

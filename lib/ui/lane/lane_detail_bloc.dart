@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gyeonggi_express/data/models/response/lane_detail_response.dart';
 import 'package:gyeonggi_express/data/models/response/lane_specific_response.dart';
-import 'package:gyeonggi_express/data/models/response/lane_tour_area_response.dart';
+import 'package:gyeonggi_express/data/models/response/tour_area_summary_response.dart';
 import 'package:gyeonggi_express/data/repository/lane_repository.dart';
 
 abstract class LaneDetailEvent extends Equatable {
