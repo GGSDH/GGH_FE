@@ -67,20 +67,22 @@ class PhotobookListItem extends StatelessWidget {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Text(
-                          formatDateRangeAndDuration(startDate, endDate),
-                          style: TextStyles.bodyMedium.copyWith(
-                            color: ColorStyles.gray500,
+                        Expanded(
+                          child: Text(
+                            formatDateRangeAndDuration(startDate, endDate),
+                            style: TextStyles.bodyMedium.copyWith(
+                              color: ColorStyles.gray500,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
                   ],
                 ),
               ),
-              
+
               const SizedBox(width: 16),
 
               ClipRRect(
