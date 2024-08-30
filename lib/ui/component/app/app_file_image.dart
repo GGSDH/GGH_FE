@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:gyeonggi_express/ui/ext/file_path_extension.dart';
 
 class AppFileImage extends StatefulWidget {
@@ -52,7 +53,7 @@ class _AppFileImageState extends State<AppFileImage> {
 
   Future<void> _loadImage() async {
     try {
-      final filePath = await widget.imageFilePath.getFilePath();
+      final filePath = await compute(_resolveFilePath, widget.imageFilePath);
       if (await File(filePath).exists()) {
         setState(() {
           resolvedFilePath = filePath;
@@ -71,6 +72,10 @@ class _AppFileImageState extends State<AppFileImage> {
         isLoading = false;
       });
     }
+  }
+
+  static Future<String> _resolveFilePath(String imageFilePath) async {
+    return await imageFilePath.getFilePath();
   }
 
   @override

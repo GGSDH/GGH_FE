@@ -6,7 +6,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/ui/component/app/app_file_image.dart';
 import 'package:gyeonggi_express/ui/component/app/app_image_plaeholder.dart';
-import 'package:gyeonggi_express/ui/ext/file_path_extension.dart';
 
 import '../../themes/text_styles.dart';
 import '../component/app/app_action_bar.dart';
@@ -21,8 +20,6 @@ class PhotobookImageListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('filePaths: $filePaths');
-
     return Material(
       color: Colors.white,
       child: SafeArea(
@@ -105,9 +102,10 @@ class _PhotoViewPopupState extends State<PhotoViewPopup> {
   }
 
   Future<void> _getImageSize(String imageUrl, int index) async {
-    final filePath = await imageUrl.getFilePath();
+    final file = File(imageUrl);
+    if (!file.existsSync()) return;
 
-    final image = Image.file(File(filePath));
+    final image = Image.file(file);
     final completer = Completer<Size>();
 
     image.image.resolve(const ImageConfiguration()).addListener(
@@ -118,7 +116,7 @@ class _PhotoViewPopupState extends State<PhotoViewPopup> {
     );
 
     _imageSizes[index] = await completer.future;
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
   @override

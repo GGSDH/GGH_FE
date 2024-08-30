@@ -61,49 +61,47 @@ class _PhotobookDetailScreenState extends State<PhotobookDetailScreen> {
 
             return Scaffold(
               body: SafeArea(
-                child: SingleChildScrollView(
-                  controller: _scrollController,
-                  child: Column(
-                    children: [
-                      AppActionBar(
-                        onBackPressed: () => GoRouter.of(context).pop(),
-                        menuItems: [
-                          ActionBarMenuItem(
-                              icon: SvgPicture.asset(
-                                "assets/icons/ic_map.svg",
-                                width: 24,
-                                height: 24,
-                              ),
-                              onPressed: () {
-                                GoRouter.of(context).push(
-                                    Uri(
-                                      path: "${Routes.photobook.path}/${Routes.photobookMap.path}",
-                                      queryParameters: {
-                                        "photobookId": widget.photobookId,
-                                      },
-                                    ).toString());
-                              })
-                        ],
-                      ),
-                      Column(
-                          children: state.photobookDailyPhotoGroups
-                              .asMap()
-                              .entries
-                              .expand((entry) {
-                            int index = entry.key;
-                            DailyPhotoGroup dailyPhotoGroup = entry.value;
-                            // Store GlobalKey for each day item
-                            _dayKeys[index] = GlobalKey();
-
-                            return [
+                child: Column(
+                  children: [
+                    AppActionBar(
+                      onBackPressed: () => GoRouter.of(context).pop(),
+                      menuItems: [
+                        ActionBarMenuItem(
+                            icon: SvgPicture.asset(
+                              "assets/icons/ic_map.svg",
+                              width: 24,
+                              height: 24,
+                            ),
+                            onPressed: () {
+                              GoRouter.of(context).push(
+                                  Uri(
+                                    path: "${Routes.photobook.path}/${Routes.photobookMap.path}",
+                                    queryParameters: {
+                                      "photobookId": widget.photobookId,
+                                    },
+                                  ).toString());
+                            })
+                      ],
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        controller: _scrollController,
+                        itemCount: state.photobookDailyPhotoGroups.length,
+                        itemBuilder: (context, index) {
+                          final dailyPhotoGroup = state.photobookDailyPhotoGroups[index];
+                          return Column(
+                            key: _dayKeys[index],  // Assign GlobalKey to each day item
+                            children: [
                               _dayItem(dailyPhotoGroup, index),
                               ...dailyPhotoGroup.hourlyPhotoGroups.map((hourlyPhotoGroup) {
                                 return _hourItem(hourlyPhotoGroup);
-                              })
-                            ];
-                          }).toList())
-                    ],
-                  ),
+                              }),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
             );
