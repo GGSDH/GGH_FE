@@ -39,6 +39,7 @@ import 'package:gyeonggi_express/ui/photobook/photobook_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_result_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_select_period_screen.dart';
+import 'package:gyeonggi_express/ui/recommend/recommend_select_region_screen.dart';
 import 'package:gyeonggi_express/ui/search/search_screen.dart';
 import 'package:gyeonggi_express/ui/splash/splash_screen.dart';
 import 'package:gyeonggi_express/ui/station/station_detail_screen.dart';
@@ -70,7 +71,9 @@ enum Routes {
   favorites,
 
   recommend,
+  recommendSelectRegion,
   recommendSelectPeriod,
+  recommendSelectTheme,
   recommendResult,
 
   photobook,
@@ -192,6 +195,13 @@ enum Routes {
                       name: Routes.recommend.name,
                       builder: (context, state) => const RecommendScreen(),
                       routes: [
+                        GoRoute(
+                          path: Routes.recommendSelectRegion.path,
+                          name: Routes.recommendSelectRegion.name,
+                          parentNavigatorKey: _rootNavigatorKey,
+                          builder: (context, state) =>
+                              const RecommendSelectRegionScreen(),
+                        ),
                         GoRoute(
                           path: Routes.recommendSelectPeriod.path,
                           name: Routes.recommendSelectPeriod.name,

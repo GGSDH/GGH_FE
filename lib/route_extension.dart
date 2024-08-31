@@ -34,12 +34,18 @@ extension RoutesExtension on Routes {
         return '/stations';
       case Routes.lanes:
         return '/lanes';
+
       case Routes.recommend:
         return '/recommend';
+      case Routes.recommendSelectRegion:
+        return 'select-region';
       case Routes.recommendSelectPeriod:
         return 'select-period';
+      case Routes.recommendSelectTheme:
+        return 'select-theme';
       case Routes.recommendResult:
         return 'result';
+
       case Routes.photobook:
         return '/photobook';
       case Routes.photobookCard:

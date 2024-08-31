@@ -40,7 +40,7 @@ class RecommendScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(bottom: 30, left: 20, right: 20),
             child: AppButton(text: "AI 노선 추천 받기", onPressed: () => {
-              GoRouter.of(context).push("${Routes.recommend.path}/${Routes.recommendSelectPeriod.path}")
+              GoRouter.of(context).push("${Routes.recommend.path}/${Routes.recommendSelectRegion.path}")
             }),
           ),
         ],
