@@ -66,9 +66,9 @@ class SelectableGrid extends StatelessWidget {
         onSelectionChanged(item.id);
       },
       child: Column(
+        mainAxisSize: MainAxisSize.min, // Column의 크기를 자식의 크기에 맞게 축소
         children: [
           Container(
-            height: 120,
             width: double.infinity,
             decoration: BoxDecoration(
               color: isSelected
@@ -80,6 +80,7 @@ class SelectableGrid extends StatelessWidget {
                 width: 1.0,
               ),
             ),
+            padding: const EdgeInsets.symmetric(vertical: 27), // 내부 요소들이 충분히 들어갈 수 있도록 padding 추가
             child: Center(
               child: Text(
                 item.emoji,
