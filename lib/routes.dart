@@ -40,6 +40,7 @@ import 'package:gyeonggi_express/ui/recommend/recommend_result_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_select_period_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_select_region_screen.dart';
+import 'package:gyeonggi_express/ui/recommend/recommend_select_theme_screen.dart';
 import 'package:gyeonggi_express/ui/search/search_screen.dart';
 import 'package:gyeonggi_express/ui/splash/splash_screen.dart';
 import 'package:gyeonggi_express/ui/station/station_detail_screen.dart';
@@ -208,6 +209,13 @@ enum Routes {
                           parentNavigatorKey: _rootNavigatorKey,
                           builder: (context, state) =>
                               const RecommendSelectPeriodScreen(),
+                        ),
+                        GoRoute(
+                          path: Routes.recommendSelectTheme.path,
+                          name: Routes.recommendSelectTheme.name,
+                          parentNavigatorKey: _rootNavigatorKey,
+                          builder: (context, state) =>
+                            const RecommendSelectThemeScreen()
                         ),
                         GoRoute(
                           path: Routes.recommendResult.path,

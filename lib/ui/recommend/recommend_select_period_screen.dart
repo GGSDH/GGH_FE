@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/ui/component/range_picker_list_item.dart';
 
+import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
 import '../component/app/app_action_bar.dart';
@@ -130,7 +132,10 @@ class _RecommendSelectPeriodScreenState
               padding: const EdgeInsets.all(14),
               child: AppButton(
                 text: '다음',
-                onPressed: () {},
+                onPressed: () {
+                  GoRouter.of(context).push(
+                      '${Routes.recommend.path}/${Routes.recommendSelectTheme.path}');
+                },
                 isEnabled: startDate != null && endDate != null,
               ),
             ),

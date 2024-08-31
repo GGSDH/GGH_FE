@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/data/models/sigungu_code.dart';
+import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/ui/component/app/app_button.dart';
 
+import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
 import '../component/app/app_action_bar.dart';
@@ -33,40 +35,47 @@ class RecommendSelectRegionState extends State<RecommendSelectRegionScreen> {
             ),
             const SizedBox(height: 20),
             Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "어디를 여행하고 싶으신가요?",
-                      style: TextStyles.headlineXSmall.copyWith(
-                        color: ColorStyles.gray900,
+              child: Container(
+                width: MediaQuery.of(context).size.width,// Padding을 Expanded 바깥으로 이동
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "어디를 여행하고 싶으신가요?",
+                        style: TextStyles.headlineXSmall.copyWith(
+                          color: ColorStyles.gray900,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "가고 싶은 모든 여행지를 선택해 주세요.",
-                      style: TextStyles.bodyLarge.copyWith(
-                        color: ColorStyles.gray600,
+                      const SizedBox(height: 4),
+                      Text(
+                        "가고 싶은 모든 여행지를 선택해 주세요.",
+                        style: TextStyles.bodyLarge.copyWith(
+                          color: ColorStyles.gray600,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    Wrap(
-                      spacing: 6,
-                      runSpacing: 6,
-                      children: chips.map((chip) => areaChip(chip)).toList(),
-                    ),
-                    const SizedBox(height: 20)
-                  ],
+                      const SizedBox(height: 20),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: chips.map((chip) => areaChip(chip)).toList(),
+                      ),
+                      const SizedBox(height: 20)
+                    ],
+                  ),
                 ),
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.all(14),
               child: AppButton(
                 text: '다음',
-                onPressed: () {},
+                onPressed: () {
+                  GoRouter.of(context).push(
+                    "${Routes.recommend.path}/${Routes.recommendSelectPeriod.path}",
+                  );
+                },
                 isEnabled: _selectedAreas.isNotEmpty,
               ),
             ),
