@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gyeonggi_express/data/models/response/tour_area_detail_response.dart';
 import 'package:gyeonggi_express/data/repository/tour_area_repository.dart';
 import 'package:gyeonggi_express/ui/station/station_detail_screen.dart';
 
@@ -34,7 +35,7 @@ class StationDetailInitial extends StationDetailState {}
 class StationDetailLoading extends StationDetailState {}
 
 class StationDetailLoaded extends StationDetailState {
-  final StationDetailScreenData data;
+  final TourAreaDetail data;
   const StationDetailLoaded({required this.data});
 }
 
@@ -60,8 +61,7 @@ class StationDetailBloc extends Bloc<StationDetailEvent, StationDetailState> {
     final result = await _tourAreaRepository.getTourAreaDetail(event.stationId);
     result.when(
       success: (data) {
-        emit(StationDetailLoaded(
-            data: StationDetailScreenData.fromTourAreaDetail(data)));
+        emit(StationDetailLoaded(data: data));
       },
       apiError: (errorMessage, errorCode) {
         emit(StationDetailError(message: errorMessage));

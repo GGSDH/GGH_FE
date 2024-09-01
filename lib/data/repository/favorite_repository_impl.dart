@@ -19,4 +19,24 @@ class FavoriteRepositoryImpl implements FavoriteRepository {
   Future<ApiResult<List<TourAreaSummary>>> getFavoriteTourAreas() {
     return _favoriteDataSource.getFavoriteTourAreas();
   }
+
+  @override
+  Future<ApiResult<bool>> addFavoriteLane(int laneId) {
+    return _favoriteDataSource.addFavoriteLane(laneId);
+  }
+
+  @override
+  Future<ApiResult<bool>> addFavoriteTourArea(int tourAreaId) {
+    return _favoriteDataSource.addFavoriteTourArea(tourAreaId);
+  }
+
+  @override
+  Future<ApiResult<bool>> removeFavoriteLane(int laneId) {
+    return _favoriteDataSource.removeFavoriteLane(laneId);
+  }
+
+  @override
+  Future<ApiResult<bool>> removeFavoriteTourArea(int tourAreaId) {
+    return _favoriteDataSource.removeFavoriteTourArea(tourAreaId);
+  }
 }

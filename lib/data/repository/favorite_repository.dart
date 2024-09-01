@@ -5,4 +5,8 @@ import 'package:gyeonggi_express/data/models/response/tour_area_summary_response
 abstract class FavoriteRepository {
   Future<ApiResult<List<TourAreaSummary>>> getFavoriteTourAreas();
   Future<ApiResult<List<Lane>>> getFavoriteLanes();
+  Future<ApiResult<bool>> addFavoriteLane(int laneId);
+  Future<ApiResult<bool>> removeFavoriteLane(int laneId);
+  Future<ApiResult<bool>> addFavoriteTourArea(int tourAreaId);
+  Future<ApiResult<bool>> removeFavoriteTourArea(int tourAreaId);
 }
