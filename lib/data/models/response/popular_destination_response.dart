@@ -6,6 +6,8 @@ part 'popular_destination_response.g.dart';
 
 @JsonSerializable()
 class PopularDestination {
+  @JsonKey(name: 'tourAreaId')
+  final int tourAreaId;
   @JsonKey(name: 'ranking')
   final int ranking;
   @JsonKey(name: 'image')
@@ -14,10 +16,12 @@ class PopularDestination {
   final String name;
   @JsonKey(name: 'sigunguValue')
   final String sigunguValue;
-  @JsonKey(name: 'category', fromJson: TripTheme.fromJson, toJson: TripTheme.toJson)
+  @JsonKey(
+      name: 'category', fromJson: TripTheme.fromJson, toJson: TripTheme.toJson)
   final TripTheme category;
 
   PopularDestination({
+    required this.tourAreaId,
     required this.ranking,
     this.image,
     required this.name,
@@ -25,7 +29,8 @@ class PopularDestination {
     required this.category,
   });
 
-  factory PopularDestination.fromJson(Map<String, dynamic> json) => _$PopularDestinationFromJson(json);
+  factory PopularDestination.fromJson(Map<String, dynamic> json) =>
+      _$PopularDestinationFromJson(json);
 
   Map<String, dynamic> toJson() => _$PopularDestinationToJson(this);
 }

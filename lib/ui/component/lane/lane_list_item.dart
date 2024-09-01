@@ -37,7 +37,8 @@ class LaneListItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
                   decoration: BoxDecoration(
                     color: ColorStyles.primaryLight,
                     borderRadius: BorderRadius.circular(4),
@@ -58,14 +59,17 @@ class LaneListItem extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                Text(
-                  description,
-                  style: TextStyles.bodyLarge.copyWith(
-                    color: ColorStyles.gray800,
+                if (description.isNotEmpty) ...[
+                  Text(
+                    description,
+                    style: TextStyles.bodyLarge.copyWith(
+                      color: ColorStyles.gray800,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                  const SizedBox(height: 4),
+                ],
                 const SizedBox(height: 4),
                 Row(
                   children: [
@@ -98,8 +102,10 @@ class LaneListItem extends StatelessWidget {
                 borderRadius: BorderRadius.circular(4),
                 child: CachedNetworkImage(
                   imageUrl: image,
-                  placeholder: (context, url) => const AppImagePlaceholder(width: 200, height: 145),
-                  errorWidget: (context, url, error) => const AppImagePlaceholder(width: 200, height: 145),
+                  placeholder: (context, url) =>
+                      const AppImagePlaceholder(width: 200, height: 145),
+                  errorWidget: (context, url, error) =>
+                      const AppImagePlaceholder(width: 200, height: 145),
                   width: 104,
                   height: 104,
                   fit: BoxFit.cover,
