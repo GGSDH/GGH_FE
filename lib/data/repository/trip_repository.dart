@@ -4,6 +4,7 @@ import '../models/api_result.dart';
 import '../models/response/lane_response.dart';
 import '../models/response/local_restaurant_response.dart';
 import '../models/response/popular_destination_response.dart';
+import '../models/response/recommend_lane_response.dart';
 import '../models/response/tour_area_pagination_response.dart';
 import '../models/trip_theme.dart';
 
@@ -19,5 +20,11 @@ abstract class TripRepository {
     required TripTheme tripTheme,
     required int page,
     int size = 20
+  });
+
+  Future<ApiResult<RecommendedLaneResponse>> getRecommendedLane({
+    required int days,
+    required List<SigunguCode> sigunguCodes,
+    required List<TripTheme> tripThemes
   });
 }

@@ -10,7 +10,7 @@ TourAreaPaginationResponse _$TourAreaPaginationResponseFromJson(
         Map<String, dynamic> json) =>
     TourAreaPaginationResponse(
       content: (json['content'] as List<dynamic>)
-          .map((e) => TourArea.fromJson(e as Map<String, dynamic>))
+          .map((e) => TourAreaResponse.fromJson(e as Map<String, dynamic>))
           .toList(),
       pageable: Pageable.fromJson(json['pageable'] as Map<String, dynamic>),
       totalPages: (json['totalPages'] as num).toInt(),

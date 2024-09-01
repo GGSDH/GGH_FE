@@ -36,6 +36,7 @@ import 'package:gyeonggi_express/ui/photobook/photobook_detail_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_image_list_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_map_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_screen.dart';
+import 'package:gyeonggi_express/ui/recommend/recommend_lane_bloc.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_result_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_select_period_screen.dart';
@@ -188,45 +189,52 @@ enum Routes {
                             );
                           }),
                     ]),
-              ]),
-              StatefulShellBranch(
-                routes: [
-                  GoRoute(
-                      path: Routes.recommend.path,
-                      name: Routes.recommend.name,
-                      builder: (context, state) => const RecommendScreen(),
-                      routes: [
-                        GoRoute(
-                          path: Routes.recommendSelectRegion.path,
-                          name: Routes.recommendSelectRegion.name,
-                          parentNavigatorKey: _rootNavigatorKey,
-                          builder: (context, state) =>
-                              const RecommendSelectRegionScreen(),
-                        ),
-                        GoRoute(
-                          path: Routes.recommendSelectPeriod.path,
-                          name: Routes.recommendSelectPeriod.name,
-                          parentNavigatorKey: _rootNavigatorKey,
-                          builder: (context, state) =>
-                              const RecommendSelectPeriodScreen(),
-                        ),
-                        GoRoute(
-                          path: Routes.recommendSelectTheme.path,
-                          name: Routes.recommendSelectTheme.name,
-                          parentNavigatorKey: _rootNavigatorKey,
-                          builder: (context, state) =>
-                            const RecommendSelectThemeScreen()
-                        ),
-                        GoRoute(
-                          path: Routes.recommendResult.path,
-                          name: Routes.recommendResult.name,
-                          parentNavigatorKey: _rootNavigatorKey,
-                          builder: (context, state) => RecommendResultScreen(),
-                        )
-                      ]),
-                ],
-              ),
-              StatefulShellBranch(
+              ]
+            ),
+
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: Routes.recommend.path,
+                  name: Routes.recommend.name,
+                  builder: (context, state) => BlocProvider(
+                    create: (context) => RecommendLaneBloc(
+                      tripRepository: GetIt.instance<TripRepository>(),
+                    ),
+                    child: const RecommendScreen(),
+                  ),
+                  routes: [
+                    // BlocProvider를 상위에서 제공하여 하위 라우트들에 동일한 Bloc을 공유합니다.
+                    GoRoute(
+                      path: Routes.recommendSelectRegion.path,
+                      name: Routes.recommendSelectRegion.name,
+                      parentNavigatorKey: _rootNavigatorKey,
+                      builder: (context, state) => const RecommendSelectRegionScreen(),
+                    ),
+                    GoRoute(
+                      path: Routes.recommendSelectPeriod.path,
+                      name: Routes.recommendSelectPeriod.name,
+                      parentNavigatorKey: _rootNavigatorKey,
+                      builder: (context, state) => const RecommendSelectPeriodScreen(),
+                    ),
+                    GoRoute(
+                      path: Routes.recommendSelectTheme.path,
+                      name: Routes.recommendSelectTheme.name,
+                      parentNavigatorKey: _rootNavigatorKey,
+                      builder: (context, state) => const RecommendSelectThemeScreen(),
+                    ),
+                    GoRoute(
+                      path: Routes.recommendResult.path,
+                      name: Routes.recommendResult.name,
+                      parentNavigatorKey: _rootNavigatorKey,
+                      builder: (context, state) => RecommendResultScreen(),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
+            StatefulShellBranch(
                 routes: [
                   GoRoute(
                     path: Routes.photobook.path,

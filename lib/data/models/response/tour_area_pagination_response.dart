@@ -6,7 +6,7 @@ part 'tour_area_pagination_response.g.dart';
 @JsonSerializable()
 class TourAreaPaginationResponse {
   @JsonKey(name: 'content')
-  final List<TourArea> content;
+  final List<TourAreaResponse> content;
 
   @JsonKey(name: 'pageable')
   final Pageable pageable;
