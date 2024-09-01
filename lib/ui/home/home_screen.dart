@@ -71,12 +71,19 @@ class HomeScreen extends StatelessWidget {
                       onShowMore: () {
                         GoRouter.of(context).push(
                             "${Routes.home.path}/${Routes.recommendedLanes.path}");
-                      }),
+                      },
+                      onItemClick: (p0) => {
+                            GoRouter.of(context)
+                                .push('${Routes.lanes.path}/$p0')
+                          }),
                   _buildRestaurantBody(
                     localRestaurants: state.localRestaurants,
                     onShowMore: () {
                       GoRouter.of(context).push(
                           "${Routes.home.path}/${Routes.localRestaurants.path}");
+                    },
+                    onItemClick: (p0) => {
+                      GoRouter.of(context).push('${Routes.stations.path}/$p0')
                     },
                   ),
                   _buildPopularPlaceBody(
@@ -84,6 +91,9 @@ class HomeScreen extends StatelessWidget {
                     onShowMore: () {
                       GoRouter.of(context).push(
                           "${Routes.home.path}/${Routes.popularDestinations.path}");
+                    },
+                    onItemClick: (p0) => {
+                      GoRouter.of(context).push('${Routes.stations.path}/$p0')
                     },
                   )
                 ],
@@ -248,6 +258,7 @@ class HomeScreen extends StatelessWidget {
     required String userName,
     required List<Lane> lanes,
     required VoidCallback onShowMore,
+    required Function(int) onItemClick,
   }) {
     return Container(
         padding: const EdgeInsets.symmetric(vertical: 20),
@@ -296,14 +307,17 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             for (final lane in lanes) ...[
-              _buildRecommendItem(
-                category: lane.category.title,
-                title: lane.laneName,
-                description: '',
-                image: lane.image,
-                period: "당일치기",
-                likeCount: lane.likeCount,
-                isLiked: false,
+              GestureDetector(
+                onTap: () => onItemClick(lane.laneId),
+                child: _buildRecommendItem(
+                  category: lane.category.title,
+                  title: lane.laneName,
+                  description: '',
+                  image: lane.image,
+                  period: "당일치기",
+                  likeCount: lane.likeCount,
+                  isLiked: false,
+                ),
               ),
             ],
           ],
@@ -329,10 +343,10 @@ class HomeScreen extends StatelessWidget {
         isLiked: isLiked);
   }
 
-  Widget _buildRestaurantBody({
-    required List<LocalRestaurant> localRestaurants,
-    required VoidCallback onShowMore,
-  }) {
+  Widget _buildRestaurantBody(
+      {required List<LocalRestaurant> localRestaurants,
+      required VoidCallback onShowMore,
+      required Function(int) onItemClick}) {
     return Container(
         padding: const EdgeInsets.symmetric(vertical: 20),
         child: Column(
@@ -373,12 +387,17 @@ class HomeScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 children: [
                   for (final restaurant in localRestaurants) ...[
-                    _buildRestaurantItem(
-                      name: restaurant.name,
-                      image: restaurant.image,
-                      likeCount: restaurant.likeCount,
-                      location: restaurant.sigunguValue,
-                      isLiked: restaurant.likedByMe,
+                    GestureDetector(
+                      onTap: () => {
+                        onItemClick(restaurant.tourAreaId),
+                      },
+                      child: _buildRestaurantItem(
+                        name: restaurant.name,
+                        image: restaurant.image,
+                        likeCount: restaurant.likeCount,
+                        location: restaurant.sigunguValue,
+                        isLiked: restaurant.likedByMe,
+                      ),
                     ),
                     const SizedBox(width: 14),
                   ]
@@ -407,6 +426,7 @@ class HomeScreen extends StatelessWidget {
   Widget _buildPopularPlaceBody({
     required List<PopularDestination> popularDestinations,
     required VoidCallback onShowMore,
+    required Function(int) onItemClick,
   }) {
     return Container(
         padding: const EdgeInsets.symmetric(vertical: 20),
@@ -448,12 +468,17 @@ class HomeScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 children: [
                   for (final place in popularDestinations) ...[
-                    PopularDestinationListItem(
-                      rank: place.ranking,
-                      name: place.name,
-                      image: place.image,
-                      location: place.sigunguValue,
-                      category: place.category.title,
+                    GestureDetector(
+                      onTap: () => {
+                        onItemClick(place.tourAreaId),
+                      },
+                      child: PopularDestinationListItem(
+                        rank: place.ranking,
+                        name: place.name,
+                        image: place.image,
+                        location: place.sigunguValue,
+                        category: place.category.title,
+                      ),
                     ),
                     const SizedBox(width: 14),
                   ]

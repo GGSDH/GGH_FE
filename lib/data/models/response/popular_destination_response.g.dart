@@ -8,6 +8,7 @@ part of 'popular_destination_response.dart';
 
 PopularDestination _$PopularDestinationFromJson(Map<String, dynamic> json) =>
     PopularDestination(
+      tourAreaId: (json['tourAreaId'] as num).toInt(),
       ranking: (json['ranking'] as num).toInt(),
       image: json['image'] as String?,
       name: json['name'] as String,
@@ -17,6 +18,7 @@ PopularDestination _$PopularDestinationFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$PopularDestinationToJson(PopularDestination instance) =>
     <String, dynamic>{
+      'tourAreaId': instance.tourAreaId,
       'ranking': instance.ranking,
       'image': instance.image,
       'name': instance.name,
