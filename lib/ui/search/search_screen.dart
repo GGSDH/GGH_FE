@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:get_it/get_it.dart';
 import 'package:gyeonggi_express/data/models/response/keyword_search_result_response.dart';
 import 'package:gyeonggi_express/data/models/response/popular_keyword_response.dart';
@@ -35,73 +36,79 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Scaffold(
-        resizeToAvoidBottomInset: false, // 키보드가 올라올 때 화면 크기 조정 방지
-        body: SafeArea(
-          child: Column(
-            children: [
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                child: Row(
-                  children: [
-                    SvgPicture.asset(
-                      'assets/icons/ic_chevron_left.svg',
-                      width: 24,
-                      height: 24,
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: SearchBar(
-                        controller: _searchController,
-                        onSubmitted: (value) {
-                          if (value.isNotEmpty) {
-                            context
-                                .read<SearchBloc>()
-                                .add(PerformSearch(value));
-                          }
-                        },
-                        onClearSearch: () {
-                          _searchController.clear();
-                          context
-                              .read<SearchBloc>()
-                              .add(FetchPopularKeywords());
-                        },
+    return PopScope(
+      canPop: true,
+      child: Material(
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          body: SafeArea(
+            child: Column(
+              children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () => context.pop(),
+                        child: SvgPicture.asset(
+                          'assets/icons/ic_chevron_left.svg',
+                          width: 24,
+                          height: 24,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                  // 스크롤 가능하게 만듦
-                  child: BlocBuilder<SearchBloc, SearchState>(
-                    builder: (context, state) {
-                      if (state is SearchLoading) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (state is PopularKeywordsLoaded) {
-                        return PopularSearchTerms(
-                          keywords: state.keywords,
-                          onKeywordTap: (keyword) {
-                            _searchController.text = keyword;
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: SearchBar(
+                          controller: _searchController,
+                          onSubmitted: (value) {
+                            if (value.isNotEmpty) {
+                              context
+                                  .read<SearchBloc>()
+                                  .add(PerformSearch(value));
+                            }
+                          },
+                          onClearSearch: () {
+                            _searchController.clear();
                             context
                                 .read<SearchBloc>()
-                                .add(PerformSearch(keyword));
+                                .add(FetchPopularKeywords());
                           },
-                        );
-                      } else if (state is SearchResultsLoaded) {
-                        return SearchResults(results: state.results);
-                      } else if (state is SearchError) {
-                        return Center(child: Text(state.message));
-                      } else {
-                        return const SizedBox.shrink();
-                      }
-                    },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ],
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: BlocBuilder<SearchBloc, SearchState>(
+                      builder: (context, state) {
+                        if (state is SearchLoading) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else if (state is PopularKeywordsLoaded) {
+                          return PopularSearchTerms(
+                            keywords: state.keywords,
+                            onKeywordTap: (keyword) {
+                              _searchController.text = keyword;
+                              context
+                                  .read<SearchBloc>()
+                                  .add(PerformSearch(keyword));
+                            },
+                          );
+                        } else if (state is SearchResultsLoaded) {
+                          return SearchResults(results: state.results);
+                        } else if (state is SearchError) {
+                          return Center(child: Text(state.message));
+                        } else {
+                          return const SizedBox.shrink();
+                        }
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

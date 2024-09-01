@@ -290,8 +290,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
-                        children: widget
-                            .laneData.days[_selectedDayIndex + 1].places
+                        children: widget.laneData.days[_selectedDayIndex].places
                             .map(
                                 (place) => _placeDetailItemInBottomSheet(place))
                             .toList(),

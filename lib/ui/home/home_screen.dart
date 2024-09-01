@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -31,8 +30,8 @@ class HomeScreen extends StatelessWidget {
         authRepository: GetIt.instance<AuthRepository>(),
         tripRepository: GetIt.instance<TripRepository>(),
       )..add(
-        HomeInitialize(),
-      ),
+          HomeInitialize(),
+        ),
       child: BlocSideEffectListener<HomeBloc, HomeSideEffect>(
         listener: (context, sideEffect) {
           if (sideEffect is HomeShowError) {
@@ -43,59 +42,60 @@ class HomeScreen extends StatelessWidget {
             );
           }
         },
-        child: BlocBuilder<HomeBloc, HomeState>(
-          builder: (context, state) {
-            if (state.isLoading) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else {
-              return SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildBanner(),
-                    _buildCategories(
-                          (category) {
-                        GoRouter.of(context).push(
-                            Uri(
-                              path: "${Routes.home.path}/${Routes.categoryDetail.path}",
-                              queryParameters: { 'category': TripTheme.toJson(category) },
-                            ).toString()
-                        );
-                      },
-                    ),
-                    _buildRecommendBody(
+        child: BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
+          if (state.isLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            return SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildBanner(context),
+                  _buildCategories(
+                    (category) {
+                      GoRouter.of(context).push(Uri(
+                        path:
+                            "${Routes.home.path}/${Routes.categoryDetail.path}",
+                        queryParameters: {
+                          'category': TripTheme.toJson(category)
+                        },
+                      ).toString());
+                    },
+                  ),
+                  _buildRecommendBody(
                       userName: state.userName,
                       lanes: state.lanes,
                       onShowMore: () {
-                        GoRouter.of(context).push("${Routes.home.path}/${Routes.recommendedLanes.path}");
-                      }
-                    ),
-                    _buildRestaurantBody(
-                      localRestaurants: state.localRestaurants,
-                      onShowMore: () {
-                        GoRouter.of(context).push("${Routes.home.path}/${Routes.localRestaurants.path}");
-                      },
-                    ),
-                    _buildPopularPlaceBody(
-                      popularDestinations: state.popularDestinations,
-                      onShowMore: () {
-                        GoRouter.of(context).push("${Routes.home.path}/${Routes.popularDestinations.path}");
-                      },
-                    )
-                  ],
-                ),
-              );
-            }
+                        GoRouter.of(context).push(
+                            "${Routes.home.path}/${Routes.recommendedLanes.path}");
+                      }),
+                  _buildRestaurantBody(
+                    localRestaurants: state.localRestaurants,
+                    onShowMore: () {
+                      GoRouter.of(context).push(
+                          "${Routes.home.path}/${Routes.localRestaurants.path}");
+                    },
+                  ),
+                  _buildPopularPlaceBody(
+                    popularDestinations: state.popularDestinations,
+                    onShowMore: () {
+                      GoRouter.of(context).push(
+                          "${Routes.home.path}/${Routes.popularDestinations.path}");
+                    },
+                  )
+                ],
+              ),
+            );
           }
-        ),
+        }),
       ),
     );
   }
 
-  Widget _buildAppBar() {
+  Widget _buildAppBar(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 44, 0, 0),
       child: Container(
@@ -112,14 +112,14 @@ class HomeScreen extends StatelessWidget {
                     _buildIconButton(
                       "assets/icons/ic_heart_white.svg",
                       () {
-                        // Handle heart icon tap
+                        context.push(Routes.favorites.path);
                       },
                     ),
                     const SizedBox(width: 14),
                     _buildIconButton(
                       "assets/icons/ic_search_white.svg",
                       () {
-                        // Handle search icon tap
+                        context.push(Routes.search.path);
                       },
                     ),
                   ],
@@ -128,7 +128,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBanner() {
+  Widget _buildBanner(BuildContext context) {
     return Stack(children: [
       Container(
         width: double.infinity,
@@ -155,7 +155,7 @@ class HomeScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildAppBar(),
+            _buildAppBar(context),
             const SizedBox(height: 35),
             const Text(
               "나만의 노선으로\n떠나는 여행",
@@ -196,7 +196,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCategories(Function (TripTheme category) onTapCategory) {
+  Widget _buildCategories(Function(TripTheme category) onTapCategory) {
     const categories = TripTheme.values;
 
     return SizedBox(
@@ -207,11 +207,9 @@ class HomeScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
         children: [
           for (final category in categories) ...[
-            _buildCategoryItem(
-                category,
-                () { onTapCategory(category);
-              }
-            ),
+            _buildCategoryItem(category, () {
+              onTapCategory(category);
+            }),
             const SizedBox(width: 8)
           ]
         ],
@@ -252,65 +250,64 @@ class HomeScreen extends StatelessWidget {
     required VoidCallback onShowMore,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                RichText(
-                  text: TextSpan(
-                    text: "$userName님",
-                    style: TextStyles.titleExtraLarge.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                    children: const <TextSpan>[
-                      TextSpan(
-                        text: "이\n좋아하실만한 노선",
-                        style: TextStyles.titleExtraLarge,
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  RichText(
+                    text: TextSpan(
+                      text: "$userName님",
+                      style: TextStyles.titleExtraLarge.copyWith(
+                        fontWeight: FontWeight.w600,
                       ),
-                    ],
-                  ),
-                ),
-                GestureDetector(
-                  onTap: onShowMore,
-                  child: Row(
-                    children: [
-                      Text(
-                        "더보기",
-                        style: TextStyles.bodyMedium.copyWith(
-                          color: ColorStyles.gray500,
+                      children: const <TextSpan>[
+                        TextSpan(
+                          text: "이\n좋아하실만한 노선",
+                          style: TextStyles.titleExtraLarge,
                         ),
-                      ),
-                      SvgPicture.asset(
-                        "assets/icons/ic_arrow_right.svg",
-                        width: 20,
-                        height: 20,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                  GestureDetector(
+                    onTap: onShowMore,
+                    child: Row(
+                      children: [
+                        Text(
+                          "더보기",
+                          style: TextStyles.bodyMedium.copyWith(
+                            color: ColorStyles.gray500,
+                          ),
+                        ),
+                        SvgPicture.asset(
+                          "assets/icons/ic_arrow_right.svg",
+                          width: 20,
+                          height: 20,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          for (final lane in lanes) ...[
-            _buildRecommendItem(
-              category: lane.category.title,
-              title: lane.laneName,
-              description: '',
-              image: lane.image,
-              period: "당일치기",
-              likeCount: lane.likeCount,
-              isLiked: false,
-            ),
+            for (final lane in lanes) ...[
+              _buildRecommendItem(
+                category: lane.category.title,
+                title: lane.laneName,
+                description: '',
+                image: lane.image,
+                period: "당일치기",
+                likeCount: lane.likeCount,
+                isLiked: false,
+              ),
+            ],
           ],
-        ],
-      )
-    );
+        ));
   }
 
   Widget _buildRecommendItem({
@@ -329,8 +326,7 @@ class HomeScreen extends StatelessWidget {
         image: image,
         period: period,
         likeCount: likeCount,
-        isLiked: isLiked
-    );
+        isLiked: isLiked);
   }
 
   Widget _buildRestaurantBody({
@@ -393,13 +389,12 @@ class HomeScreen extends StatelessWidget {
         ));
   }
 
-  Widget _buildRestaurantItem({
-    required String name,
-    required String? image,
-    required int likeCount,
-    required String location,
-    required bool isLiked
-  }) {
+  Widget _buildRestaurantItem(
+      {required String name,
+      required String? image,
+      required int likeCount,
+      required String location,
+      required bool isLiked}) {
     return RestaurantListItem(
       name: name,
       image: image,
