@@ -382,7 +382,7 @@ class _LaneDetailViewState extends State<LaneDetailView> {
                       Expanded(
                         child: Row(
                           children: [
-                            Text(laneTourArea.tourAreaName,
+                            Text(laneTourArea.sigunguCode.value,
                                 style: TextStyles.bodyMedium.copyWith(
                                     color: ColorStyles.gray500,
                                     fontWeight: FontWeight.w400)),
@@ -392,7 +392,7 @@ class _LaneDetailViewState extends State<LaneDetailView> {
                                     color: ColorStyles.gray300,
                                     fontWeight: FontWeight.w400)),
                             const SizedBox(width: 4),
-                            Text(laneTourArea.tourAreaName,
+                            Text(laneTourArea.sigunguCode.value,
                                 style: TextStyles.bodyMedium.copyWith(
                                     color: ColorStyles.gray500,
                                     fontWeight: FontWeight.w400)),
@@ -532,6 +532,7 @@ class _LaneDetailViewState extends State<LaneDetailView> {
                     children: [
                       Text(
                         laneTourArea.tourAreaName,
+                        maxLines: 1,
                         style: TextStyles.titleMedium.copyWith(
                             fontWeight: FontWeight.w600,
                             color: ColorStyles.gray800),
@@ -541,6 +542,7 @@ class _LaneDetailViewState extends State<LaneDetailView> {
                           Expanded(
                             child: Text(
                               laneTourArea.tourAreaName,
+                              maxLines: 1,
                               style: TextStyles.bodyMedium.copyWith(
                                   color: ColorStyles.gray500,
                                   fontWeight: FontWeight.w400),
