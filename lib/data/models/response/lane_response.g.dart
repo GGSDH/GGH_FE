@@ -12,6 +12,7 @@ Lane _$LaneFromJson(Map<String, dynamic> json) => Lane(
       category: TripTheme.fromJson(json['tripThemeConstants'] as String),
       likeCount: (json['likes'] as num).toInt(),
       image: json['image'] as String,
+      days: (json['days'] as num).toInt(),
     );
 
 Map<String, dynamic> _$LaneToJson(Lane instance) => <String, dynamic>{
@@ -20,4 +21,5 @@ Map<String, dynamic> _$LaneToJson(Lane instance) => <String, dynamic>{
       'tripThemeConstants': TripTheme.toJson(instance.category),
       'likes': instance.likeCount,
       'image': instance.image,
+      'days': instance.days,
     };

@@ -312,9 +312,9 @@ class HomeScreen extends StatelessWidget {
                 child: _buildRecommendItem(
                   category: lane.category.title,
                   title: lane.laneName,
-                  description: '',
+                  description: '노선',
                   image: lane.image,
-                  period: "당일치기",
+                  period: lane.getPeriodString(),
                   likeCount: lane.likeCount,
                   isLiked: false,
                 ),
