@@ -7,11 +7,11 @@ part 'tour_area_detail_response.g.dart';
 @JsonSerializable()
 class TourAreaDetail {
   @JsonKey(name: 'tourArea')
-  final TourArea tourArea;
+  final TourAreaResponse tourArea;
   @JsonKey(name: 'lanes')
   final List<Lane> lanes;
   @JsonKey(name: 'otherTourAreas')
-  final List<TourArea> otherTourAreas;
+  final List<TourAreaResponse> otherTourAreas;
 
   TourAreaDetail({
     required this.tourArea,

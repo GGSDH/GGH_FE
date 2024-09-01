@@ -8,7 +8,7 @@ import '../../data/repository/trip_repository.dart';
 
 final class CategoryDetailState {
   final bool isLoading;
-  final List<TourArea> tourAreas;
+  final List<TourAreaResponse> tourAreas;
   final TripTheme selectedCategory;
   final List<SigunguCode> selectedSigunguCodes;
   final int totalCount;
@@ -40,7 +40,7 @@ final class CategoryDetailState {
 
   CategoryDetailState copyWith({
     bool? isLoading,
-    List<TourArea>? tourAreas,
+    List<TourAreaResponse>? tourAreas,
     TripTheme? selectedCategory,
     List<SigunguCode>? selectedSigunguCodes,
     int? totalCount,

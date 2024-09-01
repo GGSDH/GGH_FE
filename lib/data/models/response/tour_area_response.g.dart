@@ -6,7 +6,8 @@ part of 'tour_area_response.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-TourArea _$TourAreaFromJson(Map<String, dynamic> json) => TourArea(
+TourAreaResponse _$TourAreaResponseFromJson(Map<String, dynamic> json) =>
+    TourAreaResponse(
       tourAreaId: (json['tourAreaId'] as num).toInt(),
       name: json['name'] as String,
       address: json['address'] as String,
@@ -22,7 +23,8 @@ TourArea _$TourAreaFromJson(Map<String, dynamic> json) => TourArea(
       contentType: TourContentType.fromJson(json['contentType'] as String),
     );
 
-Map<String, dynamic> _$TourAreaToJson(TourArea instance) => <String, dynamic>{
+Map<String, dynamic> _$TourAreaResponseToJson(TourAreaResponse instance) =>
+    <String, dynamic>{
       'tourAreaId': instance.tourAreaId,
       'name': instance.name,
       'address': instance.address,

@@ -6,7 +6,7 @@ import '../trip_theme.dart';
 part 'tour_area_response.g.dart';
 
 @JsonSerializable()
-class TourArea {
+class TourAreaResponse {
   @JsonKey(name: 'tourAreaId')
   final int tourAreaId;
 
@@ -46,7 +46,7 @@ class TourArea {
   @JsonKey(name: 'contentType', fromJson: TourContentType.fromJson, toJson: TourContentType.toJson)
   final TourContentType contentType;
 
-  TourArea({
+  TourAreaResponse({
     required this.tourAreaId,
     required this.name,
     required this.address,
@@ -63,8 +63,8 @@ class TourArea {
   });
 
   // fromJson 메서드 생성
-  factory TourArea.fromJson(Map<String, dynamic> json) => _$TourAreaFromJson(json);
+  factory TourAreaResponse.fromJson(Map<String, dynamic> json) => _$TourAreaResponseFromJson(json);
 
   // toJson 메서드 생성
-  Map<String, dynamic> toJson() => _$TourAreaToJson(this);
+  Map<String, dynamic> toJson() => _$TourAreaResponseToJson(this);
 }

@@ -5,8 +5,10 @@ import 'package:gyeonggi_express/data/models/response/tour_area_pagination_respo
 import 'package:gyeonggi_express/data/repository/trip_repository.dart';
 
 import '../models/api_result.dart';
+import '../models/request/recommended_lane_request.dart';
 import '../models/response/lane_response.dart';
 import '../models/response/local_restaurant_response.dart';
+import '../models/response/recommend_lane_response.dart';
 import '../models/sigungu_code.dart';
 import '../models/trip_theme.dart';
 
@@ -34,5 +36,14 @@ class TripRepositoryImpl implements TripRepository {
     page: page,
     size: size,
     request: TourAreaSearchRequest(sigunguCode: sigunguCodes, tripTheme: tripTheme)
+  );
+
+  @override
+  Future<ApiResult<RecommendedLaneResponse>> getRecommendedLane({
+    required int days,
+    required List<SigunguCode> sigunguCodes,
+    required List<TripTheme> tripThemes
+  }) => _tripDataSource.getRecommendedLane(
+    request: RecommendedLaneRequest(days: days, sigunguCode: sigunguCodes, tripThemeConstants: tripThemes)
   );
 }
