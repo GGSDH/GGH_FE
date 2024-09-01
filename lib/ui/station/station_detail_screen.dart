@@ -48,7 +48,7 @@ class _StationDetailViewState extends State<StationDetailView> {
         child: SafeArea(
             child: Scaffold(
           backgroundColor: Colors.white,
-          bottomNavigationBar: _bottomNavigationBar(),
+          /* bottomNavigationBar: _bottomNavigationBar(), */
           body: BlocBuilder<StationDetailBloc, StationDetailState>(
             builder: (context, state) {
               if (state is StationDetailLoaded) {
@@ -64,6 +64,8 @@ class _StationDetailViewState extends State<StationDetailView> {
                                   "assets/icons/ic_map.svg",
                                   width: 24,
                                   height: 24,
+                                  colorFilter: const ColorFilter.mode(
+                                      Colors.black, BlendMode.srcIn),
                                 ),
                                 onPressed: () => print("map clicked")),
                             ActionBarMenuItem(
@@ -71,6 +73,8 @@ class _StationDetailViewState extends State<StationDetailView> {
                                   "assets/icons/ic_heart.svg",
                                   width: 24,
                                   height: 24,
+                                  colorFilter: const ColorFilter.mode(
+                                      Colors.black, BlendMode.srcIn),
                                 ),
                                 onPressed: () => print("like clicked")),
                           ]),
@@ -84,20 +88,20 @@ class _StationDetailViewState extends State<StationDetailView> {
                               TourContentType.RESTAURANT
                           ? _stationSpotSummary(state.data)
                           : _stationRestaurantSummary(state.data), */
-                      const Divider(
+                      /* const Divider(
                         color: ColorStyles.gray100,
                         thickness: 1,
-                      ),
+                      ), */
                       _laneIncludingStation(state.data),
                       const Divider(
                         color: ColorStyles.gray100,
                         thickness: 1,
                       ),
                       _nearbyRecommendations(state.data),
-                      const Divider(
+                      /*  const Divider(
                         color: ColorStyles.gray100,
                         thickness: 1,
-                      ),
+                      ), */
                       /* _buildBlogReviews(state.data), */
                     ],
                   ),
@@ -170,14 +174,14 @@ class _StationDetailViewState extends State<StationDetailView> {
   Widget _laneIncludingStation(TourAreaDetail data) {
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Text("이 역이 포함된 노선들", style: TextStyles.headlineXSmall),
-                Row(
+                Text("이 역이 포함된 노선들", style: TextStyles.headlineXSmall),
+                /* Row(
                   children: [
                     Text("더보기",
                         style: TextStyles.bodyMedium
@@ -188,7 +192,7 @@ class _StationDetailViewState extends State<StationDetailView> {
                       height: 20,
                     )
                   ],
-                )
+                ) */
               ]),
         ),
         ...data.lanes.map(
@@ -321,12 +325,13 @@ class _StationDetailViewState extends State<StationDetailView> {
             height: 8,
           ),
           Text(data.tourArea.name, style: TextStyles.title2ExtraLarge),
-          const SizedBox(
+          /* const SizedBox(
             height: 4,
-          ),
+          ), */
           /* Text(data.subtitle,
               style: TextStyles.bodyLarge.copyWith(color: ColorStyles.gray600)), */
-          if (data.tourArea.telNo != null) ...[
+          if (data.tourArea.telNo != null &&
+              data.tourArea.telNo!.isNotEmpty) ...[
             const SizedBox(
               height: 8,
             ),
@@ -363,14 +368,14 @@ class _StationDetailViewState extends State<StationDetailView> {
   Widget _nearbyRecommendations(TourAreaDetail data) {
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Text("주변 추천 장소", style: TextStyles.headlineXSmall),
-              Row(
+              Text("주변 추천 장소", style: TextStyles.headlineXSmall),
+              /* Row(
                 children: [
                   Text("더보기",
                       style: TextStyles.bodyMedium
@@ -381,7 +386,7 @@ class _StationDetailViewState extends State<StationDetailView> {
                     height: 20,
                   )
                 ],
-              )
+              ) */
             ],
           ),
         ),
@@ -402,7 +407,7 @@ class _StationDetailViewState extends State<StationDetailView> {
                       ),
                       child: RestaurantListItem(
                         name: entry.value.name,
-                        location: entry.value.address,
+                        location: entry.value.sigungu.value,
                         image: entry.value.image,
                         isLiked: entry.value.likedByMe,
                         likeCount: entry.value.likeCount,
