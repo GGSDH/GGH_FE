@@ -6,4 +6,12 @@ abstract class FavoriteDataSource {
   Future<ApiResult<List<TourAreaSummary>>> getFavoriteTourAreas();
 
   Future<ApiResult<List<Lane>>> getFavoriteLanes();
+
+  Future<ApiResult<bool>> addFavoriteLane(int laneId);
+
+  Future<ApiResult<bool>> removeFavoriteLane(int laneId);
+
+  Future<ApiResult<bool>> addFavoriteTourArea(int tourAreaId);
+
+  Future<ApiResult<bool>> removeFavoriteTourArea(int tourAreaId);
 }

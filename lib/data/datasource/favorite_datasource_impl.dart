@@ -27,4 +27,30 @@ class FavoriteDatasourceImpl implements FavoriteDataSource {
             .map((e) => TourAreaSummary.fromJson(e as Map<String, dynamic>))
             .toList());
   }
+
+  @override
+  Future<ApiResult<bool>> addFavoriteLane(int laneId) {
+    return _dio.makeRequest<bool>(
+        () => _dio.post('v1/lane/$laneId/like'), (data) => data as bool);
+  }
+
+  @override
+  Future<ApiResult<bool>> addFavoriteTourArea(int tourAreaId) {
+    return _dio.makeRequest<bool>(
+        () => _dio.post('v1/tour-area/$tourAreaId/like'),
+        (data) => data as bool);
+  }
+
+  @override
+  Future<ApiResult<bool>> removeFavoriteLane(int laneId) {
+    return _dio.makeRequest<bool>(
+        () => _dio.post('v1/lane/$laneId/unlike'), (data) => data as bool);
+  }
+
+  @override
+  Future<ApiResult<bool>> removeFavoriteTourArea(int tourAreaId) {
+    return _dio.makeRequest<bool>(
+        () => _dio.post('v1/tour-area/$tourAreaId/unlike'),
+        (data) => data as bool);
+  }
 }

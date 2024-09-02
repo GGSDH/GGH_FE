@@ -28,16 +28,16 @@ class MyPageScreen extends StatelessWidget {
       child: BlocSideEffectListener<MyPageBloc, MyPageSideEffect>(
         listener: (context, sideEffect) {
           if (sideEffect is MyPageNavigateToSetting) {
-            GoRouter.of(context).push(
-              Uri(
-                path: "${Routes.myPage.path}/${Routes.myPageSetting.path}",
-                queryParameters: {
-                  'nickname': sideEffect.nickname,
-                  'email': sideEffect.email,
-                  'loginType': sideEffect.loginType.name
-                },
-              ).toString()
-            ).then((_) {
+            GoRouter.of(context)
+                .push(Uri(
+              path: "${Routes.myPage.path}/${Routes.myPageSetting.path}",
+              queryParameters: {
+                'nickname': sideEffect.nickname,
+                'email': sideEffect.email,
+                'loginType': sideEffect.loginType.name
+              },
+            ).toString())
+                .then((_) {
               // Pop해서 돌아왔을 때 이벤트 호출
               context.read<MyPageBloc>().add(MyPageInitialize());
             });
@@ -51,81 +51,75 @@ class MyPageScreen extends StatelessWidget {
             GoRouter.of(context).go(Routes.login.path);
           }
         },
-        child: BlocBuilder<MyPageBloc, MyPageState>(
-          builder: (context, state) {
-            if (state.isLoading) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else {
-              return SafeArea(
-                child: MyPageContent(
-                  onTapSetting: () {
-                    context.read<MyPageBloc>().add(
-                      MyPageSettingButtonClicked(
+        child: BlocBuilder<MyPageBloc, MyPageState>(builder: (context, state) {
+          if (state.isLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            return SafeArea(
+              child: MyPageContent(
+                onTapSetting: () {
+                  context.read<MyPageBloc>().add(MyPageSettingButtonClicked(
                         email: state.email,
                         nickname: state.nickname,
                         loginType: state.loginProvider,
-                      )
-                    );
-                  },
-                  onTapLocInfoTerms: () {
-                    GoRouter.of(context).push(
-                      Uri(
-                        path: "${Routes.myPage.path}/${Routes.myPagePrivacyPolicy.path}",
-                        queryParameters: {
-                          'title': '위치정보 이용약관',
-                          'url': Constants.LOCATION_INFO_TERMS_URL
-                        }
-                      ).toString()
-                    );
-                  },
-                  onTapPrivacyPolicy: () {
-                    GoRouter.of(context).push(
-                      Uri(
-                        path: "${Routes.myPage.path}/${Routes.myPagePrivacyPolicy.path}",
-                        queryParameters: {
-                          'title': '개인정보 처리방침',
-                          'url': Constants.PRIVACY_POLICY_URL
-                        }
-                      ).toString()
-                    );
-                  },
-                  onTapTermsOfUse: () {
-                    GoRouter.of(context).push(
-                      Uri(
-                        path: "${Routes.myPage.path}/${Routes.myPageServicePolicy.path}",
-                        queryParameters: {
-                          'title': '서비스 이용약관',
-                          'url': Constants.TERMS_OF_USE_URL
-                        }
-                      ).toString()
-                    );
-                  },
-                  onTapLogOut: () {
-                    _showLogoutDialog(
-                      context,
-                      () {
-                        context.read<MyPageBloc>().add(MyPageLogOutButtonClicked());
-                      },
-                    );
-                  },
-                  onTapWithdrawal: () {
-                    _showWithdrawalDialog(
-                      context,
-                      () {
-                        context.read<MyPageBloc>().add(MyPageWithdrawalButtonClicked());
-                      },
-                    );
-                  },
-                  nickname: state.nickname,
-                  email: state.email,
-                  loginProvider: state.loginProvider,
-                ),
-              );
-            }
+                      ));
+                },
+                onTapLocInfoTerms: () {
+                  GoRouter.of(context).push(Uri(
+                      path:
+                          "${Routes.myPage.path}/${Routes.myPagePrivacyPolicy.path}",
+                      queryParameters: {
+                        'title': '위치정보 이용약관',
+                        'url': Constants.LOCATION_INFO_TERMS_URL
+                      }).toString());
+                },
+                onTapPrivacyPolicy: () {
+                  GoRouter.of(context).push(Uri(
+                      path:
+                          "${Routes.myPage.path}/${Routes.myPagePrivacyPolicy.path}",
+                      queryParameters: {
+                        'title': '개인정보 처리방침',
+                        'url': Constants.PRIVACY_POLICY_URL
+                      }).toString());
+                },
+                onTapTermsOfUse: () {
+                  GoRouter.of(context).push(Uri(
+                      path:
+                          "${Routes.myPage.path}/${Routes.myPageServicePolicy.path}",
+                      queryParameters: {
+                        'title': '서비스 이용약관',
+                        'url': Constants.TERMS_OF_USE_URL
+                      }).toString());
+                },
+                onTapLogOut: () {
+                  _showLogoutDialog(
+                    context,
+                    () {
+                      context
+                          .read<MyPageBloc>()
+                          .add(MyPageLogOutButtonClicked());
+                    },
+                  );
+                },
+                onTapWithdrawal: () {
+                  _showWithdrawalDialog(
+                    context,
+                    () {
+                      context
+                          .read<MyPageBloc>()
+                          .add(MyPageWithdrawalButtonClicked());
+                    },
+                  );
+                },
+                nickname: state.nickname,
+                email: state.email,
+                loginProvider: state.loginProvider,
+              ),
+            );
           }
-        ),
+        }),
       ),
     );
   }
@@ -229,18 +223,14 @@ class MyPageScreen extends StatelessWidget {
                 height: 40,
               ),
               const SizedBox(height: 10),
-              Text(
-                  "정말로 경기선을 탈퇴하시겠습니까?",
-                  style: TextStyles.titleLarge.copyWith(
-                      color: ColorStyles.gray800
-                  )
-              ),
+              Text("정말로 경기선을 탈퇴하시겠습니까?",
+                  style: TextStyles.titleLarge
+                      .copyWith(color: ColorStyles.gray800)),
               const SizedBox(height: 8),
               Text(
                 "지금 탈퇴하시면,\n모든 데이터가 삭제되어 복구될 수 없어요",
-                style: TextStyles.bodyMedium.copyWith(
-                    color: ColorStyles.gray600
-                ),
+                style:
+                    TextStyles.bodyMedium.copyWith(color: ColorStyles.gray600),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
@@ -300,7 +290,6 @@ class MyPageScreen extends StatelessWidget {
     );
   }
 }
-
 
 class MyPageContent extends StatelessWidget {
   final VoidCallback onTapSetting;
@@ -490,14 +479,14 @@ class MyPageContent extends StatelessWidget {
             children: [
               _buildIconButton(
                 "assets/icons/ic_heart_white.svg",
-                    () {
+                () {
                   // Handle heart icon tap
                 },
               ),
               const SizedBox(width: 14),
               _buildIconButton(
                 "assets/icons/ic_search_white.svg",
-                    () {
+                () {
                   // Handle search icon tap
                 },
               ),
@@ -539,8 +528,8 @@ class MyPageContent extends StatelessWidget {
                 bottom: 0,
                 child: SvgPicture.asset(
                   loginProvider == LoginProvider.kakao
-                    ? "assets/icons/ic_profile_kakao.svg"
-                    : "assets/icons/ic_profile_google.svg",
+                      ? "assets/icons/ic_profile_kakao.svg"
+                      : "assets/icons/ic_profile_google.svg",
                   width: 18,
                   height: 18,
                 ),
@@ -580,7 +569,8 @@ class MyPageContent extends StatelessWidget {
     );
   }
 
-  Widget _buildIconButton(String assetPath, VoidCallback onTap, {double width = 24, double height = 24}) {
+  Widget _buildIconButton(String assetPath, VoidCallback onTap,
+      {double width = 24, double height = 24}) {
     return GestureDetector(
       onTap: onTap,
       child: SvgPicture.asset(

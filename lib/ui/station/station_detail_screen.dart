@@ -48,7 +48,7 @@ class _StationDetailViewState extends State<StationDetailView> {
         child: SafeArea(
             child: Scaffold(
           backgroundColor: Colors.white,
-          bottomNavigationBar: _bottomNavigationBar(),
+          /* bottomNavigationBar: _bottomNavigationBar(), */
           body: BlocBuilder<StationDetailBloc, StationDetailState>(
             builder: (context, state) {
               if (state is StationDetailLoaded) {
@@ -64,6 +64,8 @@ class _StationDetailViewState extends State<StationDetailView> {
                                   "assets/icons/ic_map.svg",
                                   width: 24,
                                   height: 24,
+                                  colorFilter: const ColorFilter.mode(
+                                      Colors.black, BlendMode.srcIn),
                                 ),
                                 onPressed: () => print("map clicked")),
                             ActionBarMenuItem(
@@ -71,6 +73,8 @@ class _StationDetailViewState extends State<StationDetailView> {
                                   "assets/icons/ic_heart.svg",
                                   width: 24,
                                   height: 24,
+                                  colorFilter: const ColorFilter.mode(
+                                      Colors.black, BlendMode.srcIn),
                                 ),
                                 onPressed: () => print("like clicked")),
                           ]),
@@ -80,24 +84,25 @@ class _StationDetailViewState extends State<StationDetailView> {
                         color: ColorStyles.gray100,
                         thickness: 1,
                       ),
-                      state.data.placeType == PlaceType.spot
+                      /* state.data.tourArea.contentType !=
+                              TourContentType.RESTAURANT
                           ? _stationSpotSummary(state.data)
-                          : _stationRestaurantSummary(state.data),
-                      const Divider(
+                          : _stationRestaurantSummary(state.data), */
+                      /* const Divider(
                         color: ColorStyles.gray100,
                         thickness: 1,
-                      ),
+                      ), */
                       _laneIncludingStation(state.data),
                       const Divider(
                         color: ColorStyles.gray100,
                         thickness: 1,
                       ),
                       _nearbyRecommendations(state.data),
-                      const Divider(
+                      /*  const Divider(
                         color: ColorStyles.gray100,
                         thickness: 1,
-                      ),
-                      _buildBlogReviews(state.data),
+                      ), */
+                      /* _buildBlogReviews(state.data), */
                     ],
                   ),
                 );
@@ -166,17 +171,17 @@ class _StationDetailViewState extends State<StationDetailView> {
     );
   }
 
-  Widget _laneIncludingStation(StationDetailScreenData data) {
+  Widget _laneIncludingStation(TourAreaDetail data) {
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Text("이 역이 포함된 노선들", style: TextStyles.headlineXSmall),
-                Row(
+                Text("이 역이 포함된 노선들", style: TextStyles.headlineXSmall),
+                /* Row(
                   children: [
                     Text("더보기",
                         style: TextStyles.bodyMedium
@@ -187,7 +192,7 @@ class _StationDetailViewState extends State<StationDetailView> {
                       height: 20,
                     )
                   ],
-                )
+                ) */
               ]),
         ),
         ...data.lanes.map(
@@ -205,7 +210,7 @@ class _StationDetailViewState extends State<StationDetailView> {
     );
   }
 
-  Widget _stationSpotSummary(StationDetailScreenData data) {
+  /* Widget _stationSpotSummary(TourAreaDetail data) {
     final spotSummary = data.spotSummary!;
     return SizedBox(
       width: double.infinity,
@@ -237,7 +242,7 @@ class _StationDetailViewState extends State<StationDetailView> {
     );
   }
 
-  Widget _stationRestaurantSummary(StationDetailScreenData data) {
+  Widget _stationRestaurantSummary(TourAreaDetail data) {
     final restaurantSummary = data.restaurantSummary!;
     return SizedBox(
       width: double.infinity,
@@ -290,9 +295,9 @@ class _StationDetailViewState extends State<StationDetailView> {
         ],
       ),
     );
-  }
+  } */
 
-  Widget _stationHeader(StationDetailScreenData data) {
+  Widget _stationHeader(TourAreaDetail data) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
       child: Column(
@@ -310,7 +315,7 @@ class _StationDetailViewState extends State<StationDetailView> {
               ),
               const SizedBox(width: 4),
               Text(
-                data.location,
+                data.tourArea.sigungu.value,
                 style: TextStyles.bodyMedium.copyWith(
                     fontWeight: FontWeight.w400, color: ColorStyles.primary),
               ),
@@ -319,13 +324,14 @@ class _StationDetailViewState extends State<StationDetailView> {
           const SizedBox(
             height: 8,
           ),
-          Text(data.title, style: TextStyles.title2ExtraLarge),
-          const SizedBox(
+          Text(data.tourArea.name, style: TextStyles.title2ExtraLarge),
+          /* const SizedBox(
             height: 4,
-          ),
-          Text(data.subtitle,
-              style: TextStyles.bodyLarge.copyWith(color: ColorStyles.gray600)),
-          if (data.phoneNumber != null) ...[
+          ), */
+          /* Text(data.subtitle,
+              style: TextStyles.bodyLarge.copyWith(color: ColorStyles.gray600)), */
+          if (data.tourArea.telNo != null &&
+              data.tourArea.telNo!.isNotEmpty) ...[
             const SizedBox(
               height: 8,
             ),
@@ -344,7 +350,7 @@ class _StationDetailViewState extends State<StationDetailView> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      data.phoneNumber!,
+                      data.tourArea.telNo!,
                       style: TextStyles.titleSmall.copyWith(
                           color: ColorStyles.gray600,
                           fontWeight: FontWeight.w400),
@@ -359,50 +365,52 @@ class _StationDetailViewState extends State<StationDetailView> {
     );
   }
 
-  Widget _nearbyRecommendations(StationDetailScreenData data) {
+  Widget _nearbyRecommendations(TourAreaDetail data) {
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text("주변 추천 장소", style: TextStyles.headlineXSmall),
-                Row(
-                  children: [
-                    Text("더보기",
-                        style: TextStyles.bodyMedium
-                            .copyWith(color: ColorStyles.gray500)),
-                    SvgPicture.asset(
-                      "assets/icons/ic_arrow_right.svg",
-                      width: 20,
-                      height: 20,
-                    )
-                  ],
-                )
-              ]),
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text("주변 추천 장소", style: TextStyles.headlineXSmall),
+              /* Row(
+                children: [
+                  Text("더보기",
+                      style: TextStyles.bodyMedium
+                          .copyWith(color: ColorStyles.gray500)),
+                  SvgPicture.asset(
+                    "assets/icons/ic_arrow_right.svg",
+                    width: 20,
+                    height: 20,
+                  )
+                ],
+              ) */
+            ],
+          ),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
-              children: data.nearbyRestaurants
+              children: data.otherTourAreas
                   .asMap()
                   .entries
                   .map(
                     (entry) => Padding(
                       padding: EdgeInsets.only(
-                        right: entry.key != data.nearbyRestaurants.length - 1
+                        right: entry.key != data.otherTourAreas.length - 1
                             ? 14
                             : 0,
                       ),
                       child: RestaurantListItem(
                         name: entry.value.name,
-                        location: entry.value.location,
-                        isLiked: entry.value.isLiked,
-                        likeCount: entry.value.rating.toInt(),
+                        location: entry.value.sigungu.value,
+                        image: entry.value.image,
+                        isLiked: entry.value.likedByMe,
+                        likeCount: entry.value.likeCount,
                       ),
                     ),
                   )
@@ -414,7 +422,7 @@ class _StationDetailViewState extends State<StationDetailView> {
     );
   }
 
-  Widget _buildBlogReviews(StationDetailScreenData data) {
+  /* Widget _buildBlogReviews(TourAreaDetail data) {
     return Column(
       children: [
         Padding(
@@ -467,29 +475,30 @@ class _StationDetailViewState extends State<StationDetailView> {
         )
       ],
     );
-  }
+  } */
 
-  Widget _imageViewer(StationDetailScreenData data) {
+  Widget _imageViewer(TourAreaDetail data) {
     return SizedBox(
       height: 295,
       child: Stack(
         children: [
-          PageView.builder(
-              onPageChanged: (value) => {
-                    setState(() {
-                      _currentPage = value;
-                    })
-                  },
-              itemCount: data.images.length,
-              itemBuilder: (context, index) {
-                return Image.network(
-                  data.images[index],
-                  fit: BoxFit.cover,
-                  height: 295,
-                  width: double.infinity,
-                );
-              }),
-          Positioned(
+          if (data.tourArea.image != null && data.tourArea.image!.isNotEmpty)
+            PageView.builder(
+                onPageChanged: (value) => {
+                      setState(() {
+                        _currentPage = value;
+                      })
+                    },
+                itemCount: 1,
+                itemBuilder: (context, index) {
+                  return Image.network(
+                    data.tourArea.image!,
+                    fit: BoxFit.cover,
+                    height: 295,
+                    width: double.infinity,
+                  );
+                }),
+          /* Positioned(
             right: 20,
             bottom: 20,
             child: Container(
@@ -504,162 +513,9 @@ class _StationDetailViewState extends State<StationDetailView> {
                     fontWeight: FontWeight.w600, color: ColorStyles.grayWhite),
               ),
             ),
-          )
+          ) */
         ],
       ),
     );
   }
-}
-
-enum PlaceType {
-  spot,
-  restaurant,
-}
-
-class StationDetailScreenData {
-  final List<String> images;
-  final String location;
-  final String title;
-  final String subtitle;
-  final String? phoneNumber;
-  final PlaceType placeType;
-  final RestaurantSummary? restaurantSummary;
-  final SpotSummary? spotSummary;
-  final List<Lane> lanes;
-  final List<Restaurant> nearbyRestaurants;
-  final List<BlogItem> blogItems;
-  StationDetailScreenData({
-    required this.images,
-    required this.location,
-    required this.title,
-    required this.subtitle,
-    this.phoneNumber,
-    required this.placeType,
-    this.restaurantSummary,
-    this.spotSummary,
-    required this.lanes,
-    required this.nearbyRestaurants,
-    required this.blogItems,
-  });
-
-  static fromTourAreaDetail(TourAreaDetail data) {
-    final tourArea = data.tourArea;
-
-    final images = <String>[];
-    if (tourArea.image != null) {
-      images.add(tourArea.image!);
-    }
-
-    RestaurantSummary? restaurantSummary;
-    if (data.otherTourAreas.isNotEmpty) {
-      final menus = data.otherTourAreas.map((area) {
-        return RestaurantMenu(
-          imageUrl: area.image ?? '',
-          title: area.name,
-          description: 'Located at ${area.address}',
-        );
-      }).toList();
-      restaurantSummary = RestaurantSummary(menus: menus);
-    }
-
-    SpotSummary? spotSummary;
-    if (tourArea.image != null) {
-      spotSummary = SpotSummary(
-        summaryImageUrl: tourArea.image!,
-        title: tourArea.name,
-        description: 'Ranked #${tourArea.ranking ?? 'N/A'} in the area',
-      );
-    }
-
-    final nearbyRestaurants = data.otherTourAreas.map((area) {
-      return Restaurant(
-        name: area.name,
-        rating: 4.5,
-        location: area.address,
-        category: 'Category',
-        isLiked: area.likedByMe,
-      );
-    }).toList();
-
-    final blogItems = data.lanes.map((lane) {
-      return BlogItem(
-        title: lane.laneName,
-        date: '2024-01-01',
-        imageUrl: lane.image,
-        articleUrl: 'https://example.com',
-      );
-    }).toList();
-
-    // Return the constructed StationDetailScreenData object
-    return StationDetailScreenData(
-      images: images,
-      location: tourArea.address,
-      title: tourArea.name,
-      subtitle: 'Subtitle', // Provide an actual subtitle if available
-      phoneNumber: tourArea.telNo,
-      placeType: tourArea.contentType == TourContentType.RESTAURANT
-          ? PlaceType.restaurant
-          : PlaceType.spot,
-      restaurantSummary: restaurantSummary,
-      spotSummary: spotSummary,
-      lanes: data.lanes,
-      nearbyRestaurants: nearbyRestaurants,
-      blogItems: blogItems,
-    );
-  }
-}
-
-class RestaurantSummary {
-  final List<RestaurantMenu> menus;
-  RestaurantSummary({required this.menus});
-}
-
-class RestaurantMenu {
-  final String imageUrl;
-  final String title;
-  final String description;
-  RestaurantMenu({
-    required this.imageUrl,
-    required this.title,
-    required this.description,
-  });
-}
-
-class SpotSummary {
-  final String summaryImageUrl;
-  final String title;
-  final String description;
-  SpotSummary({
-    required this.summaryImageUrl,
-    required this.title,
-    required this.description,
-  });
-}
-
-class Restaurant {
-  final String name;
-  final double rating;
-  final String location;
-  final String category;
-  final bool isLiked;
-  Restaurant({
-    required this.name,
-    required this.rating,
-    required this.location,
-    required this.category,
-    required this.isLiked,
-  });
-}
-
-class BlogItem {
-  final String title;
-  final String date;
-  final String imageUrl;
-  final String articleUrl;
-  BlogItem({
-    required this.title,
-    required this.date,
-    required this.imageUrl,
-    required this.articleUrl,
-  });
 }

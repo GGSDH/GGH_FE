@@ -9,13 +9,12 @@ class AppActionBar extends StatelessWidget {
   final VoidCallback onBackPressed;
   final List<ActionBarMenuItem>? menuItems;
 
-  const AppActionBar({
-    super.key,
-    this.title,
-    this.rightText,
-    required this.onBackPressed,
-    this.menuItems
-  });
+  const AppActionBar(
+      {super.key,
+      this.title,
+      this.rightText,
+      required this.onBackPressed,
+      this.menuItems});
 
   @override
   Widget build(BuildContext context) {
@@ -29,10 +28,12 @@ class AppActionBar extends StatelessWidget {
               child: Center(
                 child: title != null
                     ? Text(
-                  title!,
-                  style: TextStyles.titleLarge.copyWith(fontWeight: FontWeight.w600, color: ColorStyles.gray900),
-                  overflow: TextOverflow.ellipsis,
-                )
+                        title!,
+                        style: TextStyles.titleLarge.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: ColorStyles.gray900),
+                        overflow: TextOverflow.ellipsis,
+                      )
                     : const SizedBox(),
               ),
             ),
@@ -48,8 +49,7 @@ class AppActionBar extends StatelessWidget {
                         height: 24,
                       ),
                       onPressed: onBackPressed,
-                      padding: EdgeInsets.zero
-                  ),
+                      padding: EdgeInsets.zero),
                 ),
                 Row(
                   mainAxisSize: MainAxisSize.min,
@@ -60,17 +60,15 @@ class AppActionBar extends StatelessWidget {
                         style: TextStyles.bodyLarge
                             .copyWith(color: ColorStyles.gray400),
                       ),
-
                     if (menuItems != null)
                       ...menuItems!.map(
                         (item) => Container(
                           padding: const EdgeInsets.only(left: 10),
                           width: 34,
                           child: IconButton(
-                            icon: item.icon,
-                            onPressed: item.onPressed,
-                            padding: EdgeInsets.zero
-                          ),
+                              icon: item.icon,
+                              onPressed: item.onPressed,
+                              padding: EdgeInsets.zero),
                         ),
                       ),
                   ],
