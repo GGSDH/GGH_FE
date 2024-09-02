@@ -197,37 +197,46 @@ enum Routes {
                 GoRoute(
                   path: Routes.recommend.path,
                   name: Routes.recommend.name,
-                  builder: (context, state) => BlocProvider(
-                    create: (context) => RecommendLaneBloc(
-                      tripRepository: GetIt.instance<TripRepository>(),
-                    ),
-                    child: const RecommendScreen(),
-                  ),
+                  builder: (context, state) => const RecommendScreen(),
                   routes: [
                     // BlocProvider를 상위에서 제공하여 하위 라우트들에 동일한 Bloc을 공유합니다.
                     GoRoute(
                       path: Routes.recommendSelectRegion.path,
                       name: Routes.recommendSelectRegion.name,
                       parentNavigatorKey: _rootNavigatorKey,
-                      builder: (context, state) => const RecommendSelectRegionScreen(),
+                      builder: (context, state) => const RecommendSelectRegionScreen()
                     ),
                     GoRoute(
                       path: Routes.recommendSelectPeriod.path,
                       name: Routes.recommendSelectPeriod.name,
                       parentNavigatorKey: _rootNavigatorKey,
-                      builder: (context, state) => const RecommendSelectPeriodScreen(),
+                      builder: (context, state) => RecommendSelectPeriodScreen(
+                        sigunguCodes: state.uri.queryParameters['selectedSigunguCodes']?.split(',').map((e) => SigunguCode.fromJson(e)).toList() ?? []
+                      ),
                     ),
                     GoRoute(
                       path: Routes.recommendSelectTheme.path,
                       name: Routes.recommendSelectTheme.name,
                       parentNavigatorKey: _rootNavigatorKey,
-                      builder: (context, state) => const RecommendSelectThemeScreen(),
+                      builder: (context, state) => RecommendSelectThemeScreen(
+                        sigunguCodes: state.uri.queryParameters['selectedSigunguCodes']?.split(',').map((e) => SigunguCode.fromJson(e)).toList() ?? [],
+                        days: int.tryParse(state.uri.queryParameters['selectedDays'] ?? '') ?? 1
+                      ),
                     ),
                     GoRoute(
                       path: Routes.recommendResult.path,
                       name: Routes.recommendResult.name,
                       parentNavigatorKey: _rootNavigatorKey,
-                      builder: (context, state) => RecommendResultScreen(),
+                      builder: (context, state) => BlocProvider(
+                        create: (context) => RecommendLaneBloc(
+                          tripRepository: GetIt.instance<TripRepository>(),
+                        ),
+                        child: RecommendResultScreen(
+                          sigunguCodes: state.uri.queryParameters['selectedSigunguCodes']?.split(',').map((e) => SigunguCode.fromJson(e)).toList() ?? [],
+                          days: int.tryParse(state.uri.queryParameters['selectedDays'] ?? '') ?? 1,
+                          tripThemes: state.uri.queryParameters['selectedTripThemes']?.split(',').map((e) => TripTheme.fromJson(e)).toList() ?? [],
+                        ),
+                      )
                     ),
                   ],
                 ),

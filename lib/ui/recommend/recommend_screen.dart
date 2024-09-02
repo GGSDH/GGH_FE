@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/themes/color_styles.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
 import 'package:gyeonggi_express/ui/component/app/app_button.dart';
+import 'package:gyeonggi_express/ui/recommend/recommend_lane_bloc.dart';
 
 import '../../routes.dart';
 
@@ -42,9 +44,10 @@ class RecommendScreen extends StatelessWidget {
             child: AppButton(
                 text: "AI 노선 추천 받기",
                 onPressed: () => {
-                      GoRouter.of(context).push(
-                          "${Routes.recommend.path}/${Routes.recommendSelectRegion.path}")
-                    }),
+                  GoRouter.of(context).push(
+                    "${Routes.recommend.path}/${Routes.recommendSelectRegion.path}",
+                  )
+                }),
           ),
         ],
       ),

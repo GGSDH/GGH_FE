@@ -1,3 +1,4 @@
+import 'package:gyeonggi_express/data/models/response/recommended_tour_area_response.dart';
 import 'package:gyeonggi_express/data/models/response/tour_area_response.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -63,7 +64,7 @@ class LaneSpecificResponse {
   final String laneName;
 
   @JsonKey(name: 'tourAreaResponse')
-  final TourAreaResponse tourArea;
+  final RecommendedTourAreaResponse tourArea;
 
   final int day;
 

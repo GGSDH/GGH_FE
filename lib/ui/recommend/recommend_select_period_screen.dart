@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:gyeonggi_express/data/models/sigungu_code.dart';
 import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/ui/component/range_picker_list_item.dart';
+import 'package:gyeonggi_express/ui/recommend/recommend_lane_bloc.dart';
+import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
@@ -10,15 +14,20 @@ import '../component/app/app_action_bar.dart';
 import '../component/app/app_button.dart';
 
 class RecommendSelectPeriodScreen extends StatefulWidget {
-  const RecommendSelectPeriodScreen({super.key});
+  final List<SigunguCode> sigunguCodes;
+
+  const RecommendSelectPeriodScreen({
+    super.key,
+    required this.sigunguCodes,
+  });
 
   @override
   _RecommendSelectPeriodScreenState createState() =>
       _RecommendSelectPeriodScreenState();
 }
 
-class _RecommendSelectPeriodScreenState
-    extends State<RecommendSelectPeriodScreen> {
+class _RecommendSelectPeriodScreenState extends State<RecommendSelectPeriodScreen> {
+
   final now = DateTime.now();
 
   DateTime? startDate;
@@ -134,7 +143,16 @@ class _RecommendSelectPeriodScreenState
                 text: '다음',
                 onPressed: () {
                   GoRouter.of(context).push(
-                      '${Routes.recommend.path}/${Routes.recommendSelectTheme.path}');
+                    Uri(
+                      path: "${Routes.recommend.path}/${Routes.recommendSelectTheme.path}",
+                      queryParameters: {
+                        'selectedSigunguCodes': widget.sigunguCodes
+                            .map((e) => SigunguCode.toJson(e))
+                            .join(','),
+                        'selectedDays': "${endDate!.difference(startDate!).inDays + 1}",
+                      },
+                    ).toString()
+                  );
                 },
                 isEnabled: startDate != null && endDate != null,
               ),

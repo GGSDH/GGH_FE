@@ -63,7 +63,7 @@ LaneSpecificResponse _$LaneSpecificResponseFromJson(
     LaneSpecificResponse(
       sequence: (json['sequence'] as num).toInt(),
       laneName: json['laneName'] as String,
-      tourArea: TourAreaResponse.fromJson(
+      tourArea: RecommendedTourAreaResponse.fromJson(
           json['tourAreaResponse'] as Map<String, dynamic>),
       day: (json['day'] as num).toInt(),
     );

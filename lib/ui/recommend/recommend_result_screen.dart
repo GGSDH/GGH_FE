@@ -1,12 +1,17 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gyeonggi_express/data/models/sigungu_code.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
 import 'package:gyeonggi_express/ui/component/app/app_action_bar.dart';
-import 'package:gyeonggi_express/ui/lane/lane_detail_screen.dart';
+import 'package:gyeonggi_express/ui/recommend/recommend_lane_bloc.dart';
+import 'package:side_effect_bloc/side_effect_bloc.dart';
 
+import '../../data/models/response/recommend_lane_response.dart';
+import '../../data/models/trip_theme.dart';
 import '../../themes/color_styles.dart';
 
 class LaneData {
@@ -47,6 +52,10 @@ class PlaceData {
 }
 
 class RecommendResultScreen extends StatefulWidget {
+  final int days;
+  final List<SigunguCode> sigunguCodes;
+  final List<TripTheme> tripThemes;
+
   final LaneData laneData = LaneData(
     category: '경기도 여행',
     name: '경기도 3일 완전정복 코스',
@@ -133,7 +142,12 @@ class RecommendResultScreen extends StatefulWidget {
     ],
   );
 
-  RecommendResultScreen({super.key});
+  RecommendResultScreen({
+    super.key,
+    required this.days,
+    required this.sigunguCodes,
+    required this.tripThemes,
+  });
 
   @override
   _RecommendResultScreen createState() => _RecommendResultScreen();
@@ -149,64 +163,91 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      child: SafeArea(
-        child: DefaultTabController(
-          length: 2,
-          child: Stack(
-            children: [
-              Column(
-                children: [
-                  AppActionBar(
-                    onBackPressed: () => Navigator.of(context).pop(),
-                    menuItems: [
-                      ActionBarMenuItem(
-                        icon: SvgPicture.asset(
-                          "assets/icons/ic_close_24px.svg",
-                          width: 24,
-                          height: 24,
-                          colorFilter: const ColorFilter.mode(
-                            ColorStyles.gray800,
-                            BlendMode.srcIn,
+    print('selected days: ${widget.days}');
+    print('selected sigunguCodes: ${widget.sigunguCodes}');
+    print('selected tripThemes: ${widget.tripThemes}');
+
+    context.read<RecommendLaneBloc>().add(
+      RecommendLaneInitialize(
+        selectedDays: widget.days,
+        selectedSigunguCodes: widget.sigunguCodes,
+        selectedTripThemes: widget.tripThemes,
+      )
+    );
+
+    return BlocSideEffectListener<RecommendLaneBloc, RecommendLaneSideEffect>(
+      listener: (BuildContext context, RecommendLaneSideEffect sideEffect) {
+        if (sideEffect is RecommendLaneShowError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(sideEffect.message),
+            ),
+          );
+        }
+      },
+      child: BlocBuilder<RecommendLaneBloc, RecommendLaneState>(
+        builder: (context, state) => Scaffold(
+          body: Material(
+            color: Colors.white,
+            child: SafeArea(
+              child: DefaultTabController(
+                length: 2,
+                child: Stack(
+                  children: [
+                    Column(
+                      children: [
+                        AppActionBar(
+                          onBackPressed: () => Navigator.of(context).pop(),
+                          menuItems: [
+                            ActionBarMenuItem(
+                              icon: SvgPicture.asset(
+                                "assets/icons/ic_close_24px.svg",
+                                width: 24,
+                                height: 24,
+                                colorFilter: const ColorFilter.mode(
+                                  ColorStyles.gray800,
+                                  BlendMode.srcIn,
+                                ),
+                              ),
+                              onPressed: () {},
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 4, 24, 20),
+                          child: _laneHeader(),
+                        ),
+                        const TabBar(
+                          tabs: [
+                            Tab(text: '코스'),
+                            Tab(text: '지도'),
+                          ],
+                          indicatorColor: ColorStyles.gray900,
+                          indicatorWeight: 1,
+                          indicatorSize: TabBarIndicatorSize.tab,
+                          labelColor: Colors.black,
+                          unselectedLabelColor: ColorStyles.gray400,
+                        ),
+                        Expanded(
+                          child: TabBarView(
+                            children: [
+                              _laneCourseWidget(state.data),
+                              _mapViewWidget(),
+                            ],
                           ),
                         ),
-                        onPressed: () {},
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 4, 24, 20),
-                    child: _laneHeader(),
-                  ),
-                  const TabBar(
-                    tabs: [
-                      Tab(text: '코스'),
-                      Tab(text: '지도'),
-                    ],
-                    indicatorColor: ColorStyles.gray900,
-                    indicatorWeight: 1,
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    labelColor: Colors.black,
-                    unselectedLabelColor: ColorStyles.gray400,
-                  ),
-                  Expanded(
-                    child: TabBarView(
-                      children: [
-                        _laneCourseWidget(widget.laneData),
-                        _mapViewWidget(),
                       ],
                     ),
-                  ),
-                ],
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      child: _buildFixedBottomButtons(),
+                    ),
+                  ],
+                ),
               ),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: _buildFixedBottomButtons(),
-              ),
-            ],
+            ),
           ),
         ),
       ),
@@ -718,7 +759,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
     );
   }
 
-  Widget _laneCourseWidget(LaneData laneData) {
+  Widget _laneCourseWidget(RecommendedLaneResponse laneData) {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         return SingleChildScrollView(
@@ -730,7 +771,8 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
             child: IntrinsicHeight(
               child: Column(
                 children: [
-                  ...laneData.days.expand((day) => [
+                  /* TODO : 서버 응답 JSON 형태 수정 후 작업
+                  ...laneData..expand((day) => [
                         Padding(
                           padding: const EdgeInsets.fromLTRB(20, 20, 20, 14),
                           child: Row(children: [
@@ -754,6 +796,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                               if (day.places.last != place) _laneDivider(),
                             ]),
                       ]),
+                   */
                   SizedBox(height: _bottomButtonsHeight),
                 ],
               ),

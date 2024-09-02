@@ -71,6 +71,8 @@ class TripDataSourceImpl implements TripDataSource {
   Future<ApiResult<RecommendedLaneResponse>> getRecommendedLane({
     required RecommendedLaneRequest request
   }) {
+    print("request : ${request.toJson()}");
+
     return _dio.makeRequest<RecommendedLaneResponse>(
       () => _dio.get('v1/lane/aiLane', data: request.toJson()),
       (data) => RecommendedLaneResponse.fromJson(data as Map<String, dynamic>)
