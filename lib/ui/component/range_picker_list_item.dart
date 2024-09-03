@@ -31,6 +31,7 @@ class RangePickerListItem extends StatelessWidget {
             YearMonthHeader(currentDate: now),
             const WeekHeader(),
             ...weeks.map((week) => Week(
+              now: now,
               weekDays: week,
               onDaySelected: onDaySelected,
               startDate: startDate,
@@ -128,6 +129,7 @@ class WeekHeader extends StatelessWidget {
 }
 
 class Week extends StatelessWidget {
+  final DateTime now;
   final List<DateTime?> weekDays;
   final Function(DateTime) onDaySelected;
   final DateTime? startDate;
@@ -135,6 +137,7 @@ class Week extends StatelessWidget {
 
   const Week({
     super.key,
+    required this.now,
     required this.weekDays,
     required this.onDaySelected,
     required this.startDate,
@@ -153,6 +156,7 @@ class Week extends StatelessWidget {
           );
         } else {
           return Day(
+            now: DateTime.now(),
             day: day,
             onDaySelected: onDaySelected,
             startDate: startDate,
@@ -165,6 +169,7 @@ class Week extends StatelessWidget {
 }
 
 class Day extends StatelessWidget {
+  final DateTime now;
   final DateTime day;
   final Function(DateTime) onDaySelected;
   final DateTime? startDate;
@@ -172,6 +177,7 @@ class Day extends StatelessWidget {
 
   const Day({
     super.key,
+    required this.now,
     required this.day,
     required this.onDaySelected,
     required this.startDate,
@@ -180,6 +186,8 @@ class Day extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isBeforeToday = day.isBefore(DateTime(now.year, now.month, now.day));
+
     bool isSelected = startDate != null &&
         endDate != null &&
         day.isAfter(startDate!.subtract(const Duration(hours: 6))) &&
@@ -204,7 +212,7 @@ class Day extends StatelessWidget {
     return Expanded(
       flex: 1,
       child: GestureDetector(
-        onTap: () => onDaySelected(day),
+        onTap: !isBeforeToday ? () => onDaySelected(day) : null,
         child: Container(
           height: 54,
           padding: const EdgeInsets.symmetric(vertical: 7),
@@ -219,7 +227,7 @@ class Day extends StatelessWidget {
             child: Text(
                 day.day.toString(),
                 style: TextStyle(
-                    color: isSelected ? Colors.blue : Colors.black
+                  color: isBeforeToday ? ColorStyles.gray300 : isSelected ? Colors.blue : Colors.black,
                 )
             ),
           ),
