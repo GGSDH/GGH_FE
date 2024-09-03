@@ -11,7 +11,7 @@ TourAreaDetail _$TourAreaDetailFromJson(Map<String, dynamic> json) =>
       tourArea:
           TourAreaResponse.fromJson(json['tourArea'] as Map<String, dynamic>),
       lanes: (json['lanes'] as List<dynamic>)
-          .map((e) => Lane.fromJson(e as Map<String, dynamic>))
+          .map((e) => TourAreaRelatedLane.fromJson(e as Map<String, dynamic>))
           .toList(),
       otherTourAreas: (json['otherTourAreas'] as List<dynamic>)
           .map((e) => TourAreaResponse.fromJson(e as Map<String, dynamic>))

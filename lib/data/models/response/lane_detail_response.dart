@@ -1,5 +1,6 @@
 import 'package:gyeonggi_express/data/models/response/lane_specific_response.dart';
 import 'package:gyeonggi_express/data/models/response/tour_area_summary_response.dart';
+import 'package:gyeonggi_express/data/models/trip_theme.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'lane_detail_response.g.dart';
@@ -18,6 +19,15 @@ class LaneDetail {
   @JsonKey(name: 'image')
   final String image;
 
+  @JsonKey(name: 'laneDescription')
+  final String? laneDescription;
+
+  @JsonKey(
+      name: 'tripThemeConstants',
+      fromJson: TripTheme.fromJson,
+      toJson: TripTheme.toJson)
+  final TripTheme category;
+
   @JsonKey(name: 'laneSpecificResponses')
   final List<LaneSpecificResponse> laneSpecificResponses;
 
@@ -26,6 +36,8 @@ class LaneDetail {
     required this.days,
     required this.laneName,
     required this.image,
+    required this.laneDescription,
+    required this.category,
     required this.laneSpecificResponses,
   });
 

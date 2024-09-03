@@ -8,9 +8,6 @@ class LaneSpecificResponse {
   @JsonKey(name: 'sequence')
   final int sequence;
 
-  @JsonKey(name: 'laneName')
-  final String laneName;
-
   @JsonKey(name: 'tourAreaResponse')
   final TourAreaSummary tourAreaResponse;
 
@@ -19,7 +16,6 @@ class LaneSpecificResponse {
 
   LaneSpecificResponse({
     required this.sequence,
-    required this.laneName,
     required this.tourAreaResponse,
     required this.day,
   });
