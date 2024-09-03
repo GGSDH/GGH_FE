@@ -1,4 +1,5 @@
 import 'package:gyeonggi_express/data/models/response/lane_response.dart';
+import 'package:gyeonggi_express/data/models/response/tour_area_related_lane.dart';
 import 'package:gyeonggi_express/data/models/response/tour_area_response.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -9,7 +10,7 @@ class TourAreaDetail {
   @JsonKey(name: 'tourArea')
   final TourAreaResponse tourArea;
   @JsonKey(name: 'lanes')
-  final List<Lane> lanes;
+  final List<TourAreaRelatedLane> lanes;
   @JsonKey(name: 'otherTourAreas')
   final List<TourAreaResponse> otherTourAreas;
 

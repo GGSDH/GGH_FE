@@ -45,5 +45,28 @@ class TourAreaSummary {
 
   factory TourAreaSummary.fromJson(Map<String, dynamic> json) =>
       _$TourAreaSummaryFromJson(json);
+
   Map<String, dynamic> toJson() => _$TourAreaSummaryToJson(this);
+
+  TourAreaSummary copyWith({
+    int? tourAreaId,
+    String? tourAreaName,
+    double? latitude,
+    double? longitude,
+    String? image,
+    int? likeCnt,
+    bool? likedByMe,
+    SigunguCode? sigunguCode,
+  }) {
+    return TourAreaSummary(
+      tourAreaId: tourAreaId ?? this.tourAreaId,
+      tourAreaName: tourAreaName ?? this.tourAreaName,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      image: image ?? this.image,
+      likeCnt: likeCnt ?? this.likeCnt,
+      likedByMe: likedByMe ?? this.likedByMe,
+      sigunguCode: sigunguCode ?? this.sigunguCode,
+    );
+  }
 }

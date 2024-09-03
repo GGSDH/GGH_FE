@@ -11,14 +11,19 @@ class RestaurantListItem extends StatelessWidget {
   final int likeCount;
   final String location;
   final bool isLiked;
+  final VoidCallback onLike;
+  final VoidCallback onUnlike;
 
-  const RestaurantListItem(
-      {super.key,
-      required this.name,
-      this.image,
-      required this.likeCount,
-      required this.location,
-      required this.isLiked});
+  const RestaurantListItem({
+    super.key,
+    required this.name,
+    this.image,
+    required this.likeCount,
+    required this.location,
+    required this.isLiked,
+    required this.onLike,
+    required this.onUnlike,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -35,8 +40,10 @@ class RestaurantListItem extends StatelessWidget {
                       borderRadius: BorderRadius.circular(4),
                       child: CachedNetworkImage(
                         imageUrl: image ?? "",
-                        placeholder: (context, url) => const AppImagePlaceholder(width: 200, height: 145),
-                        errorWidget: (context, url, error) => const AppImagePlaceholder(width: 200, height: 145),
+                        placeholder: (context, url) =>
+                            const AppImagePlaceholder(width: 200, height: 145),
+                        errorWidget: (context, url, error) =>
+                            const AppImagePlaceholder(width: 200, height: 145),
                         width: 200,
                         height: 145,
                         fit: BoxFit.cover,
@@ -45,12 +52,15 @@ class RestaurantListItem extends StatelessWidget {
                     Positioned(
                       right: 10,
                       top: 10,
-                      child: SvgPicture.asset(
-                        isLiked
-                            ? "assets/icons/ic_heart_filled.svg"
-                            : "assets/icons/ic_heart_white.svg",
-                        width: 24,
-                        height: 24,
+                      child: GestureDetector(
+                        onTap: isLiked ? onUnlike : onLike,
+                        child: SvgPicture.asset(
+                          isLiked
+                              ? "assets/icons/ic_heart_filled.svg"
+                              : "assets/icons/ic_heart_white.svg",
+                          width: 24,
+                          height: 24,
+                        ),
                       ),
                     ),
                   ],

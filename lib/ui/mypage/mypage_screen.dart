@@ -502,6 +502,7 @@ class MyPageContent extends StatelessWidget {
     required LoginProvider loginProvider,
     required String nickname,
     required String email,
+    String? profileImageUrl,
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -510,29 +511,11 @@ class MyPageContent extends StatelessWidget {
         children: [
           Stack(
             children: [
-              Image.network(
-                "",
-                width: 60,
-                height: 60,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return SvgPicture.asset(
-                    "assets/icons/ic_default_profile.svg",
-                    width: 60,
-                    height: 60,
-                  );
-                },
-              ),
+              _buildProfileImage(profileImageUrl),
               Positioned(
                 right: 0,
                 bottom: 0,
-                child: SvgPicture.asset(
-                  loginProvider == LoginProvider.kakao
-                      ? "assets/icons/ic_profile_kakao.svg"
-                      : "assets/icons/ic_profile_google.svg",
-                  width: 18,
-                  height: 18,
-                ),
+                child: _buildProviderIcon(loginProvider),
               ),
             ],
           ),
@@ -566,6 +549,41 @@ class MyPageContent extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildProfileImage(String? imageUrl) {
+    if (imageUrl != null && imageUrl.isNotEmpty) {
+      return Image.network(
+        imageUrl,
+        width: 60,
+        height: 60,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) =>
+            _buildDefaultProfileImage(),
+      );
+    } else {
+      return _buildDefaultProfileImage();
+    }
+  }
+
+  Widget _buildDefaultProfileImage() {
+    return SvgPicture.asset(
+      "assets/icons/ic_default_profile.svg",
+      width: 60,
+      height: 60,
+    );
+  }
+
+  Widget _buildProviderIcon(LoginProvider loginProvider) {
+    final String iconPath = loginProvider == LoginProvider.kakao
+        ? "assets/icons/ic_profile_kakao.svg"
+        : "assets/icons/ic_profile_apple.svg";
+
+    return SvgPicture.asset(
+      iconPath,
+      width: 18,
+      height: 18,
     );
   }
 

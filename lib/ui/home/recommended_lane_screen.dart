@@ -16,7 +16,6 @@ import '../component/app/app_action_bar.dart';
 import '../component/lane/lane_list_item.dart';
 
 class RecommendedLaneScreen extends StatelessWidget {
-
   const RecommendedLaneScreen({super.key});
 
   @override
@@ -24,10 +23,9 @@ class RecommendedLaneScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => RecommendedLaneBloc(
         tripRepository: GetIt.instance<TripRepository>(),
-      )..add(
-        RecommendedLaneInitialize()
-      ),
-      child: BlocSideEffectListener<RecommendedLaneBloc, RecommendedLaneSideEffect>(
+      )..add(RecommendedLaneInitialize()),
+      child: BlocSideEffectListener<RecommendedLaneBloc,
+          RecommendedLaneSideEffect>(
         listener: (context, sideEffect) {
           if (sideEffect is RecommendedLaneShowError) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -55,7 +53,8 @@ class RecommendedLaneScreen extends StatelessWidget {
                           title: "좋아하실 만한 노선",
                         ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 20),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -75,27 +74,33 @@ class RecommendedLaneScreen extends StatelessWidget {
                               ),
                               ElevatedButton(
                                 onPressed: () async {
-                                  final result = await GoRouter.of(context).push<List<String>>(
-                                      Uri(
-                                        path: Routes.areaFilter.path,
-                                        queryParameters: {
-                                          'selectedAreas': state.selectedSigunguCodes.map((e) => SigunguCode.toJson(e)).join(','),
-                                        },
-                                      ).toString());
+                                  final result = await GoRouter.of(context)
+                                      .push<List<String>>(Uri(
+                                    path: Routes.areaFilter.path,
+                                    queryParameters: {
+                                      'selectedAreas': state
+                                          .selectedSigunguCodes
+                                          .map((e) => SigunguCode.toJson(e))
+                                          .join(','),
+                                    },
+                                  ).toString());
 
                                   if (result != null) {
                                     context.read<RecommendedLaneBloc>().add(
-                                        SelectSigunguCodes(result.map((e) => SigunguCode.fromJson(e)).toList())
-                                    );
+                                        SelectSigunguCodes(result
+                                            .map((e) => SigunguCode.fromJson(e))
+                                            .toList()));
                                   }
                                 },
                                 style: ElevatedButton.styleFrom(
                                   foregroundColor: Colors.black,
                                   backgroundColor: Colors.white,
-                                  padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
+                                  padding:
+                                      const EdgeInsets.fromLTRB(12, 8, 8, 8),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
-                                    side: BorderSide(color: Colors.grey[200]!, width: 1),
+                                    side: BorderSide(
+                                        color: Colors.grey[200]!, width: 1),
                                   ),
                                   elevation: 0,
                                 ),
@@ -103,7 +108,8 @@ class RecommendedLaneScreen extends StatelessWidget {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Text(
-                                      getSelectedAreaText(state.selectedSigunguCodes),
+                                      getSelectedAreaText(
+                                          state.selectedSigunguCodes),
                                       style: TextStyles.bodyMedium.copyWith(
                                           color: ColorStyles.gray900,
                                           fontWeight: FontWeight.w400),
@@ -125,6 +131,8 @@ class RecommendedLaneScreen extends StatelessWidget {
                             itemCount: state.lanes.length,
                             itemBuilder: (context, index) {
                               return LaneListItem(
+                                onLike: () => {},
+                                onUnlike: () => {},
                                 category: state.lanes[index].category.title,
                                 title: state.lanes[index].laneName,
                                 description: '',

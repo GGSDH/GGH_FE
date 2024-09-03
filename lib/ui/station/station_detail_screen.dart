@@ -197,10 +197,12 @@ class _StationDetailViewState extends State<StationDetailView> {
         ),
         ...data.lanes.map(
           (lane) => LaneListItem(
-            category: lane.category.title,
-            title: lane.laneName,
+            onLike: () => {},
+            onUnlike: () => {},
+            category: lane.theme.title,
+            title: lane.name,
             description: '',
-            image: lane.image,
+            image: lane.photo,
             period: '',
             likeCount: lane.likeCount,
             isLiked: false,
@@ -406,6 +408,8 @@ class _StationDetailViewState extends State<StationDetailView> {
                             : 0,
                       ),
                       child: RestaurantListItem(
+                        onLike: () => {},
+                        onUnlike: () => {},
                         name: entry.value.name,
                         location: entry.value.sigungu.value,
                         image: entry.value.image,
