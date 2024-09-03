@@ -33,7 +33,6 @@ class MyPageScreen extends StatelessWidget {
               path: "${Routes.myPage.path}/${Routes.myPageSetting.path}",
               queryParameters: {
                 'nickname': sideEffect.nickname,
-                'email': sideEffect.email,
                 'loginType': sideEffect.loginType.name
               },
             ).toString())

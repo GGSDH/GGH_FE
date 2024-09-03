@@ -8,7 +8,7 @@ part of 'lane_response.dart';
 
 Lane _$LaneFromJson(Map<String, dynamic> json) => Lane(
       laneId: (json['laneId'] as num).toInt(),
-      laneName: json['name'] as String,
+      laneName: json['laneName'] as String,
       category: TripTheme.fromJson(json['tripThemeConstants'] as String),
       likeCount: (json['likes'] as num).toInt(),
       image: json['image'] as String,
@@ -17,7 +17,7 @@ Lane _$LaneFromJson(Map<String, dynamic> json) => Lane(
 
 Map<String, dynamic> _$LaneToJson(Lane instance) => <String, dynamic>{
       'laneId': instance.laneId,
-      'name': instance.laneName,
+      'laneName': instance.laneName,
       'tripThemeConstants': TripTheme.toJson(instance.category),
       'likes': instance.likeCount,
       'image': instance.image,

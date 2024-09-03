@@ -6,13 +6,11 @@ import '../../data/repository/auth_repository.dart';
 
 final class MyPageSettingState {
   final bool isLoading;
-  final String email;
   final String nickname;
   final LoginProvider loginType;
 
   MyPageSettingState({
     required this.isLoading,
-    required this.email,
     required this.nickname,
     required this.loginType
   });
@@ -20,7 +18,6 @@ final class MyPageSettingState {
   factory MyPageSettingState.initial() {
     return MyPageSettingState(
       isLoading: false,
-      email: "",
       nickname: "",
       loginType: LoginProvider.kakao,
     );
@@ -34,7 +31,6 @@ final class MyPageSettingState {
   }) {
     return MyPageSettingState(
       isLoading: isLoading ?? this.isLoading,
-      email: email ?? this.email,
       nickname: nickname ?? this.nickname,
       loginType: loginType ?? this.loginType,
     );
@@ -43,12 +39,10 @@ final class MyPageSettingState {
 
 sealed class MyPageSettingEvent { }
 final class MyPageSettingInitialize extends MyPageSettingEvent {
-  final String email;
   final String nickname;
   final LoginProvider loginType;
 
   MyPageSettingInitialize({
-    required this.email,
     required this.nickname,
     required this.loginType
   });
@@ -92,7 +86,6 @@ class MyPageSettingBloc extends SideEffectBloc<MyPageSettingEvent, MyPageSetting
   ) {
     emit(
       state.copyWith(
-        email: event.email,
         nickname: event.nickname,
         loginType: event.loginType,
       )

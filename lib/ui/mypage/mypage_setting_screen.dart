@@ -14,13 +14,11 @@ import 'mypage_setting_bloc.dart';
 
 class MyPageSettingScreen extends StatefulWidget {
   final String nickname;
-  final String email;
   final LoginProvider loginType;
 
   const MyPageSettingScreen({
     super.key,
     required this.nickname,
-    required this.email,
     required this.loginType,
   });
 
@@ -50,7 +48,6 @@ class _MyPageSettingScreenState extends State<MyPageSettingScreen> {
         authRepository: GetIt.instance<AuthRepository>(),
       )..add(
         MyPageSettingInitialize(
-          email: widget.email,
           nickname: widget.nickname,
           loginType: widget.loginType,
         ),
@@ -74,7 +71,6 @@ class _MyPageSettingScreenState extends State<MyPageSettingScreen> {
             } else {
               return MyPageSettingScreenContent(
                 nicknameController: _nicknameController,
-                email: state.email,
                 loginType: state.loginType,
                 onSave: () {
                   context.read<MyPageSettingBloc>().add(
@@ -94,14 +90,12 @@ class _MyPageSettingScreenState extends State<MyPageSettingScreen> {
 
 class MyPageSettingScreenContent extends StatelessWidget {
   final TextEditingController nicknameController;
-  final String email;
   final LoginProvider loginType;
   final VoidCallback onSave;
 
   const MyPageSettingScreenContent({
     super.key,
     required this.nicknameController,
-    required this.email,
     required this.loginType,
     required this.onSave,
   });
@@ -119,7 +113,6 @@ class MyPageSettingScreenContent extends StatelessWidget {
               },
             ),
             _buildProfileImageSection(),
-            _buildProfileIdSection(),
             _buildNicknameSection(),
             const Spacer(),
             _buildSaveButton(onSave),
@@ -176,44 +169,6 @@ class MyPageSettingScreenContent extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileIdSection() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 14, 20, 18),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0, 4, 0, 8),
-            child: Row(
-              children: [
-                Text(
-                  '아이디',
-                  style: TextStyles.bodyLarge.copyWith(
-                    color: ColorStyles.gray800,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  loginType == LoginProvider.kakao
-                      ? "카카오로 가입한 계정이예요."
-                      : "애플로 가입한 계정이예요.",
-                  style: TextStyles.bodySmall.copyWith(
-                    color: ColorStyles.gray500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          AppTextField(
-            hintText: email,
-            hintStyle: TextStyles.bodyLarge.copyWith(
-              color: ColorStyles.gray500,
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
   Widget _buildNicknameSection() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -248,7 +203,7 @@ class MyPageSettingScreenContent extends StatelessWidget {
     final isValid = nicknameController.text.isNotEmpty;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(14),
       child: SizedBox(
         width: double.infinity,
         child: TextButton(

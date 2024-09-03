@@ -422,8 +422,6 @@ enum Routes {
                                   nickname:
                                       state.uri.queryParameters['nickname'] ??
                                           "",
-                                  email:
-                                      state.uri.queryParameters['email'] ?? "",
                                   loginType: LoginProvider.fromJson(
                                       state.uri.queryParameters['loginType'] ??
                                           ""),
