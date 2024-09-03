@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/data/models/response/popular_destination_response.dart';
+import 'package:gyeonggi_express/data/repository/favorite_repository.dart';
 import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/ui/component/destination/popular_destination_list_item.dart';
 import 'package:gyeonggi_express/ui/component/lane/lane_list_item.dart';
@@ -29,6 +30,7 @@ class HomeScreen extends StatelessWidget {
       create: (context) => HomeBloc(
         authRepository: GetIt.instance<AuthRepository>(),
         tripRepository: GetIt.instance<TripRepository>(),
+        favoriteRepository: GetIt.instance<FavoriteRepository>(),
       )..add(
           HomeInitialize(),
         ),
@@ -66,6 +68,7 @@ class HomeScreen extends StatelessWidget {
                     },
                   ),
                   _buildRecommendBody(
+                      context: context,
                       userName: state.userName,
                       lanes: state.lanes,
                       onShowMore: () {
@@ -77,6 +80,7 @@ class HomeScreen extends StatelessWidget {
                                 .push('${Routes.lanes.path}/$p0')
                           }),
                   _buildRestaurantBody(
+                    context: context,
                     localRestaurants: state.localRestaurants,
                     onShowMore: () {
                       GoRouter.of(context).push(
@@ -255,6 +259,7 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildRecommendBody({
+    required BuildContext context,
     required String userName,
     required List<Lane> lanes,
     required VoidCallback onShowMore,
@@ -310,6 +315,8 @@ class HomeScreen extends StatelessWidget {
               GestureDetector(
                 onTap: () => onItemClick(lane.laneId),
                 child: _buildRecommendItem(
+                  context: context,
+                  laneId: lane.laneId,
                   category: lane.category.title,
                   title: lane.laneName,
                   description: '',
@@ -325,6 +332,8 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildRecommendItem({
+    required BuildContext context,
+    required int laneId,
     required String category,
     required String title,
     required String description,
@@ -334,19 +343,28 @@ class HomeScreen extends StatelessWidget {
     required bool isLiked,
   }) {
     return LaneListItem(
-        category: category,
-        title: title,
-        description: description,
-        image: image,
-        period: period,
-        likeCount: likeCount,
-        isLiked: isLiked);
+      category: category,
+      title: title,
+      description: description,
+      image: image,
+      period: period,
+      likeCount: likeCount,
+      isLiked: isLiked,
+      onLike: () {
+        context.read<HomeBloc>().add(HomeLikeLane(laneId));
+      },
+      onUnlike: () {
+        context.read<HomeBloc>().add(HomeUnlikeLane(laneId));
+      },
+    );
   }
 
-  Widget _buildRestaurantBody(
-      {required List<LocalRestaurant> localRestaurants,
-      required VoidCallback onShowMore,
-      required Function(int) onItemClick}) {
+  Widget _buildRestaurantBody({
+    required BuildContext context,
+    required List<LocalRestaurant> localRestaurants,
+    required VoidCallback onShowMore,
+    required Function(int) onItemClick,
+  }) {
     return Container(
         padding: const EdgeInsets.symmetric(vertical: 20),
         child: Column(
@@ -392,6 +410,8 @@ class HomeScreen extends StatelessWidget {
                         onItemClick(restaurant.tourAreaId),
                       },
                       child: _buildRestaurantItem(
+                        context: context,
+                        tourAreaId: restaurant.tourAreaId,
                         name: restaurant.name,
                         image: restaurant.image,
                         likeCount: restaurant.likeCount,
@@ -408,18 +428,27 @@ class HomeScreen extends StatelessWidget {
         ));
   }
 
-  Widget _buildRestaurantItem(
-      {required String name,
-      required String? image,
-      required int likeCount,
-      required String location,
-      required bool isLiked}) {
+  Widget _buildRestaurantItem({
+    required BuildContext context,
+    required int tourAreaId,
+    required String name,
+    required String? image,
+    required int likeCount,
+    required String location,
+    required bool isLiked,
+  }) {
     return RestaurantListItem(
       name: name,
       image: image,
       likeCount: likeCount,
       location: location,
       isLiked: isLiked,
+      onLike: () {
+        context.read<HomeBloc>().add(HomeLikeTourArea(tourAreaId));
+      },
+      onUnlike: () {
+        context.read<HomeBloc>().add(HomeUnlikeTourArea(tourAreaId));
+      },
     );
   }
 

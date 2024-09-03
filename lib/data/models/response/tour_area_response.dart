@@ -28,13 +28,17 @@ class TourAreaResponse {
   @JsonKey(name: 'ranking') // null이면 생략
   final int? ranking;
 
-  @JsonKey(name: 'sigungu', fromJson: SigunguCode.fromJson, toJson: SigunguCode.toJson)
+  @JsonKey(
+      name: 'sigungu',
+      fromJson: SigunguCode.fromJson,
+      toJson: SigunguCode.toJson)
   final SigunguCode sigungu;
 
   @JsonKey(name: 'telNo') // null이면 생략
   final String? telNo;
 
-  @JsonKey(name: 'tripTheme', fromJson: TripTheme.fromJson, toJson: TripTheme.toJson)
+  @JsonKey(
+      name: 'tripTheme', fromJson: TripTheme.fromJson, toJson: TripTheme.toJson)
   final TripTheme tripTheme;
 
   @JsonKey(name: 'likeCount')
@@ -43,7 +47,10 @@ class TourAreaResponse {
   @JsonKey(name: 'likedByMe')
   final bool likedByMe;
 
-  @JsonKey(name: 'contentType', fromJson: TourContentType.fromJson, toJson: TourContentType.toJson)
+  @JsonKey(
+      name: 'contentType',
+      fromJson: TourContentType.fromJson,
+      toJson: TourContentType.toJson)
   final TourContentType contentType;
 
   TourAreaResponse({
@@ -63,8 +70,41 @@ class TourAreaResponse {
   });
 
   // fromJson 메서드 생성
-  factory TourAreaResponse.fromJson(Map<String, dynamic> json) => _$TourAreaResponseFromJson(json);
+  factory TourAreaResponse.fromJson(Map<String, dynamic> json) =>
+      _$TourAreaResponseFromJson(json);
 
   // toJson 메서드 생성
   Map<String, dynamic> toJson() => _$TourAreaResponseToJson(this);
+
+  TourAreaResponse copyWith({
+    int? tourAreaId,
+    String? name,
+    String? address,
+    String? image,
+    double? latitude,
+    double? longitude,
+    int? ranking,
+    SigunguCode? sigungu,
+    String? telNo,
+    TripTheme? tripTheme,
+    int? likeCount,
+    bool? likedByMe,
+    TourContentType? contentType,
+  }) {
+    return TourAreaResponse(
+      tourAreaId: tourAreaId ?? this.tourAreaId,
+      name: name ?? this.name,
+      address: address ?? this.address,
+      image: image ?? this.image,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      ranking: ranking ?? this.ranking,
+      sigungu: sigungu ?? this.sigungu,
+      telNo: telNo ?? this.telNo,
+      tripTheme: tripTheme ?? this.tripTheme,
+      likeCount: likeCount ?? this.likeCount,
+      likedByMe: likedByMe ?? this.likedByMe,
+      contentType: contentType ?? this.contentType,
+    );
+  }
 }

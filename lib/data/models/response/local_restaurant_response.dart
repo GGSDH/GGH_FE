@@ -26,7 +26,26 @@ class LocalRestaurant {
     required this.likedByMe,
   });
 
-  factory LocalRestaurant.fromJson(Map<String, dynamic> json) => _$LocalRestaurantFromJson(json);
+  factory LocalRestaurant.fromJson(Map<String, dynamic> json) =>
+      _$LocalRestaurantFromJson(json);
 
   Map<String, dynamic> toJson() => _$LocalRestaurantToJson(this);
+
+  LocalRestaurant copyWith({
+    int? tourAreaId,
+    String? image,
+    String? name,
+    int? likeCount,
+    String? sigunguValue,
+    bool? likedByMe,
+  }) {
+    return LocalRestaurant(
+      tourAreaId: tourAreaId ?? this.tourAreaId,
+      image: image ?? this.image,
+      name: name ?? this.name,
+      likeCount: likeCount ?? this.likeCount,
+      sigunguValue: sigunguValue ?? this.sigunguValue,
+      likedByMe: likedByMe ?? this.likedByMe,
+    );
+  }
 }

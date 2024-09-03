@@ -69,6 +69,8 @@ class FavoritesScreen extends StatelessWidget {
               if (isLaneTab) {
                 final lane = items[index] as Lane;
                 return LaneListItem(
+                  onLike: () => {},
+                  onUnlike: () => {},
                   category: lane.category.name,
                   title: lane.laneName,
                   description: '',

@@ -43,4 +43,22 @@ class Lane {
       return "${days - 1}박$days일";
     }
   }
+
+  Lane copyWith({
+    int? laneId,
+    String? laneName,
+    TripTheme? category,
+    int? likeCount,
+    String? image,
+    int? days,
+  }) {
+    return Lane(
+      laneId: laneId ?? this.laneId,
+      laneName: laneName ?? this.laneName,
+      category: category ?? this.category,
+      likeCount: likeCount ?? this.likeCount,
+      image: image ?? this.image,
+      days: days ?? this.days,
+    );
+  }
 }

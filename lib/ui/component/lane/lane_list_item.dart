@@ -6,16 +6,22 @@ import 'package:gyeonggi_express/themes/text_styles.dart';
 
 import '../app/app_image_plaeholder.dart';
 
-class LaneListItem extends StatelessWidget {
-  String category;
-  String title;
-  String description;
-  String image;
-  String period;
-  int likeCount;
-  bool isLiked;
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
-  LaneListItem({
+class LaneListItem extends StatelessWidget {
+  final String category;
+  final String title;
+  final String description;
+  final String image;
+  final String period;
+  final int likeCount;
+  final bool isLiked;
+  final VoidCallback onLike;
+  final VoidCallback onUnlike;
+
+  const LaneListItem({
     super.key,
     required this.category,
     required this.title,
@@ -24,6 +30,8 @@ class LaneListItem extends StatelessWidget {
     required this.period,
     required this.likeCount,
     required this.isLiked,
+    required this.onLike,
+    required this.onUnlike,
   });
 
   @override
@@ -114,12 +122,15 @@ class LaneListItem extends StatelessWidget {
               Positioned(
                 right: 10,
                 top: 10,
-                child: SvgPicture.asset(
-                  isLiked
-                      ? "assets/icons/ic_heart_filled.svg"
-                      : "assets/icons/ic_heart_white.svg",
-                  width: 24,
-                  height: 24,
+                child: GestureDetector(
+                  onTap: isLiked ? onUnlike : onLike,
+                  child: SvgPicture.asset(
+                    isLiked
+                        ? "assets/icons/ic_heart_filled.svg"
+                        : "assets/icons/ic_heart_white.svg",
+                    width: 24,
+                    height: 24,
+                  ),
                 ),
               ),
             ],
