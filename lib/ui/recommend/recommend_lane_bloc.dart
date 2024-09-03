@@ -3,7 +3,7 @@ import 'package:gyeonggi_express/data/models/sigungu_code.dart';
 import 'package:gyeonggi_express/data/repository/trip_repository.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
-import '../../data/models/response/recommend_lane_response.dart';
+import '../../data/models/response/recommended_lane_response.dart';
 import '../../data/models/trip_theme.dart';
 
 final class RecommendLaneState {
@@ -20,12 +20,9 @@ final class RecommendLaneState {
     return RecommendLaneState(
       isLoading: false,
       data: RecommendedLaneResponse(
-        travelPlan: TravelPlan(
-          title: '',
-          description: '',
-          days: [],
-        ),
-        laneSpecificResponse: {},
+        title: '',
+        description: '',
+        days: [],
         id: 0,
       ),
     );

@@ -1,20 +1,21 @@
 import 'package:gyeonggi_express/data/models/response/recommended_tour_area_response.dart';
-import 'package:gyeonggi_express/data/models/response/tour_area_response.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'recommend_lane_response.g.dart';
+part 'recommended_lane_response.g.dart';
 
 @JsonSerializable()
 class RecommendedLaneResponse {
-  @JsonKey(name: 'data')
-  final TravelPlan travelPlan;
-
-  final Map<String, List<LaneSpecificResponse>> laneSpecificResponse;
+  @JsonKey(name: 'title', defaultValue: '')
+  final String title;
+  @JsonKey(name: 'description', defaultValue: '')
+  final String description;
+  final List<DayPlan> days;
   final int id;
 
   RecommendedLaneResponse({
-    required this.travelPlan,
-    required this.laneSpecificResponse,
+    required this.title,
+    required this.description,
+    required this.days,
     required this.id,
   });
 
@@ -25,31 +26,15 @@ class RecommendedLaneResponse {
 }
 
 @JsonSerializable()
-class TravelPlan {
-  final String title;
-  final String description;
-  final List<DayPlan> days;
-
-  TravelPlan({
-    required this.title,
-    required this.description,
-    required this.days,
-  });
-
-  factory TravelPlan.fromJson(Map<String, dynamic> json) =>
-      _$TravelPlanFromJson(json);
-
-  Map<String, dynamic> toJson() => _$TravelPlanToJson(this);
-}
-
-@JsonSerializable()
 class DayPlan {
   final int day;
   final List<String> tripAreaNames;
+  final List<LaneSpecificResponse> tourAreas;
 
   DayPlan({
     required this.day,
     required this.tripAreaNames,
+    required this.tourAreas,
   });
 
   factory DayPlan.fromJson(Map<String, dynamic> json) =>
@@ -61,18 +46,12 @@ class DayPlan {
 @JsonSerializable()
 class LaneSpecificResponse {
   final int sequence;
-  final String laneName;
-
   @JsonKey(name: 'tourAreaResponse')
   final RecommendedTourAreaResponse tourArea;
 
-  final int day;
-
   LaneSpecificResponse({
     required this.sequence,
-    required this.laneName,
     required this.tourArea,
-    required this.day,
   });
 
   factory LaneSpecificResponse.fromJson(Map<String, dynamic> json) =>

@@ -10,137 +10,16 @@ import 'package:gyeonggi_express/ui/component/app/app_action_bar.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_lane_bloc.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
-import '../../data/models/response/recommend_lane_response.dart';
+import '../../data/models/response/recommended_lane_response.dart';
+import '../../data/models/response/recommended_tour_area_response.dart';
+import '../../data/models/response/tour_area_response.dart';
 import '../../data/models/trip_theme.dart';
 import '../../themes/color_styles.dart';
-
-class LaneData {
-  final String category;
-  final String name;
-  final String description;
-  final List<DayData> days;
-
-  LaneData({
-    required this.category,
-    required this.name,
-    required this.description,
-    required this.days,
-  });
-}
-
-class DayData {
-  final String date;
-  final List<PlaceData> places;
-
-  DayData({required this.date, required this.places});
-}
-
-class PlaceData {
-  final String name;
-  final String region;
-  final String category;
-  final int likeCount;
-  final List<String> imageUrls;
-
-  PlaceData({
-    required this.name,
-    required this.region,
-    required this.category,
-    required this.likeCount,
-    required this.imageUrls,
-  });
-}
 
 class RecommendResultScreen extends StatefulWidget {
   final int days;
   final List<SigunguCode> sigunguCodes;
   final List<TripTheme> tripThemes;
-
-  final LaneData laneData = LaneData(
-    category: '경기도 여행',
-    name: '경기도 3일 완전정복 코스',
-    description: '경기도의 주요 명소를 3일간 둘러보는 알찬 여행 코스',
-    days: [
-      DayData(
-        date: '2024.12.31',
-        places: [
-          PlaceData(
-            name: '수원화성',
-            region: '수원시',
-            category: '역사유적',
-            likeCount: 1234,
-            imageUrls: [
-              'https://picsum.photos/seed/suwon1/800/800',
-              'https://picsum.photos/seed/suwon2/800/800',
-              'https://picsum.photos/seed/suwon3/800/800',
-            ],
-          ),
-          PlaceData(
-            name: '행궁동 카페거리',
-            region: '수원시',
-            category: '카페',
-            likeCount: 987,
-            imageUrls: [
-              'https://picsum.photos/seed/cafe1/800/800',
-              'https://picsum.photos/seed/cafe2/800/800',
-            ],
-          ),
-        ],
-      ),
-      DayData(
-        date: '2025.01.01',
-        places: [
-          PlaceData(
-            name: '에버랜드',
-            region: '용인시',
-            category: '테마파크',
-            likeCount: 5678,
-            imageUrls: [
-              'https://picsum.photos/seed/everland1/800/800',
-              'https://picsum.photos/seed/everland2/800/800',
-              'https://picsum.photos/seed/everland3/800/800',
-            ],
-          ),
-          PlaceData(
-            name: '한국민속촌',
-            region: '용인시',
-            category: '문화체험',
-            likeCount: 3456,
-            imageUrls: [
-              'https://picsum.photos/seed/folk1/800/800',
-              'https://picsum.photos/seed/folk2/800/800',
-            ],
-          ),
-        ],
-      ),
-      DayData(
-        date: '2025.01.02',
-        places: [
-          PlaceData(
-            name: '쁘띠프랑스',
-            region: '가평군',
-            category: '테마파크',
-            likeCount: 2345,
-            imageUrls: [
-              'https://picsum.photos/seed/france1/800/800',
-              'https://picsum.photos/seed/france2/800/800',
-            ],
-          ),
-          PlaceData(
-            name: '남이섬',
-            region: '가평군',
-            category: '자연/관광',
-            likeCount: 4567,
-            imageUrls: [
-              'https://picsum.photos/seed/nami1/800/800',
-              'https://picsum.photos/seed/nami2/800/800',
-              'https://picsum.photos/seed/nami3/800/800',
-            ],
-          ),
-        ],
-      ),
-    ],
-  );
 
   RecommendResultScreen({
     super.key,
@@ -166,14 +45,6 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
     print('selected days: ${widget.days}');
     print('selected sigunguCodes: ${widget.sigunguCodes}');
     print('selected tripThemes: ${widget.tripThemes}');
-
-    context.read<RecommendLaneBloc>().add(
-      RecommendLaneInitialize(
-        selectedDays: widget.days,
-        selectedSigunguCodes: widget.sigunguCodes,
-        selectedTripThemes: widget.tripThemes,
-      )
-    );
 
     return BlocSideEffectListener<RecommendLaneBloc, RecommendLaneSideEffect>(
       listener: (BuildContext context, RecommendLaneSideEffect sideEffect) {
@@ -215,7 +86,12 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                         ),
                         Padding(
                           padding: const EdgeInsets.fromLTRB(24, 4, 24, 20),
-                          child: _laneHeader(),
+                          child: _laneHeader(
+                            state.data.title,
+                            _formatDays(widget.days),
+                            widget.sigunguCodes.first.value,
+                            widget.tripThemes.first.title,
+                          ),
                         ),
                         const TabBar(
                           tabs: [
@@ -232,7 +108,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                           child: TabBarView(
                             children: [
                               _laneCourseWidget(state.data),
-                              _mapViewWidget(),
+                              _mapViewWidget(state.data),
                             ],
                           ),
                         ),
@@ -254,7 +130,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
     );
   }
 
-  Widget _mapViewWidget() {
+  Widget _mapViewWidget(RecommendedLaneResponse laneData) {
     return Stack(
       children: [
         _NaverMapSection(mapControllerCompleter: _mapControllerCompleter),
@@ -262,7 +138,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
           left: 0,
           right: 0,
           bottom: _bottomButtonsHeight,
-          child: _buildBottomSheetLikeView(),
+          child: _buildBottomSheetLikeView(laneData),
         ),
       ],
     );
@@ -282,7 +158,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
     });
   }
 
-  Widget _buildBottomSheetLikeView() {
+  Widget _buildBottomSheetLikeView(RecommendedLaneResponse laneData) {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         return Container(
@@ -318,7 +194,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                           ),
                         ),
                         GestureDetector(
-                          onTap: _showBottomSheet,
+                          onTap: () { _showBottomSheet(laneData); },
                           child: SvgPicture.asset(
                             "assets/icons/ic_chevron_right.svg",
                             width: 24,
@@ -331,9 +207,9 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
-                        children: widget.laneData.days[_selectedDayIndex].places
+                        children: laneData.days[_selectedDayIndex].tourAreas
                             .map(
-                                (place) => _placeDetailItemInBottomSheet(place))
+                                (place) => _placeDetailItemInBottomSheet(place.tourArea))
                             .toList(),
                       ),
                     )
@@ -347,7 +223,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
     );
   }
 
-  void _showBottomSheet() {
+  void _showBottomSheet(RecommendedLaneResponse laneData) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -376,7 +252,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: ListView.builder(
                     shrinkWrap: true,
-                    itemCount: widget.laneData.days.length,
+                    itemCount: laneData.days.length,
                     itemBuilder: (context, idx) {
                       bool isSelected = idx == _selectedDayIndex;
                       return Padding(
@@ -418,7 +294,12 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
     );
   }
 
-  Widget _laneHeader() {
+  Widget _laneHeader(
+    String title,
+    String period,
+    String category,
+    String theme
+  ) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -435,7 +316,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
               borderRadius: BorderRadius.circular(100),
             ),
             child: Text(
-              widget.laneData.category,
+              category,
               style: TextStyles.titleXSmall.copyWith(
                 color: const Color(0xFFFBB12C),
                 fontWeight: FontWeight.w600,
@@ -445,14 +326,14 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
         ),
         const SizedBox(height: 14),
         Text(
-          widget.laneData.name,
+          title,
           style: TextStyles.title2ExtraLarge.copyWith(
             fontWeight: FontWeight.w600,
             color: ColorStyles.gray900,
           ),
         ),
         Text(
-          widget.laneData.description,
+          "$period | $theme",
           style: TextStyles.bodyLarge.copyWith(
             fontWeight: FontWeight.w400,
             color: ColorStyles.gray500,
@@ -564,111 +445,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
     );
   }
 
-  Widget _lanePlace(PlaceData place) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 20),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Column(
-              children: [
-                Container(
-                  width: 20,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: const Color(0xFFFBB12C),
-                      width: 1,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    width: 1,
-                    color: const Color(0xFFFBB12C),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(width: 20),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(place.name,
-                      style: TextStyles.titleMedium.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: ColorStyles.gray800)),
-                  const SizedBox(height: 2),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Row(
-                          children: [
-                            Text(place.region,
-                                style: TextStyles.bodyMedium.copyWith(
-                                    color: ColorStyles.gray500,
-                                    fontWeight: FontWeight.w400)),
-                            const SizedBox(width: 4),
-                            Text("|",
-                                style: TextStyles.bodyMedium.copyWith(
-                                    color: ColorStyles.gray300,
-                                    fontWeight: FontWeight.w400)),
-                            const SizedBox(width: 4),
-                            Text(place.category,
-                                style: TextStyles.bodyMedium.copyWith(
-                                    color: ColorStyles.gray500,
-                                    fontWeight: FontWeight.w400)),
-                          ],
-                        ),
-                      ),
-                      SvgPicture.asset(
-                        "assets/icons/ic_heart_filled.svg",
-                        width: 18,
-                        height: 18,
-                      ),
-                      const SizedBox(width: 2),
-                      Text(place.likeCount.toString(),
-                          style: TextStyles.bodyXSmall.copyWith(
-                              color: ColorStyles.gray600,
-                              fontWeight: FontWeight.w400)),
-                      const SizedBox(width: 20),
-                    ],
-                  ),
-                  const SizedBox(height: 14),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: place.imageUrls
-                          .map((url) => Padding(
-                                padding: const EdgeInsets.only(right: 10),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: Image.network(
-                                    url,
-                                    fit: BoxFit.cover,
-                                    height: 150,
-                                    width: 240,
-                                  ),
-                                ),
-                              ))
-                          .toList(),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _placeDetailItemInBottomSheet(PlaceData place) {
+  Widget _placeDetailItemInBottomSheet(RecommendedTourAreaResponse tourArea) {
     return SizedBox(
       width: 300,
       child: Column(
@@ -702,7 +479,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(4),
                 child: Image.network(
-                  place.imageUrls.first,
+                  tourArea.image ?? '',
                   fit: BoxFit.cover,
                   height: 80,
                   width: 80,
@@ -716,7 +493,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        place.name,
+                        tourArea.tourAreaName,
                         style: TextStyles.titleMedium.copyWith(
                             fontWeight: FontWeight.w600,
                             color: ColorStyles.gray800),
@@ -725,7 +502,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                         children: [
                           Expanded(
                             child: Text(
-                              "${place.region} | ${place.category}",
+                              "${tourArea.sigunguCode} | ${tourArea.tripTheme}",
                               style: TextStyles.bodyMedium.copyWith(
                                   color: ColorStyles.gray500,
                                   fontWeight: FontWeight.w400),
@@ -742,7 +519,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                             height: 18,
                           ),
                           const SizedBox(width: 2),
-                          Text(place.likeCount.toString(),
+                          Text(tourArea.likeCnt.toString(),
                               style: TextStyles.bodyXSmall.copyWith(
                                   color: ColorStyles.gray600,
                                   fontWeight: FontWeight.w400))
@@ -771,32 +548,32 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
             child: IntrinsicHeight(
               child: Column(
                 children: [
-                  /* TODO : 서버 응답 JSON 형태 수정 후 작업
-                  ...laneData..expand((day) => [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 20, 20, 14),
-                          child: Row(children: [
-                            Text(
-                              "Day ${laneData.days.indexOf(day) + 1}",
-                              style: TextStyles.titleLarge.copyWith(
-                                  color: ColorStyles.gray900,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              day.date,
-                              style: TextStyles.bodyLarge.copyWith(
-                                  color: ColorStyles.gray500,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                          ]),
-                        ),
-                        ...day.places.expand((place) => [
-                              _lanePlace(place),
-                              if (day.places.last != place) _laneDivider(),
-                            ]),
-                      ]),
-                   */
+                  ...laneData.days.expand((day) => [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 14),
+                      child: Row(
+                        children: [
+                          Text(
+                            "Day ${day.day}",
+                            style: TextStyles.titleLarge.copyWith(
+                                color: ColorStyles.gray900,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            "Day ${day.day}",
+                            style: TextStyles.bodyLarge.copyWith(
+                                color: ColorStyles.gray500,
+                                fontWeight: FontWeight.w400),
+                          ),
+                        ],
+                      ),
+                    ),
+                    ...day.tourAreas.expand((area) => [
+                      _lanePlace(area.tourArea),
+                      if (day.tourAreas.last != area) _laneDivider(),
+                    ]),
+                  ]),
                   SizedBox(height: _bottomButtonsHeight),
                 ],
               ),
@@ -804,6 +581,111 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
           ),
         );
       },
+    );
+  }
+
+  Widget _lanePlace(RecommendedTourAreaResponse place) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Column(
+              children: [
+                Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: const Color(0xFFFBB12C),
+                      width: 1,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    width: 1,
+                    color: const Color(0xFFFBB12C),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(width: 20),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(place.tourAreaName,
+                      style: TextStyles.titleMedium.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: ColorStyles.gray800)),
+                  const SizedBox(height: 2),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Text(place.sigunguCode.value,
+                                style: TextStyles.bodyMedium.copyWith(
+                                    color: ColorStyles.gray500,
+                                    fontWeight: FontWeight.w400)),
+                            const SizedBox(width: 4),
+                            Text("|",
+                                style: TextStyles.bodyMedium.copyWith(
+                                    color: ColorStyles.gray300,
+                                    fontWeight: FontWeight.w400)),
+                            const SizedBox(width: 4),
+                            Text(place.tripTheme.title,
+                                style: TextStyles.bodyMedium.copyWith(
+                                    color: ColorStyles.gray500,
+                                    fontWeight: FontWeight.w400)),
+                          ],
+                        ),
+                      ),
+                      SvgPicture.asset(
+                        "assets/icons/ic_heart_filled.svg",
+                        width: 18,
+                        height: 18,
+                      ),
+                      const SizedBox(width: 2),
+                      Text(place.likeCnt.toString(),
+                          style: TextStyles.bodyXSmall.copyWith(
+                              color: ColorStyles.gray600,
+                              fontWeight: FontWeight.w400)),
+                      const SizedBox(width: 20),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        if (place.image.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Image.network(
+                                place.image,
+                                fit: BoxFit.cover,
+                                height: 150,
+                                width: 240,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -826,5 +708,13 @@ class _NaverMapSection extends StatelessWidget {
         mapControllerCompleter.complete(controller);
       },
     );
+  }
+}
+
+String _formatDays(int days) {
+  if (days == 1) {
+    return "당일치기";
+  } else {
+    return "${days - 1}박 $days일";
   }
 }

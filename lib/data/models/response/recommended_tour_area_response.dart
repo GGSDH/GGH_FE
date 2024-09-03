@@ -1,4 +1,7 @@
+import 'package:gyeonggi_express/data/models/sigungu_code.dart';
 import 'package:json_annotation/json_annotation.dart';
+
+import '../trip_theme.dart';
 
 part 'recommended_tour_area_response.g.dart';
 
@@ -25,8 +28,11 @@ class RecommendedTourAreaResponse {
   @JsonKey(name: 'likedByMe')
   final bool likedByMe;
 
-  @JsonKey(name: 'sigunguCode')
-  final String sigunguCode;
+  @JsonKey(name: 'sigunguCode', fromJson: SigunguCode.fromJson, toJson: SigunguCode.toJson)
+  final SigunguCode sigunguCode;
+
+  @JsonKey(name: 'tripThemeConstants', fromJson: TripTheme.fromJson, toJson: TripTheme.toJson)
+  final TripTheme tripTheme;
 
   RecommendedTourAreaResponse({
     required this.tourAreaId,
@@ -37,6 +43,7 @@ class RecommendedTourAreaResponse {
     required this.likeCnt,
     required this.likedByMe,
     required this.sigunguCode,
+    required this.tripTheme,
   });
 
   // JSON 데이터를 Dart 객체로 변환하는 팩토리 생성자

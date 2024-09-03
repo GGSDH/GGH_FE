@@ -16,7 +16,8 @@ RecommendedTourAreaResponse _$RecommendedTourAreaResponseFromJson(
       image: json['image'] as String,
       likeCnt: (json['likeCnt'] as num).toInt(),
       likedByMe: json['likedByMe'] as bool,
-      sigunguCode: json['sigunguCode'] as String,
+      sigunguCode: SigunguCode.fromJson(json['sigunguCode'] as String),
+      tripTheme: TripTheme.fromJson(json['tripThemeConstants'] as String),
     );
 
 Map<String, dynamic> _$RecommendedTourAreaResponseToJson(
@@ -29,5 +30,6 @@ Map<String, dynamic> _$RecommendedTourAreaResponseToJson(
       'image': instance.image,
       'likeCnt': instance.likeCnt,
       'likedByMe': instance.likedByMe,
-      'sigunguCode': instance.sigunguCode,
+      'sigunguCode': SigunguCode.toJson(instance.sigunguCode),
+      'tripThemeConstants': TripTheme.toJson(instance.tripTheme),
     };

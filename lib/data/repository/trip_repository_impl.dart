@@ -8,7 +8,7 @@ import '../models/api_result.dart';
 import '../models/request/recommended_lane_request.dart';
 import '../models/response/lane_response.dart';
 import '../models/response/local_restaurant_response.dart';
-import '../models/response/recommend_lane_response.dart';
+import '../models/response/recommended_lane_response.dart';
 import '../models/sigungu_code.dart';
 import '../models/trip_theme.dart';
 

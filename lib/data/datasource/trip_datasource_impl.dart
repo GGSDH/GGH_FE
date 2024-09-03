@@ -10,7 +10,7 @@ import 'package:gyeonggi_express/data/models/sigungu_code.dart';
 import '../models/request/recommended_lane_request.dart';
 import '../models/request/tour_area_search_request.dart';
 import '../models/response/lane_response.dart';
-import '../models/response/recommend_lane_response.dart';
+import '../models/response/recommended_lane_response.dart';
 
 class TripDataSourceImpl implements TripDataSource {
   final Dio _dio;

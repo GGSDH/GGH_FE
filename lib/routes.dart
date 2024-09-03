@@ -227,16 +227,30 @@ enum Routes {
                       path: Routes.recommendResult.path,
                       name: Routes.recommendResult.name,
                       parentNavigatorKey: _rootNavigatorKey,
-                      builder: (context, state) => BlocProvider(
-                        create: (context) => RecommendLaneBloc(
+                      builder: (context, state) {
+                        // Bloc 생성
+                        final bloc = RecommendLaneBloc(
                           tripRepository: GetIt.instance<TripRepository>(),
-                        ),
-                        child: RecommendResultScreen(
-                          sigunguCodes: state.uri.queryParameters['selectedSigunguCodes']?.split(',').map((e) => SigunguCode.fromJson(e)).toList() ?? [],
-                          days: int.tryParse(state.uri.queryParameters['selectedDays'] ?? '') ?? 1,
-                          tripThemes: state.uri.queryParameters['selectedTripThemes']?.split(',').map((e) => TripTheme.fromJson(e)).toList() ?? [],
-                        ),
-                      )
+                        );
+
+                        // 이벤트 추가
+                        bloc.add(
+                          RecommendLaneInitialize(
+                              selectedSigunguCodes: state.uri.queryParameters['selectedSigunguCodes']?.split(',').map((e) => SigunguCode.fromJson(e)).toList() ?? [],
+                              selectedDays: int.tryParse(state.uri.queryParameters['selectedDays'] ?? '') ?? 1,
+                              selectedTripThemes: state.uri.queryParameters['selectedTripThemes']?.split(',').map((e) => TripTheme.fromJson(e)).toList() ?? []
+                          ),
+                        );
+
+                        return BlocProvider(
+                          create: (context) => bloc,
+                          child: RecommendResultScreen(
+                            sigunguCodes: state.uri.queryParameters['selectedSigunguCodes']?.split(',').map((e) => SigunguCode.fromJson(e)).toList() ?? [],
+                            days: int.tryParse(state.uri.queryParameters['selectedDays'] ?? '') ?? 1,
+                            tripThemes: state.uri.queryParameters['selectedTripThemes']?.split(',').map((e) => TripTheme.fromJson(e)).toList() ?? [],
+                          ),
+                        );
+                      }
                     ),
                   ],
                 ),
