@@ -131,6 +131,7 @@ class RecommendedLaneScreen extends StatelessWidget {
                             itemCount: state.lanes.length,
                             itemBuilder: (context, index) {
                               return LaneListItem(
+                                onClick: () => {},
                                 onLike: () => {},
                                 onUnlike: () => {},
                                 category: state.lanes[index].category.title,

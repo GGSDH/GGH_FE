@@ -14,6 +14,7 @@ class PlaceListItem extends StatelessWidget {
   final String sigunguValue;
   final VoidCallback onLike;
   final VoidCallback onUnlike;
+  final VoidCallback onClick; // 새로운 콜백 함수 추가
 
   const PlaceListItem({
     super.key,
@@ -25,105 +26,110 @@ class PlaceListItem extends StatelessWidget {
     required this.sigunguValue,
     required this.onLike,
     required this.onUnlike,
+    required this.onClick, // 새로운 콜백 함수 추가
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 12),
-                Text(
-                  name,
-                  style: TextStyles.titleLarge.copyWith(
-                    color: ColorStyles.gray900,
+    return GestureDetector(
+      // 전체 컨테이너를 GestureDetector로 감싸기
+      onTap: onClick, // 클릭 이벤트 추가
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 12),
+                  Text(
+                    name,
+                    style: TextStyles.titleLarge.copyWith(
+                      color: ColorStyles.gray900,
+                    ),
                   ),
-                ),
-                Text(
-                  description,
-                  style: TextStyles.bodyLarge.copyWith(
-                    color: ColorStyles.gray800,
+                  Text(
+                    description,
+                    style: TextStyles.bodyLarge.copyWith(
+                      color: ColorStyles.gray800,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    GestureDetector(
-                      onTap: likedByMe ? onUnlike : onLike,
-                      child: SvgPicture.asset(
-                        likedByMe
-                            ? "assets/icons/ic_heart_filled.svg"
-                            : "assets/icons/ic_heart.svg",
-                        width: 18,
-                        height: 18,
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: likedByMe ? onUnlike : onLike,
+                        child: SvgPicture.asset(
+                          likedByMe
+                              ? "assets/icons/ic_heart_filled.svg"
+                              : "assets/icons/ic_heart.svg",
+                          width: 18,
+                          height: 18,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 1),
-                    Text(
-                      likeCount.toString(),
-                      style: TextStyles.bodyXSmall.copyWith(
-                          color: ColorStyles.gray500,
-                          fontWeight: FontWeight.w400),
-                    ),
-                    const SizedBox(width: 4),
-                    Text("|",
+                      const SizedBox(width: 1),
+                      Text(
+                        likeCount.toString(),
+                        style: TextStyles.bodyXSmall.copyWith(
+                            color: ColorStyles.gray500,
+                            fontWeight: FontWeight.w400),
+                      ),
+                      const SizedBox(width: 4),
+                      Text("|",
+                          style: TextStyles.bodyMedium.copyWith(
+                              color: ColorStyles.gray300,
+                              fontWeight: FontWeight.w400)),
+                      const SizedBox(width: 4),
+                      Text(
+                        sigunguValue,
                         style: TextStyles.bodyMedium.copyWith(
-                            color: ColorStyles.gray300,
-                            fontWeight: FontWeight.w400)),
-                    const SizedBox(width: 4),
-                    Text(
-                      sigunguValue,
-                      style: TextStyles.bodyMedium.copyWith(
-                          color: ColorStyles.gray500,
-                          fontWeight: FontWeight.w400),
+                            color: ColorStyles.gray500,
+                            fontWeight: FontWeight.w400),
+                      ),
+                      const SizedBox(width: 4),
+                      Text("|",
+                          style: TextStyles.bodyMedium.copyWith(
+                              color: ColorStyles.gray300,
+                              fontWeight: FontWeight.w400)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: CachedNetworkImage(
+                    imageUrl: image,
+                    placeholder: (context, url) =>
+                        const AppImagePlaceholder(width: 104, height: 104),
+                    errorWidget: (context, url, error) =>
+                        const AppImagePlaceholder(width: 104, height: 104),
+                    width: 104,
+                    height: 104,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Positioned(
+                  right: 10,
+                  top: 10,
+                  child: GestureDetector(
+                    onTap: likedByMe ? onUnlike : onLike,
+                    child: SvgPicture.asset(
+                      likedByMe
+                          ? "assets/icons/ic_heart_filled.svg"
+                          : "assets/icons/ic_heart_white.svg",
+                      width: 24,
+                      height: 24,
                     ),
-                    const SizedBox(width: 4),
-                    Text("|",
-                        style: TextStyles.bodyMedium.copyWith(
-                            color: ColorStyles.gray300,
-                            fontWeight: FontWeight.w400)),
-                  ],
+                  ),
                 ),
               ],
             ),
-          ),
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: CachedNetworkImage(
-                  imageUrl: image,
-                  placeholder: (context, url) =>
-                      const AppImagePlaceholder(width: 104, height: 104),
-                  errorWidget: (context, url, error) =>
-                      const AppImagePlaceholder(width: 104, height: 104),
-                  width: 104,
-                  height: 104,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              Positioned(
-                right: 10,
-                top: 10,
-                child: GestureDetector(
-                  onTap: likedByMe ? onUnlike : onLike,
-                  child: SvgPicture.asset(
-                    likedByMe
-                        ? "assets/icons/ic_heart_filled.svg"
-                        : "assets/icons/ic_heart_white.svg",
-                    width: 24,
-                    height: 24,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

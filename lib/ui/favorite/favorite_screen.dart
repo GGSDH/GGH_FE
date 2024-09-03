@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/data/models/response/lane_response.dart';
 import 'package:gyeonggi_express/data/models/response/tour_area_summary_response.dart';
 import 'package:gyeonggi_express/data/repository/favorite_repository.dart';
+import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/themes/color_styles.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
 import 'package:gyeonggi_express/ui/component/lane/lane_list_item.dart';
 import 'package:gyeonggi_express/ui/component/place/place_list_item.dart';
 import 'package:gyeonggi_express/ui/favorite/favorite_bloc.dart';
+
+import '../../routes.dart';
 
 class FavoritesScreen extends StatelessWidget {
   const FavoritesScreen({super.key});
@@ -21,6 +25,7 @@ class FavoritesScreen extends StatelessWidget {
           FavoritesBloc(repository: GetIt.instance<FavoriteRepository>())
             ..add(LoadFavorites()),
       child: Scaffold(
+        backgroundColor: Colors.white,
         body: SafeArea(
           child: DefaultTabController(
             length: 2,
@@ -77,7 +82,11 @@ class FavoritesScreen extends StatelessWidget {
                   onUnlike: () {
                     context.read<FavoritesBloc>().add(UnlikeLane(lane.laneId));
                   },
-                  category: lane.category.name,
+                  onClick: () {
+                    GoRouter.of(context)
+                        .push('${Routes.lanes.path}/${lane.laneId}');
+                  },
+                  category: lane.category.title,
                   title: lane.laneName,
                   description: '',
                   image: lane.image,
@@ -94,6 +103,10 @@ class FavoritesScreen extends StatelessWidget {
                   likeCount: tourArea.likeCnt,
                   likedByMe: tourArea.likedByMe,
                   sigunguValue: tourArea.sigunguCode.value,
+                  onClick: () {
+                    GoRouter.of(context)
+                        .push('${Routes.stations.path}/${tourArea.tourAreaId}');
+                  },
                   onLike: () {
                     context
                         .read<FavoritesBloc>()

@@ -197,6 +197,7 @@ class _StationDetailViewState extends State<StationDetailView> {
         ),
         ...data.lanes.map(
           (lane) => LaneListItem(
+            onClick: () => {},
             onLike: () => {},
             onUnlike: () => {},
             category: lane.theme.title,
