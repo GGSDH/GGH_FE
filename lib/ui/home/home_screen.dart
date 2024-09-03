@@ -323,7 +323,7 @@ class HomeScreen extends StatelessWidget {
                   image: lane.image,
                   period: lane.getPeriodString(),
                   likeCount: lane.likeCount,
-                  isLiked: false,
+                  isLiked: lane.likedByMe,
                 ),
               ),
             ],

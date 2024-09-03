@@ -176,7 +176,7 @@ class HomeBloc extends SideEffectBloc<HomeEvent, HomeState, HomeSideEffect> {
         final updatedLanes = state.lanes.map((lane) {
           if (lane.laneId == event.laneId) {
             return lane.copyWith(
-                /* likedByMe: true, */ likeCount: lane.likeCount + 1);
+                likedByMe: true, likeCount: lane.likeCount + 1);
           }
           return lane;
         }).toList();
@@ -197,7 +197,7 @@ class HomeBloc extends SideEffectBloc<HomeEvent, HomeState, HomeSideEffect> {
         final updatedLanes = state.lanes.map((lane) {
           if (lane.laneId == event.laneId) {
             return lane.copyWith(
-                /* likedByMe: false, */ likeCount: lane.likeCount - 1);
+                likedByMe: false, likeCount: lane.likeCount - 1);
           }
           return lane;
         }).toList();
