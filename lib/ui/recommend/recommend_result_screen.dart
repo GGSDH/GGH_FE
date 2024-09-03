@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
@@ -15,6 +16,7 @@ import '../../data/models/response/recommended_tour_area_response.dart';
 import '../../data/models/response/tour_area_response.dart';
 import '../../data/models/trip_theme.dart';
 import '../../themes/color_styles.dart';
+import '../component/app/app_image_plaeholder.dart';
 
 class RecommendResultScreen extends StatefulWidget {
   final int days;
@@ -42,10 +44,6 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print('selected days: ${widget.days}');
-    print('selected sigunguCodes: ${widget.sigunguCodes}');
-    print('selected tripThemes: ${widget.tripThemes}');
-
     return BlocSideEffectListener<RecommendLaneBloc, RecommendLaneSideEffect>(
       listener: (BuildContext context, RecommendLaneSideEffect sideEffect) {
         if (sideEffect is RecommendLaneShowError) {
@@ -57,75 +55,83 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
         }
       },
       child: BlocBuilder<RecommendLaneBloc, RecommendLaneState>(
-        builder: (context, state) => Scaffold(
-          body: Material(
-            color: Colors.white,
-            child: SafeArea(
-              child: DefaultTabController(
-                length: 2,
-                child: Stack(
-                  children: [
-                    Column(
-                      children: [
-                        AppActionBar(
-                          onBackPressed: () => Navigator.of(context).pop(),
-                          menuItems: [
-                            ActionBarMenuItem(
-                              icon: SvgPicture.asset(
-                                "assets/icons/ic_close_24px.svg",
-                                width: 24,
-                                height: 24,
-                                colorFilter: const ColorFilter.mode(
-                                  ColorStyles.gray800,
-                                  BlendMode.srcIn,
+        builder: (context, state) {
+          return Scaffold(
+            body: Material(
+              color: Colors.white,
+              child: state.isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : SafeArea(
+                child: DefaultTabController(
+                  length: 2,
+                  child: Stack(
+                    children: [
+                      Column(
+                        children: [
+                          SizedBox(
+                            height: 56,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 20), // 우측에 20dp 간격 추가
+                                  child: GestureDetector(
+                                    onTap: () => {},
+                                    child: SvgPicture.asset(
+                                      "assets/icons/ic_close_24px.svg",
+                                      width: 24,
+                                      height: 24,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                              onPressed: () {},
+                              ],
                             ),
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(24, 4, 24, 20),
-                          child: _laneHeader(
-                            state.data.title,
-                            _formatDays(widget.days),
-                            widget.sigunguCodes.first.value,
-                            widget.tripThemes.first.title,
                           ),
-                        ),
-                        const TabBar(
-                          tabs: [
-                            Tab(text: '코스'),
-                            Tab(text: '지도'),
-                          ],
-                          indicatorColor: ColorStyles.gray900,
-                          indicatorWeight: 1,
-                          indicatorSize: TabBarIndicatorSize.tab,
-                          labelColor: Colors.black,
-                          unselectedLabelColor: ColorStyles.gray400,
-                        ),
-                        Expanded(
-                          child: TabBarView(
-                            children: [
-                              _laneCourseWidget(state.data),
-                              _mapViewWidget(state.data),
+
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(24, 4, 24, 20),
+                            child: _laneHeader(
+                              state.data.title,
+                              _formatDays(widget.days),
+                              widget.sigunguCodes.first.value,
+                              widget.tripThemes.first.title,
+                            ),
+                          ),
+                          const TabBar(
+                            tabs: [
+                              Tab(text: '코스'),
+                              Tab(text: '지도'),
                             ],
+                            indicatorColor: ColorStyles.gray900,
+                            indicatorWeight: 1,
+                            indicatorSize: TabBarIndicatorSize.tab,
+                            labelColor: Colors.black,
+                            unselectedLabelColor: ColorStyles.gray400,
                           ),
-                        ),
-                      ],
-                    ),
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      child: _buildFixedBottomButtons(),
-                    ),
-                  ],
+                          Expanded(
+                            child: TabBarView(
+                              children: [
+                                _laneCourseWidget(state.data),
+                                _mapViewWidget(state.data),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      Positioned(
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        child: _buildFixedBottomButtons(),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
@@ -327,7 +333,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
         const SizedBox(height: 14),
         Text(
           title,
-          style: TextStyles.title2ExtraLarge.copyWith(
+          style: TextStyles.titleLarge.copyWith(
             fontWeight: FontWeight.w600,
             color: ColorStyles.gray900,
           ),
@@ -360,6 +366,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
               ),
             ],
           ),
+
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -371,24 +378,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                   ),
                   borderRadius: BorderRadius.circular(8.0),
                 ),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () {},
-                    borderRadius: BorderRadius.circular(8.0),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 14.0, horizontal: 20.0),
-                      child: SvgPicture.asset(
-                        "assets/icons/ic_share.svg",
-                        width: 20,
-                        height: 20,
-                      ),
-                    ),
-                  ),
-                ),
               ),
-              const SizedBox(width: 16),
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {},
@@ -478,17 +468,19 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(4),
-                child: Image.network(
-                  tourArea.image ?? '',
-                  fit: BoxFit.cover,
+                child: CachedNetworkImage(
+                  imageUrl: tourArea.image,
+                  placeholder: (context, url) => const AppImagePlaceholder(width: 80, height: 80),
+                  errorWidget: (context, url, error) => const AppImagePlaceholder(width: 80, height: 80),
                   height: 80,
                   width: 80,
+                  fit: BoxFit.cover,
                 ),
               ),
-              Expanded(
+              const SizedBox(width: 14),  // 텍스트와 이미지 간격을 위해 간격 추가
+              Flexible(
                 child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                  padding: const EdgeInsets.symmetric(vertical: 7),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -497,18 +489,15 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                         style: TextStyles.titleMedium.copyWith(
                             fontWeight: FontWeight.w600,
                             color: ColorStyles.gray800),
+                        overflow: TextOverflow.ellipsis,  // 길면 줄임표로 처리
                       ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              "${tourArea.sigunguCode} | ${tourArea.tripTheme}",
-                              style: TextStyles.bodyMedium.copyWith(
-                                  color: ColorStyles.gray500,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                          ),
-                        ],
+                      const SizedBox(height: 4),
+                      Text(
+                        "${tourArea.sigunguCode.value} | ${tourArea.tripTheme.title}",
+                        style: TextStyles.bodyMedium.copyWith(
+                            color: ColorStyles.gray500,
+                            fontWeight: FontWeight.w400),
+                        overflow: TextOverflow.ellipsis,  // 길면 줄임표로 처리
                       ),
                       const SizedBox(height: 4),
                       Row(
@@ -519,18 +508,20 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                             height: 18,
                           ),
                           const SizedBox(width: 2),
-                          Text(tourArea.likeCnt.toString(),
-                              style: TextStyles.bodyXSmall.copyWith(
-                                  color: ColorStyles.gray600,
-                                  fontWeight: FontWeight.w400))
+                          Text(
+                            tourArea.likeCnt.toString(),
+                            style: TextStyles.bodyXSmall.copyWith(
+                                color: ColorStyles.gray600,
+                                fontWeight: FontWeight.w400),
+                          ),
                         ],
-                      )
+                      ),
                     ],
                   ),
                 ),
-              )
+              ),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -668,11 +659,13 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                             padding: const EdgeInsets.only(right: 10),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(20),
-                              child: Image.network(
-                                place.image,
-                                fit: BoxFit.cover,
-                                height: 150,
+                              child: CachedNetworkImage(
+                                imageUrl: place.image,
+                                placeholder: (context, url) => const AppImagePlaceholder(width: 240, height: 150),
+                                errorWidget: (context, url, error) => const AppImagePlaceholder(width: 240, height: 150),
                                 width: 240,
+                                height: 150,
+                                fit: BoxFit.cover
                               ),
                             ),
                           ),
