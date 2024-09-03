@@ -12,6 +12,8 @@ class PlaceListItem extends StatelessWidget {
   final int likeCount;
   final bool likedByMe;
   final String sigunguValue;
+  final VoidCallback onLike;
+  final VoidCallback onUnlike;
 
   const PlaceListItem({
     super.key,
@@ -21,6 +23,8 @@ class PlaceListItem extends StatelessWidget {
     required this.likeCount,
     required this.likedByMe,
     required this.sigunguValue,
+    required this.onLike,
+    required this.onUnlike,
   });
 
   @override
@@ -49,12 +53,15 @@ class PlaceListItem extends StatelessWidget {
                 const SizedBox(height: 10),
                 Row(
                   children: [
-                    SvgPicture.asset(
-                      likedByMe
-                          ? "assets/icons/ic_heart_filled.svg"
-                          : "assets/icons/ic_heart.svg",
-                      width: 18,
-                      height: 18,
+                    GestureDetector(
+                      onTap: likedByMe ? onUnlike : onLike,
+                      child: SvgPicture.asset(
+                        likedByMe
+                            ? "assets/icons/ic_heart_filled.svg"
+                            : "assets/icons/ic_heart.svg",
+                        width: 18,
+                        height: 18,
+                      ),
                     ),
                     const SizedBox(width: 1),
                     Text(
@@ -103,12 +110,15 @@ class PlaceListItem extends StatelessWidget {
               Positioned(
                 right: 10,
                 top: 10,
-                child: SvgPicture.asset(
-                  likedByMe
-                      ? "assets/icons/ic_heart_filled.svg"
-                      : "assets/icons/ic_heart_white.svg",
-                  width: 24,
-                  height: 24,
+                child: GestureDetector(
+                  onTap: likedByMe ? onUnlike : onLike,
+                  child: SvgPicture.asset(
+                    likedByMe
+                        ? "assets/icons/ic_heart_filled.svg"
+                        : "assets/icons/ic_heart_white.svg",
+                    width: 24,
+                    height: 24,
+                  ),
                 ),
               ),
             ],

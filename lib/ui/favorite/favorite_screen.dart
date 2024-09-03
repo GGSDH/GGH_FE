@@ -56,9 +56,11 @@ class FavoritesScreen extends StatelessWidget {
   Widget _buildContent({required bool isLaneTab}) {
     return BlocBuilder<FavoritesBloc, FavoritesState>(
       builder: (context, state) {
-        if (state is FavoritesLoading) {
+        if (state.isLoading) {
           return const Center(child: CircularProgressIndicator());
-        } else if (state is FavoritesLoaded) {
+        } else if (state.error != null) {
+          return Center(child: Text('Error: ${state.error}'));
+        } else {
           final items = isLaneTab ? state.lanes : state.tourAreas;
           if (items.isEmpty) {
             return _buildEmptyState(isLaneTab);
@@ -69,13 +71,17 @@ class FavoritesScreen extends StatelessWidget {
               if (isLaneTab) {
                 final lane = items[index] as Lane;
                 return LaneListItem(
-                  onLike: () => {},
-                  onUnlike: () => {},
+                  onLike: () {
+                    context.read<FavoritesBloc>().add(LikeLane(lane.laneId));
+                  },
+                  onUnlike: () {
+                    context.read<FavoritesBloc>().add(UnlikeLane(lane.laneId));
+                  },
                   category: lane.category.name,
                   title: lane.laneName,
                   description: '',
                   image: lane.image,
-                  period: '',
+                  period: lane.getPeriodString(),
                   likeCount: lane.likeCount,
                   isLiked: true,
                 );
@@ -87,15 +93,22 @@ class FavoritesScreen extends StatelessWidget {
                   image: tourArea.image,
                   likeCount: tourArea.likeCnt,
                   likedByMe: tourArea.likedByMe,
-                  sigunguValue: '',
+                  sigunguValue: tourArea.sigunguCode.value,
+                  onLike: () {
+                    context
+                        .read<FavoritesBloc>()
+                        .add(LikeTourArea(tourArea.tourAreaId));
+                  },
+                  onUnlike: () {
+                    context
+                        .read<FavoritesBloc>()
+                        .add(UnlikeTourArea(tourArea.tourAreaId));
+                  },
                 );
               }
             },
           );
-        } else if (state is FavoritesError) {
-          return Center(child: Text('Error: ${state.message}'));
         }
-        return const Center(child: Text('Unknown state'));
       },
     );
   }
@@ -129,7 +142,9 @@ class FavoritesScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              // TODO: Implement navigation to appropriate screen
+            },
             style: ElevatedButton.styleFrom(
               foregroundColor: Colors.white,
               backgroundColor: ColorStyles.primary,
