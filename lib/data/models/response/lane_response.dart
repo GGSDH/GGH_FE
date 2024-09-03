@@ -8,27 +8,37 @@ part 'lane_response.g.dart';
 class Lane {
   @JsonKey(name: 'laneId')
   final int laneId;
+
   @JsonKey(name: 'laneName')
   final String laneName;
+
   @JsonKey(
       name: 'tripThemeConstants',
       fromJson: TripTheme.fromJson,
       toJson: TripTheme.toJson)
   final TripTheme category;
+
   @JsonKey(name: 'likes')
   final int likeCount;
+
   @JsonKey(name: 'image')
   final String image;
+
   @JsonKey(name: 'days')
   final int days;
 
-  Lane(
-      {required this.laneId,
-      required this.laneName,
-      required this.category,
-      required this.likeCount,
-      required this.image,
-      required this.days});
+  @JsonKey(name: 'likedByMe')
+  final bool likedByMe;
+
+  Lane({
+    required this.laneId,
+    required this.laneName,
+    required this.category,
+    required this.likeCount,
+    required this.image,
+    required this.days,
+    required this.likedByMe,
+  });
 
   factory Lane.fromJson(Map<String, dynamic> json) => _$LaneFromJson(json);
 
@@ -51,6 +61,7 @@ class Lane {
     int? likeCount,
     String? image,
     int? days,
+    bool? likedByMe,
   }) {
     return Lane(
       laneId: laneId ?? this.laneId,
@@ -59,6 +70,7 @@ class Lane {
       likeCount: likeCount ?? this.likeCount,
       image: image ?? this.image,
       days: days ?? this.days,
+      likedByMe: likedByMe ?? this.likedByMe,
     );
   }
 }

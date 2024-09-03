@@ -13,6 +13,7 @@ Lane _$LaneFromJson(Map<String, dynamic> json) => Lane(
       likeCount: (json['likes'] as num).toInt(),
       image: json['image'] as String,
       days: (json['days'] as num).toInt(),
+      likedByMe: json['likedByMe'] as bool,
     );
 
 Map<String, dynamic> _$LaneToJson(Lane instance) => <String, dynamic>{
@@ -22,4 +23,5 @@ Map<String, dynamic> _$LaneToJson(Lane instance) => <String, dynamic>{
       'likes': instance.likeCount,
       'image': instance.image,
       'days': instance.days,
+      'likedByMe': instance.likedByMe,
     };
