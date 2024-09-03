@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:gyeonggi_express/data/models/response/lane_specific_response.dart';
 import 'package:gyeonggi_express/ui/ext/file_path_extension.dart';
 import '../data/models/response/photobook_response.dart';
 import '../themes/color_styles.dart';
@@ -17,11 +18,13 @@ class NaverMapUtil {
 
     for (var photobook in photobookDetailCards) {
       if (photobook.location?.lat != null && photobook.location?.lon != null) {
-        final currentLocation = NLatLng(photobook.location!.lat!, photobook.location!.lon!);
+        final currentLocation =
+            NLatLng(photobook.location!.lat, photobook.location!.lon);
         pathCoords.add(currentLocation);
 
         try {
-          final overlayImage = await _createOverlayImage(photobook.filePathUrl, context);
+          final overlayImage =
+              await _createOverlayImage(photobook.filePathUrl, context);
           final photobookMarker = NMarker(
             id: photobook.id,
             position: currentLocation,
@@ -30,13 +33,16 @@ class NaverMapUtil {
           );
           controller.addOverlay(photobookMarker);
 
-          final circleMarker = _createCircleMarker(photobook.id, currentLocation);
+          final circleMarker =
+              _createCircleMarker(photobook.id, currentLocation);
           controller.addOverlay(circleMarker);
         } catch (e) {
-          final errorMarker = await _createErrorMarker(photobook.id, currentLocation, context);
+          final errorMarker =
+              await _createErrorMarker(photobook.id, currentLocation, context);
           controller.addOverlay(errorMarker);
 
-          final circleMarker = _createCircleMarker(photobook.id, currentLocation);
+          final circleMarker =
+              _createCircleMarker(photobook.id, currentLocation);
           controller.addOverlay(circleMarker);
         }
       }
@@ -61,11 +67,13 @@ class NaverMapUtil {
     for (var photobook in photobooks) {
       if (photobook.location?.lat != null && photobook.location?.lon != null) {
         final currentLocation = NLatLng(
-          photobook.location!.lat!, photobook.location!.lon!,
+          photobook.location!.lat,
+          photobook.location!.lon,
         );
 
         try {
-          final overlayImage = await _createOverlayImage(photobook.mainPhoto?.path ?? '', context);
+          final overlayImage = await _createOverlayImage(
+              photobook.mainPhoto?.path ?? '', context);
           final photobookMarker = NMarker(
             id: "${photobook.id}",
             position: currentLocation,
@@ -74,13 +82,16 @@ class NaverMapUtil {
           );
           controller.addOverlay(photobookMarker);
 
-          final circleMarker = _createCircleMarker("${photobook.id}", currentLocation);
+          final circleMarker =
+              _createCircleMarker("${photobook.id}", currentLocation);
           controller.addOverlay(circleMarker);
         } catch (e) {
-          final errorMarker = await _createErrorMarker("${photobook.id}", currentLocation, context);
+          final errorMarker = await _createErrorMarker(
+              "${photobook.id}", currentLocation, context);
           controller.addOverlay(errorMarker);
 
-          final circleMarker = _createCircleMarker("${photobook.id}", currentLocation);
+          final circleMarker =
+              _createCircleMarker("${photobook.id}", currentLocation);
           controller.addOverlay(circleMarker);
         }
       }
@@ -131,6 +142,84 @@ class NaverMapUtil {
       id: markerId,
       position: currentLocation,
       icon: errorIcon,
+    );
+  }
+
+  static Future<void> addMarkersAndPathForLane(
+    NaverMapController controller,
+    List<LaneSpecificResponse> laneSpecificResponses,
+    BuildContext context,
+  ) async {
+    List<NLatLng> pathCoords = [];
+
+    // Sort the responses by sequence
+    laneSpecificResponses.sort((a, b) => a.sequence.compareTo(b.sequence));
+
+    for (var laneResponse in laneSpecificResponses) {
+      if (laneResponse.tourAreaResponse.latitude != null &&
+          laneResponse.tourAreaResponse.longitude != null) {
+        final currentLocation = NLatLng(laneResponse.tourAreaResponse.latitude!,
+            laneResponse.tourAreaResponse.longitude!);
+        pathCoords.add(currentLocation);
+
+        try {
+          final markerIcon =
+              await _createSequenceMarker(laneResponse.sequence, context);
+          final marker = NMarker(
+            id: 'lane_${laneResponse.sequence}',
+            position: currentLocation,
+            icon: markerIcon,
+            size: const Size(48, 48),
+          );
+          controller.addOverlay(marker);
+
+          final circleMarker = _createCircleMarker(
+              'lane_${laneResponse.sequence}', currentLocation);
+          controller.addOverlay(circleMarker);
+        } catch (e) {
+          print(
+              'Error creating marker for sequence ${laneResponse.sequence}: $e');
+          // You might want to add error handling here, similar to the original code
+        }
+      }
+    }
+
+    if (pathCoords.isNotEmpty) {
+      final pathOverlay = NPathOverlay(
+        id: 'lane_path',
+        coords: pathCoords,
+        width: 8,
+        color: ColorStyles.primary,
+      );
+      controller.addOverlay(pathOverlay);
+    }
+  }
+
+  static Future<NOverlayImage> _createSequenceMarker(
+    int sequence,
+    BuildContext context,
+  ) async {
+    return NOverlayImage.fromWidget(
+      context: context,
+      widget: Container(
+        width: 48,
+        height: 48,
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          color: ColorStyles.primary,
+        ),
+        child: Center(
+          child: Text(
+            sequence.toString(),
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+        ),
+      ),
+      size: const Size(48, 48),
     );
   }
 }

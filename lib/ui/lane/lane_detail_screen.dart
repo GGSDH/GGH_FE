@@ -7,12 +7,14 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/data/models/response/lane_detail_response.dart';
+import 'package:gyeonggi_express/data/models/response/lane_specific_response.dart';
 import 'package:gyeonggi_express/data/models/response/tour_area_summary_response.dart';
 import 'package:gyeonggi_express/data/repository/lane_repository.dart';
 import 'package:gyeonggi_express/themes/color_styles.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
 import 'package:gyeonggi_express/ui/component/app/app_action_bar.dart';
 import 'package:gyeonggi_express/ui/lane/lane_detail_bloc.dart';
+import 'package:gyeonggi_express/util/naver_map_util.dart';
 
 class LaneDetailScreen extends StatelessWidget {
   final int laneId;
@@ -129,7 +131,11 @@ class _LaneDetailViewState extends State<LaneDetailView> {
   Widget _mapViewWidget(LaneDetail laneDetail) {
     return Stack(
       children: [
-        _NaverMapSection(mapControllerCompleter: _mapControllerCompleter),
+        _LaneMapSection(
+          mapControllerCompleter: _mapControllerCompleter,
+          laneDetail: laneDetail,
+          selectedDay: _selectedDayIndex + 1,
+        ),
         Positioned(
           left: 0,
           right: 0,
@@ -262,6 +268,7 @@ class _LaneDetailViewState extends State<LaneDetailView> {
                             setState(() {
                               _selectedDayIndex = idx;
                             });
+                            _updateMapMarkers();
                             Navigator.pop(context);
                           },
                         ),
@@ -473,105 +480,121 @@ class _LaneDetailViewState extends State<LaneDetailView> {
     );
   }
 
-  Widget _placeDetailItemInBottomSheet(TourAreaSummary laneTourArea) {
-    return SizedBox(
-      width: 300,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 20,
-                height: 20,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: const Color(0xFFFBB12C),
-                    width: 1,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  height: 1,
-                  color: const Color(0xFFFBB12C),
-                ),
-              ),
-            ],
+  void _moveCameraToLocation(TourAreaSummary tourArea) {
+    _mapControllerCompleter.future.then((controller) {
+      if (tourArea.latitude != null && tourArea.longitude != null) {
+        controller.updateCamera(
+          NCameraUpdate.withParams(
+            target: NLatLng(tourArea.latitude!, tourArea.longitude!),
+            zoom: 13,
           ),
-          const SizedBox(height: 14),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              (laneTourArea.image.isNotEmpty)
-                  ? Image.network(
-                      laneTourArea.image,
-                      fit: BoxFit.cover,
-                      height: 80,
-                      width: 80,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          height: 80,
-                          width: 80,
-                          color: Colors.grey,
-                        );
-                      },
-                    )
-                  : Container(
-                      height: 80,
-                      width: 80,
-                      color: Colors.grey,
+        );
+      }
+    });
+  }
+
+  Widget _placeDetailItemInBottomSheet(TourAreaSummary laneTourArea) {
+    return GestureDetector(
+      onTap: () => {_moveCameraToLocation(laneTourArea)},
+      child: SizedBox(
+        width: 300,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: const Color(0xFFFBB12C),
+                      width: 1,
                     ),
-              Expanded(
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        laneTourArea.tourAreaName,
-                        maxLines: 1,
-                        style: TextStyles.titleMedium.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: ColorStyles.gray800),
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              laneTourArea.tourAreaName,
-                              maxLines: 1,
-                              style: TextStyles.bodyMedium.copyWith(
-                                  color: ColorStyles.gray500,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          SvgPicture.asset(
-                            "assets/icons/ic_heart_filled.svg",
-                            width: 18,
-                            height: 18,
-                          ),
-                          const SizedBox(width: 2),
-                          Text(laneTourArea.likeCnt.toString(),
-                              style: TextStyles.bodyXSmall.copyWith(
-                                  color: ColorStyles.gray600,
-                                  fontWeight: FontWeight.w400))
-                        ],
-                      )
-                    ],
                   ),
                 ),
-              )
-            ],
-          )
-        ],
+                Expanded(
+                  child: Container(
+                    height: 1,
+                    color: const Color(0xFFFBB12C),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                (laneTourArea.image.isNotEmpty)
+                    ? Image.network(
+                        laneTourArea.image,
+                        fit: BoxFit.cover,
+                        height: 80,
+                        width: 80,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            height: 80,
+                            width: 80,
+                            color: Colors.grey,
+                          );
+                        },
+                      )
+                    : Container(
+                        height: 80,
+                        width: 80,
+                        color: Colors.grey,
+                      ),
+                Expanded(
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          laneTourArea.tourAreaName,
+                          maxLines: 1,
+                          style: TextStyles.titleMedium.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: ColorStyles.gray800),
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                laneTourArea.tourAreaName,
+                                maxLines: 1,
+                                style: TextStyles.bodyMedium.copyWith(
+                                    color: ColorStyles.gray500,
+                                    fontWeight: FontWeight.w400),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            SvgPicture.asset(
+                              "assets/icons/ic_heart_filled.svg",
+                              width: 18,
+                              height: 18,
+                            ),
+                            const SizedBox(width: 2),
+                            Text(laneTourArea.likeCnt.toString(),
+                                style: TextStyles.bodyXSmall.copyWith(
+                                    color: ColorStyles.gray600,
+                                    fontWeight: FontWeight.w400))
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -627,24 +650,73 @@ class _LaneDetailViewState extends State<LaneDetailView> {
       },
     );
   }
+
+  void _updateMapMarkers() {
+    _mapControllerCompleter.future.then((controller) async {
+      controller.clearOverlays();
+      List<LaneSpecificResponse> selectedDayResponses = widget
+          .laneDetail.laneSpecificResponses
+          .where((response) => response.day == _selectedDayIndex + 1)
+          .toList();
+      await NaverMapUtil.addMarkersAndPathForLane(
+          controller, selectedDayResponses, context);
+
+      // 카메라 위치 업데이트
+      if (selectedDayResponses.isNotEmpty) {
+        print(selectedDayResponses.first.tourAreaResponse.latitude);
+        var firstPlace = selectedDayResponses.first.tourAreaResponse;
+        if (firstPlace.latitude != null && firstPlace.longitude != null) {
+          controller.updateCamera(
+            NCameraUpdate.withParams(
+              target: NLatLng(firstPlace.latitude!, firstPlace.longitude!),
+              zoom: 14,
+            ),
+          );
+        }
+      } else {
+        print("empty");
+      }
+    });
+  }
 }
 
-class _NaverMapSection extends StatelessWidget {
-  const _NaverMapSection({required this.mapControllerCompleter});
+class _LaneMapSection extends StatelessWidget {
+  const _LaneMapSection({
+    required this.mapControllerCompleter,
+    required this.laneDetail,
+    required this.selectedDay,
+  });
 
   final Completer<NaverMapController> mapControllerCompleter;
+  final LaneDetail laneDetail;
+  final int selectedDay;
 
   @override
   Widget build(BuildContext context) {
     return NaverMap(
-      forceGesture: true,
       options: const NaverMapViewOptions(
+        initialCameraPosition: NCameraPosition(
+          target: NLatLng(37.5666102, 126.9783881),
+          zoom: 11,
+        ),
         indoorEnable: true,
         locationButtonEnable: false,
         consumeSymbolTapEvents: false,
+        rotationGesturesEnable: true,
+        scrollGesturesEnable: true,
+        zoomGesturesEnable: true,
       ),
-      onMapReady: (controller) {
-        mapControllerCompleter.complete(controller);
+      forceGesture: true,
+      onMapReady: (controller) async {
+        if (!mapControllerCompleter.isCompleted) {
+          mapControllerCompleter.complete(controller);
+        }
+        List<LaneSpecificResponse> selectedDayResponses = laneDetail
+            .laneSpecificResponses
+            .where((response) => response.day == selectedDay)
+            .toList();
+        await NaverMapUtil.addMarkersAndPathForLane(
+            controller, selectedDayResponses, context);
       },
     );
   }
