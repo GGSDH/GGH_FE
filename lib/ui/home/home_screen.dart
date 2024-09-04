@@ -356,7 +356,9 @@ class HomeScreen extends StatelessWidget {
       onUnlike: () {
         context.read<HomeBloc>().add(HomeUnlikeLane(laneId));
       },
-      onClick: () {},
+      onClick: () {
+        context.push('${Routes.lanes.path}/$laneId');
+      },
     );
   }
 

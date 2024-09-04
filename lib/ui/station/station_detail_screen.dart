@@ -3,17 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:gyeonggi_express/data/models/response/tour_area_detail_response.dart';
-import 'package:gyeonggi_express/data/models/tour_content_type.dart';
 import 'package:gyeonggi_express/data/repository/tour_area_repository.dart';
 import 'package:gyeonggi_express/themes/color_styles.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
-import 'package:gyeonggi_express/ui/component/%08blog/blog_list_item.dart';
 import 'package:gyeonggi_express/ui/component/app/app_action_bar.dart';
 import 'package:gyeonggi_express/ui/component/lane/lane_list_item.dart';
 import 'package:gyeonggi_express/ui/component/restaurant/restaurant_list_item.dart';
 import 'package:gyeonggi_express/ui/station/station_detail_bloc.dart';
-
-import '../../data/models/response/lane_response.dart';
 
 class StationDetailScreen extends StatelessWidget {
   final int stationId;
@@ -92,7 +88,8 @@ class _StationDetailViewState extends State<StationDetailView> {
                         color: ColorStyles.gray100,
                         thickness: 1,
                       ), */
-                      _laneIncludingStation(state.data),
+                      if (state.data.otherTourAreas.isNotEmpty)
+                        _laneIncludingStation(state.data),
                       const Divider(
                         color: ColorStyles.gray100,
                         thickness: 1,

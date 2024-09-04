@@ -55,8 +55,7 @@ class LaneDetailView extends StatefulWidget {
 }
 
 class _LaneDetailViewState extends State<LaneDetailView> {
-  final Completer<NaverMapController> _mapControllerCompleter =
-      Completer<NaverMapController>();
+  NaverMapController? _mapController;
   int _selectedDayIndex = 0;
 
   @override
@@ -131,10 +130,24 @@ class _LaneDetailViewState extends State<LaneDetailView> {
   Widget _mapViewWidget(LaneDetail laneDetail) {
     return Stack(
       children: [
-        _LaneMapSection(
-          mapControllerCompleter: _mapControllerCompleter,
-          laneDetail: laneDetail,
-          selectedDay: _selectedDayIndex + 1,
+        NaverMap(
+          forceGesture: true,
+          options: const NaverMapViewOptions(
+            initialCameraPosition: NCameraPosition(
+              target: NLatLng(37.5666102, 126.9783881),
+              zoom: 11,
+            ),
+            indoorEnable: true,
+            locationButtonEnable: false,
+            consumeSymbolTapEvents: false,
+            rotationGesturesEnable: true,
+            scrollGesturesEnable: true,
+            zoomGesturesEnable: true,
+          ),
+          onMapReady: (controller) {
+            _mapController = controller;
+            _updateMapMarkers();
+          },
         ),
         Positioned(
           left: 0,
@@ -481,16 +494,16 @@ class _LaneDetailViewState extends State<LaneDetailView> {
   }
 
   void _moveCameraToLocation(TourAreaSummary tourArea) {
-    _mapControllerCompleter.future.then((controller) {
-      if (tourArea.latitude != null && tourArea.longitude != null) {
-        controller.updateCamera(
-          NCameraUpdate.withParams(
-            target: NLatLng(tourArea.latitude!, tourArea.longitude!),
-            zoom: 13,
-          ),
-        );
-      }
-    });
+    if (_mapController != null &&
+        tourArea.latitude != null &&
+        tourArea.longitude != null) {
+      _mapController!.updateCamera(
+        NCameraUpdate.withParams(
+          target: NLatLng(tourArea.latitude!, tourArea.longitude!),
+          zoom: 13,
+        ),
+      );
+    }
   }
 
   Widget _placeDetailItemInBottomSheet(TourAreaSummary laneTourArea) {
@@ -652,72 +665,27 @@ class _LaneDetailViewState extends State<LaneDetailView> {
   }
 
   void _updateMapMarkers() {
-    _mapControllerCompleter.future.then((controller) async {
-      controller.clearOverlays();
-      List<LaneSpecificResponse> selectedDayResponses = widget
-          .laneDetail.laneSpecificResponses
-          .where((response) => response.day == _selectedDayIndex + 1)
-          .toList();
-      await NaverMapUtil.addMarkersAndPathForLane(
-          controller, selectedDayResponses, context);
+    if (_mapController == null) return;
 
-      // 카메라 위치 업데이트
-      if (selectedDayResponses.isNotEmpty) {
-        print(selectedDayResponses.first.tourAreaResponse.latitude);
-        var firstPlace = selectedDayResponses.first.tourAreaResponse;
-        if (firstPlace.latitude != null && firstPlace.longitude != null) {
-          controller.updateCamera(
-            NCameraUpdate.withParams(
-              target: NLatLng(firstPlace.latitude!, firstPlace.longitude!),
-              zoom: 14,
-            ),
-          );
-        }
-      } else {
-        print("empty");
+    _mapController!.clearOverlays();
+    List<LaneSpecificResponse> selectedDayResponses = widget
+        .laneDetail.laneSpecificResponses
+        .where((response) => response.day == _selectedDayIndex + 1)
+        .toList();
+    NaverMapUtil.addMarkersAndPathForLane(
+        _mapController!, selectedDayResponses, context);
+
+    // 카메라 위치 업데이트
+    if (selectedDayResponses.isNotEmpty) {
+      var firstPlace = selectedDayResponses.first.tourAreaResponse;
+      if (firstPlace.latitude != null && firstPlace.longitude != null) {
+        _mapController!.updateCamera(
+          NCameraUpdate.withParams(
+            target: NLatLng(firstPlace.latitude!, firstPlace.longitude!),
+            zoom: 14,
+          ),
+        );
       }
-    });
-  }
-}
-
-class _LaneMapSection extends StatelessWidget {
-  const _LaneMapSection({
-    required this.mapControllerCompleter,
-    required this.laneDetail,
-    required this.selectedDay,
-  });
-
-  final Completer<NaverMapController> mapControllerCompleter;
-  final LaneDetail laneDetail;
-  final int selectedDay;
-
-  @override
-  Widget build(BuildContext context) {
-    return NaverMap(
-      options: const NaverMapViewOptions(
-        initialCameraPosition: NCameraPosition(
-          target: NLatLng(37.5666102, 126.9783881),
-          zoom: 11,
-        ),
-        indoorEnable: true,
-        locationButtonEnable: false,
-        consumeSymbolTapEvents: false,
-        rotationGesturesEnable: true,
-        scrollGesturesEnable: true,
-        zoomGesturesEnable: true,
-      ),
-      forceGesture: true,
-      onMapReady: (controller) async {
-        if (!mapControllerCompleter.isCompleted) {
-          mapControllerCompleter.complete(controller);
-        }
-        List<LaneSpecificResponse> selectedDayResponses = laneDetail
-            .laneSpecificResponses
-            .where((response) => response.day == selectedDay)
-            .toList();
-        await NaverMapUtil.addMarkersAndPathForLane(
-            controller, selectedDayResponses, context);
-      },
-    );
+    }
   }
 }
