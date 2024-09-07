@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gyeonggi_express/data/models/response/tour_area_detail_response.dart';
 import 'package:gyeonggi_express/data/repository/tour_area_repository.dart';
-import 'package:gyeonggi_express/ui/station/station_detail_screen.dart';
 
 @immutable
 abstract class StationDetailEvent extends Equatable {
@@ -68,4 +67,6 @@ class StationDetailBloc extends Bloc<StationDetailEvent, StationDetailState> {
       },
     );
   }
+
+
 }

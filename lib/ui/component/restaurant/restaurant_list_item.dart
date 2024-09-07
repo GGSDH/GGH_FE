@@ -11,6 +11,7 @@ class RestaurantListItem extends StatelessWidget {
   final int likeCount;
   final String location;
   final bool isLiked;
+  final VoidCallback onClick;
   final VoidCallback onLike;
   final VoidCallback onUnlike;
 
@@ -21,6 +22,7 @@ class RestaurantListItem extends StatelessWidget {
     required this.likeCount,
     required this.location,
     required this.isLiked,
+    required this.onClick,
     required this.onLike,
     required this.onUnlike,
   });
@@ -36,17 +38,20 @@ class RestaurantListItem extends StatelessWidget {
               children: [
                 Stack(
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: CachedNetworkImage(
-                        imageUrl: image ?? "",
-                        placeholder: (context, url) =>
-                            const AppImagePlaceholder(width: 200, height: 145),
-                        errorWidget: (context, url, error) =>
-                            const AppImagePlaceholder(width: 200, height: 145),
-                        width: 200,
-                        height: 145,
-                        fit: BoxFit.cover,
+                    GestureDetector(
+                      onTap: onClick,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: CachedNetworkImage(
+                          imageUrl: image ?? "",
+                          placeholder: (context, url) =>
+                              const AppImagePlaceholder(width: 200, height: 145),
+                          errorWidget: (context, url, error) =>
+                              const AppImagePlaceholder(width: 200, height: 145),
+                          width: 200,
+                          height: 145,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                     Positioned(

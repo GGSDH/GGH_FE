@@ -446,6 +446,9 @@ class HomeScreen extends StatelessWidget {
       likeCount: likeCount,
       location: location,
       isLiked: isLiked,
+      onClick: () {
+
+      },
       onLike: () {
         context.read<HomeBloc>().add(HomeLikeTourArea(tourAreaId));
       },

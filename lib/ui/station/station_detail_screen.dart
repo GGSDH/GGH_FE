@@ -1,15 +1,21 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/data/models/response/tour_area_detail_response.dart';
 import 'package:gyeonggi_express/data/repository/tour_area_repository.dart';
+import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/themes/color_styles.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
 import 'package:gyeonggi_express/ui/component/app/app_action_bar.dart';
 import 'package:gyeonggi_express/ui/component/lane/lane_list_item.dart';
 import 'package:gyeonggi_express/ui/component/restaurant/restaurant_list_item.dart';
 import 'package:gyeonggi_express/ui/station/station_detail_bloc.dart';
+
+import '../../routes.dart';
+import '../component/app/app_image_plaeholder.dart';
 
 class StationDetailScreen extends StatelessWidget {
   final int stationId;
@@ -35,7 +41,6 @@ class StationDetailView extends StatefulWidget {
 }
 
 class _StationDetailViewState extends State<StationDetailView> {
-  int _currentPage = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +57,9 @@ class _StationDetailViewState extends State<StationDetailView> {
                     children: [
                       AppActionBar(
                           rightText: "",
-                          onBackPressed: () => {},
+                          onBackPressed: () => {
+                            GoRouter.of(context).pop()
+                          },
                           menuItems: [
                             ActionBarMenuItem(
                                 icon: SvgPicture.asset(
@@ -94,7 +101,18 @@ class _StationDetailViewState extends State<StationDetailView> {
                           thickness: 1,
                         ),
                       ],
-                      _nearbyRecommendations(state.data),
+                      _nearbyRecommendations(
+                        data: state.data,
+                        onClick: (id) => {
+                          GoRouter.of(context).push("${Routes.stations.path}/$id")
+                        },
+                        onLike: (id) => {
+
+                        },
+                        onUnlike: (id) => {
+
+                        },
+                      ),
                       /*  const Divider(
                         color: ColorStyles.gray100,
                         thickness: 1,
@@ -291,30 +309,18 @@ class _StationDetailViewState extends State<StationDetailView> {
     );
   }
 
-  Widget _nearbyRecommendations(TourAreaDetail data) {
+  Widget _nearbyRecommendations({
+    required TourAreaDetail data,
+    required Function(int) onClick,
+    required Function(int) onLike,
+    required Function(int) onUnlike,
+  }) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text("주변 추천 장소", style: TextStyles.headlineXSmall),
-              /* Row(
-                children: [
-                  Text("더보기",
-                      style: TextStyles.bodyMedium
-                          .copyWith(color: ColorStyles.gray500)),
-                  SvgPicture.asset(
-                    "assets/icons/ic_arrow_right.svg",
-                    width: 20,
-                    height: 20,
-                  )
-                ],
-              ) */
-            ],
-          ),
+          child: Text("주변 추천 장소", style: TextStyles.headlineXSmall),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -332,8 +338,9 @@ class _StationDetailViewState extends State<StationDetailView> {
                             : 0,
                       ),
                       child: RestaurantListItem(
-                        onLike: () => {},
-                        onUnlike: () => {},
+                        onClick: () => onClick(entry.value.tourAreaId),
+                        onLike: () => onLike(entry.value.tourAreaId),
+                        onUnlike: () => onUnlike(entry.value.tourAreaId),
                         name: entry.value.name,
                         location: entry.value.sigungu.value,
                         image: entry.value.image,
@@ -406,43 +413,15 @@ class _StationDetailViewState extends State<StationDetailView> {
   } */
 
   Widget _imageViewer(TourAreaDetail data) {
-    return SizedBox(
-      height: 295,
-      child: Stack(
-        children: [
-          if (data.tourArea.image != null && data.tourArea.image!.isNotEmpty)
-            PageView.builder(
-                onPageChanged: (value) => {
-                      setState(() {
-                        _currentPage = value;
-                      })
-                    },
-                itemCount: 1,
-                itemBuilder: (context, index) {
-                  return Image.network(
-                    data.tourArea.image!,
-                    fit: BoxFit.cover,
-                    height: 295,
-                    width: double.infinity,
-                  );
-                }),
-          /* Positioned(
-            right: 20,
-            bottom: 20,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(100),
-              ),
-              child: Text(
-                "${_currentPage + 1}/${data.images.length}",
-                style: TextStyles.titleXSmall.copyWith(
-                    fontWeight: FontWeight.w600, color: ColorStyles.grayWhite),
-              ),
-            ),
-          ) */
-        ],
+    return AspectRatio(
+      aspectRatio: 1.33,
+      child: CachedNetworkImage(
+        imageUrl: data.tourArea.image ?? "",
+        placeholder: (context, url) => const AppImagePlaceholder(width: double.infinity, height: double.infinity),
+        errorWidget: (context, url, error) => const AppImagePlaceholder(width: double.infinity, height: double.infinity),
+        width: double.infinity,
+        height: double.infinity,
+        fit: BoxFit.cover,
       ),
     );
   }
