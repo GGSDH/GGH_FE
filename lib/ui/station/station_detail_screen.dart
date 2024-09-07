@@ -44,7 +44,6 @@ class _StationDetailViewState extends State<StationDetailView> {
         child: SafeArea(
             child: Scaffold(
           backgroundColor: Colors.white,
-          /* bottomNavigationBar: _bottomNavigationBar(), */
           body: BlocBuilder<StationDetailBloc, StationDetailState>(
             builder: (context, state) {
               if (state is StationDetailLoaded) {
@@ -88,12 +87,13 @@ class _StationDetailViewState extends State<StationDetailView> {
                         color: ColorStyles.gray100,
                         thickness: 1,
                       ), */
-                      if (state.data.otherTourAreas.isNotEmpty)
+                      if (state.data.lanes.isNotEmpty) ...[
                         _laneIncludingStation(state.data),
-                      const Divider(
-                        color: ColorStyles.gray100,
-                        thickness: 1,
-                      ),
+                        const Divider(
+                          color: ColorStyles.gray100,
+                          thickness: 1,
+                        ),
+                      ],
                       _nearbyRecommendations(state.data),
                       /*  const Divider(
                         color: ColorStyles.gray100,
@@ -111,86 +111,12 @@ class _StationDetailViewState extends State<StationDetailView> {
         )));
   }
 
-  Widget _bottomNavigationBar() {
-    return Container(
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Row(
-            children: [
-              _buildNavigationItem(
-                  SvgPicture.asset(
-                    "assets/icons/ic_marker_01.svg",
-                    width: 24,
-                    height: 24,
-                  ),
-                  "1"),
-              _buildNavigationItem(
-                  SvgPicture.asset(
-                    "assets/icons/ic_heart.svg",
-                    width: 24,
-                    height: 24,
-                  ),
-                  "2"),
-              _buildNavigationItem(
-                  SvgPicture.asset(
-                    "assets/icons/ic_message_circle_2.svg",
-                    width: 24,
-                    height: 24,
-                  ),
-                  "3"),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavigationItem(Widget icon, String text) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(0, 14, 0, 9),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            icon,
-            const SizedBox(height: 4),
-            Text(
-              text,
-              style: TextStyles.bodyXSmall.copyWith(
-                color: ColorStyles.gray500,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _laneIncludingStation(TourAreaDetail data) {
     return Column(
       children: [
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text("이 역이 포함된 노선들", style: TextStyles.headlineXSmall),
-                /* Row(
-                  children: [
-                    Text("더보기",
-                        style: TextStyles.bodyMedium
-                            .copyWith(color: ColorStyles.gray500)),
-                    SvgPicture.asset(
-                      "assets/icons/ic_arrow_right.svg",
-                      width: 20,
-                      height: 20,
-                    )
-                  ],
-                ) */
-              ]),
+          child: Text("이 역이 포함된 노선들", style: TextStyles.headlineXSmall),
         ),
         ...data.lanes.map(
           (lane) => LaneListItem(
