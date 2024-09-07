@@ -56,7 +56,10 @@ class _PhotobookDetailScreenState extends State<PhotobookDetailScreen> {
         child: BlocBuilder<PhotobookDetailBloc, PhotobookDetailState>(
           builder: (context, state) {
             if (state.isLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return const Material(
+                color: Colors.white,
+                child: Center(child: CircularProgressIndicator())
+              );
             }
 
             return Scaffold(
