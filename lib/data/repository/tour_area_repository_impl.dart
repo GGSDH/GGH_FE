@@ -12,14 +12,4 @@ class TourAreaRepositoryImpl implements TourAreaRepository {
   Future<ApiResult<TourAreaDetail>> getTourAreaDetail(int tourAreaId) {
     return _tourAreaDataSource.getTourAreaDetail(tourAreaId);
   }
-
-  @override
-  Future<ApiResult<bool>> likeTourArea(int tourAreaId) {
-    return _tourAreaDataSource.likeTourArea(tourAreaId);
-  }
-
-  @override
-  Future<ApiResult<bool>> unlikeTourArea(int tourAreaId) {
-    return _tourAreaDataSource.unlikeTourArea(tourAreaId);
-  }
 }

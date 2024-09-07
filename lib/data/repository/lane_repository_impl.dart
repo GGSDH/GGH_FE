@@ -12,14 +12,4 @@ class LaneRepositoryImpl implements LaneRepository {
   Future<ApiResult<LaneDetail>> getLaneDetail(int laneId) {
     return _laneDataSource.getLaneDetail(laneId);
   }
-
-  @override
-  Future<ApiResult<bool>> likeLane(int laneId) {
-    return _laneDataSource.likeLane(laneId);
-  }
-
-  @override
-  Future<ApiResult<bool>> unlikeLane(int laneId) {
-    return _laneDataSource.unlikeLane(laneId);
-  }
 }

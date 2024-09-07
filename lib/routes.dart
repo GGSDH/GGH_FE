@@ -50,6 +50,7 @@ import 'package:gyeonggi_express/ui/station/station_detail_screen.dart';
 import 'data/models/login_provider.dart';
 import 'data/models/sigungu_code.dart';
 import 'data/models/trip_theme.dart';
+import 'data/repository/favorite_repository.dart';
 import 'data/repository/tour_area_repository.dart';
 import 'data/repository/trip_repository.dart';
 
@@ -462,6 +463,7 @@ enum Routes {
               return BlocProvider(
                 create: (context) => StationDetailBloc(
                   tourAreaRepository: GetIt.instance<TourAreaRepository>(),
+                  favoriteRepository: GetIt.instance<FavoriteRepository>(),
                 )..add(InitializeStationDetail(stationId)),
                 child: StationDetailScreen(stationId: stationId)
               );

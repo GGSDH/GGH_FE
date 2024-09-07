@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gyeonggi_express/data/models/response/tour_area_related_lane.dart';
+import 'package:gyeonggi_express/data/repository/favorite_repository.dart';
 import 'package:gyeonggi_express/data/repository/tour_area_repository.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
@@ -101,10 +102,13 @@ final class StationDetailShowError extends StationDetailSideEffect {
 
 class StationDetailBloc extends SideEffectBloc<StationDetailEvent, StationDetailState, StationDetailSideEffect> {
   final TourAreaRepository _tourAreaRepository;
+  final FavoriteRepository _favoriteRepository;
 
   StationDetailBloc({
-    required TourAreaRepository tourAreaRepository}
-  ) : _tourAreaRepository = tourAreaRepository,
+    required TourAreaRepository tourAreaRepository,
+    required FavoriteRepository favoriteRepository,
+  }) : _tourAreaRepository = tourAreaRepository,
+        _favoriteRepository = favoriteRepository,
         super(StationDetailState.initial()) {
     on<InitializeStationDetail>(_onFetchStationDetail);
     on<LikeStation>(_onLikeStation);
@@ -141,7 +145,7 @@ class StationDetailBloc extends SideEffectBloc<StationDetailEvent, StationDetail
   Future<void> _onLikeStation(
     LikeStation event, Emitter<StationDetailState> emit
   ) async {
-    final response = await _tourAreaRepository.likeTourArea(event.stationId);
+    final response = await _favoriteRepository.addFavoriteTourArea(event.stationId);
     response.when(
       success: (data) {
         emit(state.copyWith(tourArea: state.tourArea.copyWith(likedByMe: true)));
@@ -155,7 +159,7 @@ class StationDetailBloc extends SideEffectBloc<StationDetailEvent, StationDetail
   Future<void> _onUnlikeStation(
     UnlikeStation event, Emitter<StationDetailState> emit
   ) async {
-    final response = await _tourAreaRepository.unlikeTourArea(event.stationId);
+    final response = await _favoriteRepository.removeFavoriteTourArea(event.stationId);
     response.when(
       success: (data) {
         emit(state.copyWith(tourArea: state.tourArea.copyWith(likedByMe: false)));
@@ -169,7 +173,7 @@ class StationDetailBloc extends SideEffectBloc<StationDetailEvent, StationDetail
   Future<void> _onLikeIncludingLane(
     LikeIncludingLane event, Emitter<StationDetailState> emit
   ) async {
-    final response = await _tourAreaRepository.likeTourArea(event.laneId);
+    final response = await _favoriteRepository.addFavoriteLane(event.laneId);
     response.when(
       success: (data) {
         emit(
@@ -192,7 +196,7 @@ class StationDetailBloc extends SideEffectBloc<StationDetailEvent, StationDetail
   Future<void> _onUnlikeIncludingLane(
     UnlikeIncludingLane event, Emitter<StationDetailState> emit
   ) async {
-    final response = await _tourAreaRepository.unlikeTourArea(event.laneId);
+    final response = await _favoriteRepository.removeFavoriteLane(event.laneId);
     response.when(
       success: (data) {
         emit(
@@ -215,7 +219,7 @@ class StationDetailBloc extends SideEffectBloc<StationDetailEvent, StationDetail
   Future<void> _onLikeRecommendation(
     LikeRecommendation event, Emitter<StationDetailState> emit
   ) async {
-    final response = await _tourAreaRepository.likeTourArea(event.stationId);
+    final response = await _favoriteRepository.addFavoriteTourArea(event.stationId);
     response.when(
       success: (data) {
         emit(
@@ -238,7 +242,7 @@ class StationDetailBloc extends SideEffectBloc<StationDetailEvent, StationDetail
   Future<void> _onUnlikeRecommendation(
     UnlikeRecommendation event, Emitter<StationDetailState> emit
   ) async {
-    final response = await _tourAreaRepository.unlikeTourArea(event.stationId);
+    final response = await _favoriteRepository.removeFavoriteTourArea(event.stationId);
     response.when(
       success: (data) {
         emit(

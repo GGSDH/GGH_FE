@@ -84,7 +84,7 @@ class HomeScreen extends StatelessWidget {
                     localRestaurants: state.localRestaurants,
                     onShowMore: () {
                       GoRouter.of(context).push(
-                          "${ Routes.home.path}/${Routes.localRestaurants.path}");
+                          "${Routes.home.path}/${Routes.localRestaurants.path}");
                     },
                     onItemClick: (p0) => {
                       GoRouter.of(context).push('${Routes.stations.path}/$p0')
@@ -408,19 +408,14 @@ class HomeScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 children: [
                   for (final restaurant in localRestaurants) ...[
-                    GestureDetector(
-                      onTap: () => {
-                        onItemClick(restaurant.tourAreaId),
-                      },
-                      child: _buildRestaurantItem(
-                        context: context,
-                        tourAreaId: restaurant.tourAreaId,
-                        name: restaurant.name,
-                        image: restaurant.image,
-                        likeCount: restaurant.likeCount,
-                        location: restaurant.sigunguValue,
-                        isLiked: restaurant.likedByMe,
-                      ),
+                    _buildRestaurantItem(
+                      context: context,
+                      tourAreaId: restaurant.tourAreaId,
+                      name: restaurant.name,
+                      image: restaurant.image,
+                      likeCount: restaurant.likeCount,
+                      location: restaurant.sigunguValue,
+                      isLiked: restaurant.likedByMe,
                     ),
                     const SizedBox(width: 14),
                   ]
@@ -447,7 +442,7 @@ class HomeScreen extends StatelessWidget {
       location: location,
       isLiked: isLiked,
       onClick: () {
-
+        GoRouter.of(context).push('${Routes.stations.path}/$tourAreaId');
       },
       onLike: () {
         context.read<HomeBloc>().add(HomeLikeTourArea(tourAreaId));
