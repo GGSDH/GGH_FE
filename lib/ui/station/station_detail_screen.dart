@@ -104,10 +104,14 @@ class StationDetailScreen extends StatelessWidget {
                             GoRouter.of(context).push("${Routes.stations.path}/$id")
                           },
                           onLike: (id) => {
-                            // handle like
+                            context.read<StationDetailBloc>().add(
+                              LikeRecommendation(id),
+                            )
                           },
                           onUnlike: (id) => {
-                            // handle unlike
+                            context.read<StationDetailBloc>().add(
+                              UnlikeRecommendation(id),
+                            )
                           },
                         ),
                       ],
@@ -219,6 +223,7 @@ class StationDetailScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
+            clipBehavior: Clip.none,  // This allows content to overflow outside the padding area
             child: Row(
               children: recommendations
                   .asMap()

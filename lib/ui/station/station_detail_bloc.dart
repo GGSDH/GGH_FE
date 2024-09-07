@@ -99,6 +99,8 @@ class StationDetailBloc extends SideEffectBloc<StationDetailEvent, StationDetail
     on<InitializeStationDetail>(_onFetchStationDetail);
     on<LikeStation>(_onLikeStation);
     on<UnlikeStation>(_onUnlikeStation);
+    on<LikeRecommendation>(_onLikeRecommendation);
+    on<UnlikeRecommendation>(_onUnlikeRecommendation);
   }
 
   Future<void> _onFetchStationDetail(
@@ -145,6 +147,52 @@ class StationDetailBloc extends SideEffectBloc<StationDetailEvent, StationDetail
     response.when(
       success: (data) {
         emit(state.copyWith(tourArea: state.tourArea.copyWith(likedByMe: false)));
+      },
+      apiError: (errorMessage, errorCode) {
+        produceSideEffect(StationDetailShowError(errorMessage));
+      },
+    );
+  }
+
+  Future<void> _onLikeRecommendation(
+    LikeRecommendation event, Emitter<StationDetailState> emit
+  ) async {
+    final response = await _tourAreaRepository.likeTourArea(event.stationId);
+    response.when(
+      success: (data) {
+        emit(
+          state.copyWith(
+            otherTourAreas: state.otherTourAreas
+                .map((tourArea) =>
+            tourArea.tourAreaId == event.stationId
+                ? tourArea.copyWith(likedByMe: true, likeCount: tourArea.likeCount + 1)
+                : tourArea
+            ).toList(),
+          ),
+        );
+      },
+      apiError: (errorMessage, errorCode) {
+        produceSideEffect(StationDetailShowError(errorMessage));
+      },
+    );
+  }
+
+  Future<void> _onUnlikeRecommendation(
+    UnlikeRecommendation event, Emitter<StationDetailState> emit
+  ) async {
+    final response = await _tourAreaRepository.unlikeTourArea(event.stationId);
+    response.when(
+      success: (data) {
+        emit(
+          state.copyWith(
+            otherTourAreas: state.otherTourAreas
+                .map((tourArea) =>
+            tourArea.tourAreaId == event.stationId
+                ? tourArea.copyWith(likedByMe: false, likeCount: tourArea.likeCount - 1)
+                : tourArea
+            ).toList(),
+          ),
+        );
       },
       apiError: (errorMessage, errorCode) {
         produceSideEffect(StationDetailShowError(errorMessage));
