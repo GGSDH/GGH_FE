@@ -84,7 +84,7 @@ class HomeScreen extends StatelessWidget {
                     localRestaurants: state.localRestaurants,
                     onShowMore: () {
                       GoRouter.of(context).push(
-                          "${Routes.home.path}/${Routes.localRestaurants.path}");
+                          "${ Routes.home.path}/${Routes.localRestaurants.path}");
                     },
                     onItemClick: (p0) => {
                       GoRouter.of(context).push('${Routes.stations.path}/$p0')

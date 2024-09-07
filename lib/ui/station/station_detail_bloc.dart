@@ -1,72 +1,154 @@
-import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gyeonggi_express/data/models/response/tour_area_detail_response.dart';
+import 'package:gyeonggi_express/data/models/response/tour_area_related_lane.dart';
 import 'package:gyeonggi_express/data/repository/tour_area_repository.dart';
+import 'package:side_effect_bloc/side_effect_bloc.dart';
 
-@immutable
-abstract class StationDetailEvent extends Equatable {
-  const StationDetailEvent();
+import '../../data/models/response/tour_area_response.dart';
+import '../../data/models/sigungu_code.dart';
+import '../../data/models/tour_content_type.dart';
+import '../../data/models/trip_theme.dart';
 
-  @override
-  List<Object> get props => [];
+final class StationDetailState {
+  final bool isLoading;
+  final TourAreaResponse tourArea;
+  final List<TourAreaRelatedLane> lanes;
+  final List<TourAreaResponse> otherTourAreas;
+
+  StationDetailState({
+    required this.isLoading,
+    required this.tourArea,
+    required this.lanes,
+    required this.otherTourAreas,
+  });
+
+  factory StationDetailState.initial() => StationDetailState(
+    isLoading: false,
+    tourArea: TourAreaResponse(
+      tourAreaId: 0,
+      name: "",
+      address: "",
+      image: "",
+      latitude: 0,
+      longitude: 0,
+      likeCount: 0,
+      likedByMe: false,
+      contentType: TourContentType.RESTAURANT,
+      tripTheme: TripTheme.NATURAL,
+      sigungu: SigunguCode.ANSAN,
+    ),
+    lanes: [],
+    otherTourAreas: [],
+  );
+
+  StationDetailState copyWith({
+    bool? isLoading,
+    TourAreaResponse? tourArea,
+    List<TourAreaRelatedLane>? lanes,
+    List<TourAreaResponse>? otherTourAreas,
+  }) {
+    return StationDetailState(
+      isLoading: isLoading ?? this.isLoading,
+      tourArea: tourArea ?? this.tourArea,
+      lanes: lanes ?? this.lanes,
+      otherTourAreas: otherTourAreas ?? this.otherTourAreas,
+    );
+  }
 }
 
-class FetchStationDetail extends StationDetailEvent {
+sealed class StationDetailEvent { }
+final class InitializeStationDetail extends StationDetailEvent {
   final int stationId;
 
-  const FetchStationDetail({required this.stationId});
+  InitializeStationDetail(this.stationId);
+}
+final class LikeStation extends StationDetailEvent {
+  final int stationId;
 
-  @override
-  List<Object> get props => [stationId];
+  LikeStation(this.stationId);
+}
+final class UnlikeStation extends StationDetailEvent {
+  final int stationId;
+
+  UnlikeStation(this.stationId);
+}
+final class LikeRecommendation extends StationDetailEvent {
+  final int stationId;
+
+  LikeRecommendation(this.stationId);
+}
+final class UnlikeRecommendation extends StationDetailEvent {
+  final int stationId;
+
+  UnlikeRecommendation(this.stationId);
 }
 
-@immutable
-abstract class StationDetailState extends Equatable {
-  const StationDetailState();
-
-  @override
-  List<Object> get props => [];
-}
-
-class StationDetailInitial extends StationDetailState {}
-
-class StationDetailLoading extends StationDetailState {}
-
-class StationDetailLoaded extends StationDetailState {
-  final TourAreaDetail data;
-  const StationDetailLoaded({required this.data});
-}
-
-class StationDetailError extends StationDetailState {
+sealed class StationDetailSideEffect { }
+final class StationDetailShowError extends StationDetailSideEffect {
   final String message;
 
-  const StationDetailError({required this.message});
-
-  @override
-  List<Object> get props => [message];
+  StationDetailShowError(this.message);
 }
 
-class StationDetailBloc extends Bloc<StationDetailEvent, StationDetailState> {
+class StationDetailBloc extends SideEffectBloc<StationDetailEvent, StationDetailState, StationDetailSideEffect> {
   final TourAreaRepository _tourAreaRepository;
 
-  StationDetailBloc(this._tourAreaRepository) : super(StationDetailInitial()) {
-    on<FetchStationDetail>(_onFetchStationDetail);
+  StationDetailBloc({
+    required TourAreaRepository tourAreaRepository}
+  ) : _tourAreaRepository = tourAreaRepository,
+        super(StationDetailState.initial()) {
+    on<InitializeStationDetail>(_onFetchStationDetail);
+    on<LikeStation>(_onLikeStation);
+    on<UnlikeStation>(_onUnlikeStation);
   }
 
   Future<void> _onFetchStationDetail(
-      FetchStationDetail event, Emitter<StationDetailState> emit) async {
-    emit(StationDetailLoading());
-    final result = await _tourAreaRepository.getTourAreaDetail(event.stationId);
-    result.when(
+    InitializeStationDetail event, Emitter<StationDetailState> emit
+  ) async {
+    emit(state.copyWith(isLoading: true));
+    final response = await _tourAreaRepository.getTourAreaDetail(event.stationId);
+    response.when(
       success: (data) {
-        emit(StationDetailLoaded(data: data));
+        emit(
+          state.copyWith(
+            isLoading: false,
+            tourArea: data.tourArea,
+            lanes: data.lanes,
+            otherTourAreas: data.otherTourAreas
+          )
+        );
       },
       apiError: (errorMessage, errorCode) {
-        emit(StationDetailError(message: errorMessage));
+        state.copyWith(isLoading: false);
+        produceSideEffect(StationDetailShowError(errorMessage));
       },
     );
   }
 
+  Future<void> _onLikeStation(
+    LikeStation event, Emitter<StationDetailState> emit
+  ) async {
+    final response = await _tourAreaRepository.likeTourArea(event.stationId);
+    response.when(
+      success: (data) {
+        emit(state.copyWith(tourArea: state.tourArea.copyWith(likedByMe: true)));
+      },
+      apiError: (errorMessage, errorCode) {
+        produceSideEffect(StationDetailShowError(errorMessage));
+      },
+    );
+  }
 
+  Future<void> _onUnlikeStation(
+    UnlikeStation event, Emitter<StationDetailState> emit
+  ) async {
+    final response = await _tourAreaRepository.unlikeTourArea(event.stationId);
+    response.when(
+      success: (data) {
+        emit(state.copyWith(tourArea: state.tourArea.copyWith(likedByMe: false)));
+      },
+      apiError: (errorMessage, errorCode) {
+        produceSideEffect(StationDetailShowError(errorMessage));
+      },
+    );
+  }
 }

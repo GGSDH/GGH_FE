@@ -15,4 +15,18 @@ class TourAreaDataSourceImpl extends TourAreaDataSource {
         () => _dio.get('v1/tour-area/$tourAreaId'),
         (data) => TourAreaDetail.fromJson(data as Map<String, dynamic>));
   }
+
+  @override
+  Future<ApiResult<bool>> likeTourArea(int tourAreaId) {
+    return _dio.makeRequest<bool>(
+        () => _dio.post('v1/tour-area/$tourAreaId/like'),
+        (data) => data as bool);
+  }
+
+  @override
+  Future<ApiResult<bool>> unlikeTourArea(int tourAreaId) {
+    return _dio.makeRequest<bool>(
+        () => _dio.post('v1/tour-area/$tourAreaId/unlike'),
+        (data) => data as bool);
+  }
 }

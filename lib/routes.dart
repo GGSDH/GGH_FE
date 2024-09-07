@@ -5,17 +5,17 @@ import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/data/repository/photobook_repository.dart';
 import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/router_observer.dart';
+import 'package:gyeonggi_express/ui/component/app/app_bottom_navigation_bar.dart';
 import 'package:gyeonggi_express/ui/favorite/favorite_screen.dart';
+import 'package:gyeonggi_express/ui/home/area_filter_screen.dart';
 import 'package:gyeonggi_express/ui/home/category_detail_bloc.dart';
 import 'package:gyeonggi_express/ui/home/category_detail_screen.dart';
-import 'package:gyeonggi_express/ui/component/app/app_bottom_navigation_bar.dart';
 import 'package:gyeonggi_express/ui/home/home_screen.dart';
 import 'package:gyeonggi_express/ui/home/local_restaruant_bloc.dart';
 import 'package:gyeonggi_express/ui/home/local_restaurant_screen.dart';
 import 'package:gyeonggi_express/ui/home/popular_destination_bloc.dart';
 import 'package:gyeonggi_express/ui/home/popular_destination_screen.dart';
 import 'package:gyeonggi_express/ui/home/recommended_lane_screen.dart';
-import 'package:gyeonggi_express/ui/home/area_filter_screen.dart';
 import 'package:gyeonggi_express/ui/lane/lane_detail_screen.dart';
 import 'package:gyeonggi_express/ui/login/login_screen.dart';
 import 'package:gyeonggi_express/ui/mypage/mypage_policy_screen.dart';
@@ -27,15 +27,15 @@ import 'package:gyeonggi_express/ui/photobook/add/add_photobook_loading_screen.d
 import 'package:gyeonggi_express/ui/photobook/add/add_photobook_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/add/add_photobook_select_period_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_bloc.dart';
-import 'package:gyeonggi_express/ui/photobook/phototicket/add_photo_ticket_bloc.dart';
-import 'package:gyeonggi_express/ui/photobook/phototicket/select_photo_ticket_bloc.dart';
-import 'package:gyeonggi_express/ui/photobook/phototicket/add_photo_ticket_screen.dart';
-import 'package:gyeonggi_express/ui/photobook/phototicket/select_photo_ticket_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_card_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_detail_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_image_list_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_map_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_screen.dart';
+import 'package:gyeonggi_express/ui/photobook/phototicket/add_photo_ticket_bloc.dart';
+import 'package:gyeonggi_express/ui/photobook/phototicket/add_photo_ticket_screen.dart';
+import 'package:gyeonggi_express/ui/photobook/phototicket/select_photo_ticket_bloc.dart';
+import 'package:gyeonggi_express/ui/photobook/phototicket/select_photo_ticket_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_lane_bloc.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_result_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_screen.dart';
@@ -44,11 +44,13 @@ import 'package:gyeonggi_express/ui/recommend/recommend_select_region_screen.dar
 import 'package:gyeonggi_express/ui/recommend/recommend_select_theme_screen.dart';
 import 'package:gyeonggi_express/ui/search/search_screen.dart';
 import 'package:gyeonggi_express/ui/splash/splash_screen.dart';
+import 'package:gyeonggi_express/ui/station/station_detail_bloc.dart';
 import 'package:gyeonggi_express/ui/station/station_detail_screen.dart';
 
 import 'data/models/login_provider.dart';
 import 'data/models/sigungu_code.dart';
 import 'data/models/trip_theme.dart';
+import 'data/repository/tour_area_repository.dart';
 import 'data/repository/trip_repository.dart';
 
 enum Routes {
@@ -457,7 +459,12 @@ enum Routes {
               if (stationId == null) {
                 return const Text('Invalid station ID');
               }
-              return StationDetailScreen(stationId: stationId);
+              return BlocProvider(
+                create: (context) => StationDetailBloc(
+                  tourAreaRepository: GetIt.instance<TourAreaRepository>(),
+                )..add(InitializeStationDetail(stationId)),
+                child: StationDetailScreen(stationId: stationId)
+              );
             }),
         GoRoute(
             path: '${Routes.lanes.path}/:laneId',
