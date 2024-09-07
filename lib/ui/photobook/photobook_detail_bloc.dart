@@ -115,18 +115,18 @@ class PhotobookDetailBloc extends SideEffectBloc<PhotobookDetailEvent, Photobook
 
       response.when(
         success: (data) {
-          final List<PhotobookDetailCard> cards = data.dailyPhotoGroup.expand((dailyGroup) {
-            return dailyGroup.hourlyPhotoGroups.map((hourlyGroup) {
-              final firstPhoto = hourlyGroup.photos.first;
+          final List<PhotobookDetailCard> cards = data.dailyPhotoGroup.map((dailyGroup) {
+            // 각 day의 hourlyPhotoGroups의 첫 번째 항목만 선택
+            final hourlyGroup = dailyGroup.hourlyPhotoGroups.first;
+            final firstPhoto = hourlyGroup.photos.first;
 
-              return PhotobookDetailCard(
-                id: firstPhoto.id,
-                date: dailyGroup.dateTime,
-                title: hourlyGroup.dominantLocation?.name ?? "",
-                location: hourlyGroup.dominantLocation,
-                filePathUrl: firstPhoto.path,
-              );
-            }).toList();
+            return PhotobookDetailCard(
+              id: firstPhoto.id,
+              date: dailyGroup.dateTime,
+              title: hourlyGroup.dominantLocation?.name ?? "",
+              location: hourlyGroup.dominantLocation,
+              filePathUrl: firstPhoto.path,
+            );
           }).toList();
 
           emit(
