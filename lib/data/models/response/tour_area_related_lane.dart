@@ -33,6 +33,24 @@ class TourAreaRelatedLane {
     required this.theme,
   });
 
+  TourAreaRelatedLane copyWith({
+    int? laneId,
+    String? name,
+    String? photo,
+    int? likeCount,
+    bool? likedByMe,
+    TripTheme? theme,
+  }) {
+    return TourAreaRelatedLane(
+      laneId: laneId ?? this.laneId,
+      name: name ?? this.name,
+      photo: photo ?? this.photo,
+      likeCount: likeCount ?? this.likeCount,
+      likedByMe: likedByMe ?? this.likedByMe,
+      theme: theme ?? this.theme,
+    );
+  }
+
   factory TourAreaRelatedLane.fromJson(Map<String, dynamic> json) =>
       _$TourAreaRelatedLaneFromJson(json);
 

@@ -14,4 +14,16 @@ class LaneDatasourceImpl implements LaneDatasource {
     return _dio.makeRequest<LaneDetail>(() => _dio.get('v1/lane/$laneId'),
         (data) => LaneDetail.fromJson(data as Map<String, dynamic>));
   }
+
+  @override
+  Future<ApiResult<bool>> likeLane(int laneId) {
+    return _dio.makeRequest<bool>(() => _dio.post('v1/lane/$laneId/like'),
+        (data) => data as bool);
+  }
+
+  @override
+  Future<ApiResult<bool>> unlikeLane(int laneId) {
+    return _dio.makeRequest<bool>(() => _dio.post('v1/lane/$laneId/unlike'),
+        (data) => data as bool);
+  }
 }

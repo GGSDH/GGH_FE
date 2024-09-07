@@ -42,80 +42,93 @@ class StationDetailScreen extends StatelessWidget {
               ),
             );
           } else {
-            return Material(
-              child: SafeArea(
-                child: Scaffold(
-                  backgroundColor: Colors.white,
-                  body: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        AppActionBar(
-                          rightText: "",
-                          onBackPressed: () => GoRouter.of(context).pop(),
-                          menuItems: [
-                            ActionBarMenuItem(
-                              icon: SvgPicture.asset(
-                                "assets/icons/ic_map.svg",
-                                width: 24,
-                                height: 24,
-                                colorFilter: const ColorFilter.mode(
-                                    Colors.black, BlendMode.srcIn),
-                              ),
-                              onPressed: () => print("map clicked"),
+            return Scaffold(
+              backgroundColor: Colors.white,
+              body: SafeArea(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      AppActionBar(
+                        rightText: "",
+                        onBackPressed: () => GoRouter.of(context).pop(),
+                        menuItems: [
+                          ActionBarMenuItem(
+                            icon: SvgPicture.asset(
+                              "assets/icons/ic_map.svg",
+                              width: 24,
+                              height: 24,
+                              colorFilter: const ColorFilter.mode(
+                                  Colors.black, BlendMode.srcIn),
                             ),
-                            ActionBarMenuItem(
-                              icon: SvgPicture.asset(
-                                (state.tourArea.likedByMe) ? "assets/icons/ic_heart_filled.svg" : "assets/icons/ic_heart.svg",
-                                width: 24,
-                                height: 24,
-                                colorFilter: ColorFilter.mode(
-                                    (state.tourArea.likedByMe) ? Colors.red : Colors.black, BlendMode.srcIn),
-                              ),
-                              onPressed: () => {
-                                if (state.tourArea.likedByMe) {
-                                  context.read<StationDetailBloc>().add(
-                                    UnlikeStation(state.tourArea.tourAreaId),
-                                  )
-                                } else {
-                                  context.read<StationDetailBloc>().add(
-                                    LikeStation(state.tourArea.tourAreaId),
-                                  )
-                                }
-                              },
+                            onPressed: () => print("map clicked"),
+                          ),
+                          ActionBarMenuItem(
+                            icon: SvgPicture.asset(
+                              (state.tourArea.likedByMe) ? "assets/icons/ic_heart_filled.svg" : "assets/icons/ic_heart.svg",
+                              width: 24,
+                              height: 24,
+                              colorFilter: ColorFilter.mode(
+                                  (state.tourArea.likedByMe) ? Colors.red : Colors.black, BlendMode.srcIn),
                             ),
-                          ],
-                        ),
-                        _imageViewer(state.tourArea.image),
-                        _stationHeader(state.tourArea),
-                        const Divider(
-                          color: ColorStyles.gray100,
-                          thickness: 1,
-                        ),
-                        if (state.lanes.isNotEmpty) ...[
-                          _laneIncludingStation(state.lanes),
-                          const Divider(
-                            color: ColorStyles.gray100,
-                            thickness: 1,
+                            onPressed: () => {
+                              if (state.tourArea.likedByMe) {
+                                context.read<StationDetailBloc>().add(
+                                  UnlikeStation(state.tourArea.tourAreaId),
+                                )
+                              } else {
+                                context.read<StationDetailBloc>().add(
+                                  LikeStation(state.tourArea.tourAreaId),
+                                )
+                              }
+                            },
                           ),
                         ],
-                        _nearbyRecommendations(
-                          recommendations: state.otherTourAreas,
+                      ),
+                      _imageViewer(state.tourArea.image),
+                      _stationHeader(state.tourArea),
+                      const Divider(
+                        color: ColorStyles.gray100,
+                        thickness: 1,
+                      ),
+                      if (state.lanes.isNotEmpty) ...[
+                        _laneIncludingStation(
+                          lanes: state.lanes,
                           onClick: (id) => {
-                            GoRouter.of(context).push("${Routes.stations.path}/$id")
+                            GoRouter.of(context).push("${Routes.lanes.path}/$id")
                           },
                           onLike: (id) => {
                             context.read<StationDetailBloc>().add(
-                              LikeRecommendation(id),
+                              LikeIncludingLane(id),
                             )
                           },
                           onUnlike: (id) => {
                             context.read<StationDetailBloc>().add(
-                              UnlikeRecommendation(id),
+                              UnlikeIncludingLane(id),
                             )
                           },
                         ),
+                        const Divider(
+                          color: ColorStyles.gray100,
+                          thickness: 1,
+                        ),
                       ],
-                    ),
+                      _nearbyRecommendations(
+                        recommendations: state.otherTourAreas,
+                        onClick: (id) => {
+                          GoRouter.of(context).push("${Routes.stations.path}/$id")
+                        },
+                        onLike: (id) => {
+                          context.read<StationDetailBloc>().add(
+                            LikeRecommendation(id),
+                          )
+                        },
+                        onUnlike: (id) => {
+                          context.read<StationDetailBloc>().add(
+                            UnlikeRecommendation(id),
+                          )
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -126,8 +139,14 @@ class StationDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _laneIncludingStation(List<TourAreaRelatedLane> lanes) {
+  Widget _laneIncludingStation({
+    required List<TourAreaRelatedLane> lanes,
+    required Function(int) onClick,
+    required Function(int) onLike,
+    required Function(int) onUnlike,
+  }) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -135,16 +154,16 @@ class StationDetailScreen extends StatelessWidget {
         ),
         ...lanes.map(
               (lane) => LaneListItem(
-            onClick: () => {},
-            onLike: () => {},
-            onUnlike: () => {},
+            onClick: () => onClick(lane.laneId),
+            onLike: () => onLike(lane.laneId),
+            onUnlike: () => onUnlike(lane.laneId),
             category: lane.theme.title,
             title: lane.name,
             description: '',
             image: lane.photo,
             period: '',
             likeCount: lane.likeCount,
-            isLiked: false,
+            isLiked: lane.likedByMe,
           ),
         ),
       ],

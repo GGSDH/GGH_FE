@@ -110,74 +110,79 @@ class DestinationItem extends StatelessWidget {
   Widget build(BuildContext context) {
     const double aspectRatio = 1.17;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min, // 추가된 부분: Column이 자식의 크기에 맞게 줄어들도록 설정
-      children: [
-        Stack(
-          children: [
-            AspectRatio(
-              aspectRatio: aspectRatio,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: CachedNetworkImage(
-                  imageUrl: destination.image ?? "",
-                  placeholder: (context, url) => const AppImagePlaceholder(width: double.infinity, height: 145),
-                  errorWidget: (context, url, error) => const AppImagePlaceholder(width: double.infinity, height: 145),
-                  width: double.infinity,
-                  height: 145,
-                  fit: BoxFit.cover,
+    return GestureDetector(
+      onTap: () {
+        GoRouter.of(context).push('/stations/${destination.tourAreaId}');
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min, // 추가된 부분: Column이 자식의 크기에 맞게 줄어들도록 설정
+        children: [
+          Stack(
+            children: [
+              AspectRatio(
+                aspectRatio: aspectRatio,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: CachedNetworkImage(
+                    imageUrl: destination.image ?? "",
+                    placeholder: (context, url) => const AppImagePlaceholder(width: double.infinity, height: 145),
+                    errorWidget: (context, url, error) => const AppImagePlaceholder(width: double.infinity, height: 145),
+                    width: double.infinity,
+                    height: 145,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
-            ),
-            Positioned(
-              top: 0,
-              left: 0,
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: const BoxDecoration(
-                  color: ColorStyles.gray800,
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(8), bottomRight: Radius.circular(8)),
-                ),
-                child: Text(
-                  '${destination.ranking}',
-                  style: TextStyles.titleXSmall.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
+              Positioned(
+                top: 0,
+                left: 0,
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: const BoxDecoration(
+                    color: ColorStyles.gray800,
+                    borderRadius: BorderRadius.only(topLeft: Radius.circular(8), bottomRight: Radius.circular(8)),
+                  ),
+                  child: Text(
+                    '${destination.ranking}',
+                    style: TextStyles.titleXSmall.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Text(
-          destination.name,
-          style: TextStyles.titleMedium.copyWith(color: ColorStyles.gray900, fontWeight: FontWeight.w600),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        const SizedBox(height: 2),
-        Row(
-          children: [
-            Text(
-              destination.sigunguValue,
-              style: TextStyles.bodyMedium.copyWith(
-                  color: ColorStyles.gray500,
-                  fontWeight: FontWeight.w400),
-            ),
-            const SizedBox(width: 4),
-            Text("|",
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            destination.name,
+            style: TextStyles.titleMedium.copyWith(color: ColorStyles.gray900, fontWeight: FontWeight.w600),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 2),
+          Row(
+            children: [
+              Text(
+                destination.sigunguValue,
                 style: TextStyles.bodyMedium.copyWith(
-                    color: ColorStyles.gray300,
-                    fontWeight: FontWeight.w400)),
-            const SizedBox(width: 4),
-            Text(
-              destination.category.title,
-              style: TextStyles.bodyMedium.copyWith(
-                  color: ColorStyles.gray500,
-                  fontWeight: FontWeight.w400),
-            )
-          ],
-        ),
-      ],
+                    color: ColorStyles.gray500,
+                    fontWeight: FontWeight.w400),
+              ),
+              const SizedBox(width: 4),
+              Text("|",
+                  style: TextStyles.bodyMedium.copyWith(
+                      color: ColorStyles.gray300,
+                      fontWeight: FontWeight.w400)),
+              const SizedBox(width: 4),
+              Text(
+                destination.category.title,
+                style: TextStyles.bodyMedium.copyWith(
+                    color: ColorStyles.gray500,
+                    fontWeight: FontWeight.w400),
+              )
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

@@ -71,6 +71,16 @@ final class UnlikeStation extends StationDetailEvent {
 
   UnlikeStation(this.stationId);
 }
+final class LikeIncludingLane extends StationDetailEvent {
+  final int laneId;
+
+  LikeIncludingLane(this.laneId);
+}
+final class UnlikeIncludingLane extends StationDetailEvent {
+  final int laneId;
+
+  UnlikeIncludingLane(this.laneId);
+}
 final class LikeRecommendation extends StationDetailEvent {
   final int stationId;
 
@@ -101,6 +111,8 @@ class StationDetailBloc extends SideEffectBloc<StationDetailEvent, StationDetail
     on<UnlikeStation>(_onUnlikeStation);
     on<LikeRecommendation>(_onLikeRecommendation);
     on<UnlikeRecommendation>(_onUnlikeRecommendation);
+    on<LikeIncludingLane>(_onLikeIncludingLane);
+    on<UnlikeIncludingLane>(_onUnlikeIncludingLane);
   }
 
   Future<void> _onFetchStationDetail(
@@ -147,6 +159,52 @@ class StationDetailBloc extends SideEffectBloc<StationDetailEvent, StationDetail
     response.when(
       success: (data) {
         emit(state.copyWith(tourArea: state.tourArea.copyWith(likedByMe: false)));
+      },
+      apiError: (errorMessage, errorCode) {
+        produceSideEffect(StationDetailShowError(errorMessage));
+      },
+    );
+  }
+
+  Future<void> _onLikeIncludingLane(
+    LikeIncludingLane event, Emitter<StationDetailState> emit
+  ) async {
+    final response = await _tourAreaRepository.likeTourArea(event.laneId);
+    response.when(
+      success: (data) {
+        emit(
+          state.copyWith(
+            lanes: state.lanes
+                .map((lane) =>
+            lane.laneId == event.laneId
+                ? lane.copyWith(likedByMe: true, likeCount: lane.likeCount + 1)
+                : lane
+            ).toList(),
+          ),
+        );
+      },
+      apiError: (errorMessage, errorCode) {
+        produceSideEffect(StationDetailShowError(errorMessage));
+      },
+    );
+  }
+
+  Future<void> _onUnlikeIncludingLane(
+    UnlikeIncludingLane event, Emitter<StationDetailState> emit
+  ) async {
+    final response = await _tourAreaRepository.unlikeTourArea(event.laneId);
+    response.when(
+      success: (data) {
+        emit(
+          state.copyWith(
+            lanes: state.lanes
+                .map((lane) =>
+            lane.laneId == event.laneId
+                ? lane.copyWith(likedByMe: false, likeCount: lane.likeCount - 1)
+                : lane
+            ).toList(),
+          ),
+        );
       },
       apiError: (errorMessage, errorCode) {
         produceSideEffect(StationDetailShowError(errorMessage));
