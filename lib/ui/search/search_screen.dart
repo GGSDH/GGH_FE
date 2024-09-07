@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:get_it/get_it.dart';
 import 'package:gyeonggi_express/data/models/response/keyword_search_result_response.dart';
 import 'package:gyeonggi_express/data/models/response/popular_keyword_response.dart';
+import 'package:gyeonggi_express/route_extension.dart';
+import 'package:gyeonggi_express/routes.dart';
 import 'package:gyeonggi_express/themes/color_styles.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
 import 'package:gyeonggi_express/ui/search/search_bloc.dart';
@@ -305,44 +307,55 @@ class SearchResults extends StatelessWidget {
             separatorBuilder: (context, index) => const SizedBox(height: 20),
             itemBuilder: (context, index) {
               final result = results[index];
-              return Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: ColorStyles.gray100,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Center(
-                      child: SvgPicture.asset(
-                        'assets/icons/ic_map_pin.svg',
-                        width: 24,
-                        height: 24,
+              return GestureDetector(
+                onTap: () {
+                  if (result.type == "TOUR_AREA") {
+                    GoRouter.of(context)
+                        .push('${Routes.stations.path}/${result.id}');
+                  } else if (result.type == "LANE") {
+                    GoRouter.of(context)
+                        .push('${Routes.lanes.path}/${result.id}');
+                  }
+                },
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: ColorStyles.gray100,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Center(
+                        child: SvgPicture.asset(
+                          'assets/icons/ic_map_pin.svg',
+                          width: 24,
+                          height: 24,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          result.name,
-                          style: TextStyles.titleMedium
-                              .copyWith(fontWeight: FontWeight.w600),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          "${result.tripThemeConstants} · ${result.sigunguCode}",
-                          style: TextStyles.bodySmall
-                              .copyWith(color: ColorStyles.gray600),
-                        ),
-                      ],
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            result.name,
+                            style: TextStyles.titleMedium
+                                .copyWith(fontWeight: FontWeight.w600),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "${result.tripThemeConstants.title} · ${result.sigunguCode.value}",
+                            style: TextStyles.bodySmall
+                                .copyWith(color: ColorStyles.gray600),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               );
             },
           ),

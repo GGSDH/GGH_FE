@@ -10,9 +10,10 @@ KeywordSearchResult _$KeywordSearchResultFromJson(Map<String, dynamic> json) =>
     KeywordSearchResult(
       id: (json['id'] as num).toInt(),
       type: json['type'] as String,
-      tripThemeConstants: json['tripThemeConstants'] as String,
+      tripThemeConstants:
+          TripTheme.fromJson(json['tripThemeConstants'] as String),
       name: json['name'] as String,
-      sigunguCode: json['sigunguCode'] as String,
+      sigunguCode: SigunguCode.fromJson(json['sigunguCode'] as String),
     );
 
 Map<String, dynamic> _$KeywordSearchResultToJson(
@@ -20,7 +21,7 @@ Map<String, dynamic> _$KeywordSearchResultToJson(
     <String, dynamic>{
       'id': instance.id,
       'type': instance.type,
-      'tripThemeConstants': instance.tripThemeConstants,
+      'tripThemeConstants': TripTheme.toJson(instance.tripThemeConstants),
       'name': instance.name,
-      'sigunguCode': instance.sigunguCode,
+      'sigunguCode': SigunguCode.toJson(instance.sigunguCode),
     };

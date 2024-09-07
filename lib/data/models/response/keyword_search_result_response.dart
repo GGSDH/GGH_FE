@@ -1,3 +1,5 @@
+import 'package:gyeonggi_express/data/models/sigungu_code.dart';
+import 'package:gyeonggi_express/data/models/trip_theme.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'keyword_search_result_response.g.dart';
@@ -10,14 +12,20 @@ class KeywordSearchResult {
   @JsonKey(name: 'type')
   final String type;
 
-  @JsonKey(name: 'tripThemeConstants')
-  final String tripThemeConstants;
+  @JsonKey(
+      name: 'tripThemeConstants',
+      fromJson: TripTheme.fromJson,
+      toJson: TripTheme.toJson)
+  final TripTheme tripThemeConstants;
 
   @JsonKey(name: 'name')
   final String name;
 
-  @JsonKey(name: 'sigunguCode')
-  final String sigunguCode;
+  @JsonKey(
+      name: 'sigunguCode',
+      fromJson: SigunguCode.fromJson,
+      toJson: SigunguCode.toJson)
+  final SigunguCode sigunguCode;
 
   KeywordSearchResult({
     required this.id,
