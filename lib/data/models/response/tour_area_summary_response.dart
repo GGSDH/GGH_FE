@@ -1,6 +1,8 @@
 import 'package:gyeonggi_express/data/models/sigungu_code.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../trip_theme.dart';
+
 part 'tour_area_summary_response.g.dart';
 
 @JsonSerializable()
@@ -32,6 +34,9 @@ class TourAreaSummary {
       toJson: SigunguCode.toJson)
   final SigunguCode sigunguCode;
 
+  @JsonKey(name: 'tripThemeConstants', fromJson: TripTheme.fromJson, toJson: TripTheme.toJson)
+  final TripTheme tripTheme;
+
   TourAreaSummary({
     required this.tourAreaId,
     required this.tourAreaName,
@@ -41,6 +46,7 @@ class TourAreaSummary {
     required this.likeCnt,
     required this.likedByMe,
     required this.sigunguCode,
+    required this.tripTheme,
   });
 
   factory TourAreaSummary.fromJson(Map<String, dynamic> json) =>
@@ -57,6 +63,7 @@ class TourAreaSummary {
     int? likeCnt,
     bool? likedByMe,
     SigunguCode? sigunguCode,
+    TripTheme? tripTheme,
   }) {
     return TourAreaSummary(
       tourAreaId: tourAreaId ?? this.tourAreaId,
@@ -67,6 +74,7 @@ class TourAreaSummary {
       likeCnt: likeCnt ?? this.likeCnt,
       likedByMe: likedByMe ?? this.likedByMe,
       sigunguCode: sigunguCode ?? this.sigunguCode,
+      tripTheme: tripTheme ?? this.tripTheme,
     );
   }
 }

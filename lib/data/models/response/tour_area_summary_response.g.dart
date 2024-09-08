@@ -16,6 +16,7 @@ TourAreaSummary _$TourAreaSummaryFromJson(Map<String, dynamic> json) =>
       likeCnt: (json['likeCnt'] as num).toInt(),
       likedByMe: json['likedByMe'] as bool,
       sigunguCode: SigunguCode.fromJson(json['sigunguCode'] as String),
+      tripTheme: TripTheme.fromJson(json['tripThemeConstants'] as String),
     );
 
 Map<String, dynamic> _$TourAreaSummaryToJson(TourAreaSummary instance) =>
@@ -28,4 +29,5 @@ Map<String, dynamic> _$TourAreaSummaryToJson(TourAreaSummary instance) =>
       'likeCnt': instance.likeCnt,
       'likedByMe': instance.likedByMe,
       'sigunguCode': SigunguCode.toJson(instance.sigunguCode),
+      'tripThemeConstants': TripTheme.toJson(instance.tripTheme),
     };

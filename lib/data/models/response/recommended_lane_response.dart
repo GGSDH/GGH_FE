@@ -1,5 +1,6 @@
-import 'package:gyeonggi_express/data/models/response/recommended_tour_area_response.dart';
 import 'package:json_annotation/json_annotation.dart';
+
+import 'lane_specific_response.dart';
 
 part 'recommended_lane_response.g.dart';
 
@@ -41,21 +42,4 @@ class DayPlan {
       _$DayPlanFromJson(json);
 
   Map<String, dynamic> toJson() => _$DayPlanToJson(this);
-}
-
-@JsonSerializable()
-class LaneSpecificResponse {
-  final int sequence;
-  @JsonKey(name: 'tourAreaResponse')
-  final RecommendedTourAreaResponse tourArea;
-
-  LaneSpecificResponse({
-    required this.sequence,
-    required this.tourArea,
-  });
-
-  factory LaneSpecificResponse.fromJson(Map<String, dynamic> json) =>
-      _$LaneSpecificResponseFromJson(json);
-
-  Map<String, dynamic> toJson() => _$LaneSpecificResponseToJson(this);
 }

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,11 +11,13 @@ import 'package:gyeonggi_express/ui/component/app/app_action_bar.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_lane_bloc.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
+import '../../data/models/response/lane_specific_response.dart';
 import '../../data/models/response/recommended_lane_response.dart';
-import '../../data/models/response/recommended_tour_area_response.dart';
+import '../../data/models/response/tour_area_summary_response.dart';
 import '../../data/models/trip_theme.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
+import '../../util/naver_map_util.dart';
 import '../component/app/app_image_plaeholder.dart';
 
 class RecommendResultScreen extends StatefulWidget {
@@ -37,8 +37,7 @@ class RecommendResultScreen extends StatefulWidget {
 }
 
 class _RecommendResultScreen extends State<RecommendResultScreen> {
-  final Completer<NaverMapController> _mapControllerCompleter =
-      Completer<NaverMapController>();
+  NaverMapController? _mapController;
   int _selectedDayIndex = 0;
 
   @override
@@ -139,7 +138,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
   Widget _mapViewWidget(RecommendedLaneResponse laneData) {
     return Stack(
       children: [
-        _NaverMapSection(mapControllerCompleter: _mapControllerCompleter),
+        _naverMapSection(),
         Positioned(
           left: 0,
           right: 0,
@@ -201,7 +200,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                       child: Row(
                         children: laneData.days[_selectedDayIndex].tourAreas
                             .map(
-                                (place) => _placeDetailItemInBottomSheet(place.tourArea))
+                                (place) => _placeDetailItemInBottomSheet(place.tourAreaResponse))
                             .toList(),
                       ),
                     )
@@ -270,6 +269,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                           onTap: () {
                             setState(() {
                               _selectedDayIndex = idx;
+                              _updateMapMarkers(laneData);
                             });
                             Navigator.pop(context);
                           },
@@ -352,7 +352,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
     );
   }
 
-  Widget _placeDetailItemInBottomSheet(RecommendedTourAreaResponse tourArea) {
+  Widget _placeDetailItemInBottomSheet(TourAreaSummary tourArea) {
     return SizedBox(
       width: 300,
       child: Column(
@@ -468,7 +468,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                       ),
                     ),
                     ...day.tourAreas.expand((area) => [
-                      _lanePlace(area.tourArea),
+                      _lanePlace(area.tourAreaResponse),
                       if (day.tourAreas.last != area) _laneDivider(),
                     ]),
                   ]),
@@ -481,7 +481,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
     );
   }
 
-  Widget _lanePlace(RecommendedTourAreaResponse place) {
+  Widget _lanePlace(TourAreaSummary place) {
     return Padding(
       padding: const EdgeInsets.only(left: 20),
       child: IntrinsicHeight(
@@ -560,21 +560,20 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        if (place.image.isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: CachedNetworkImage(
-                                imageUrl: place.image,
-                                placeholder: (context, url) => const AppImagePlaceholder(width: 240, height: 150),
-                                errorWidget: (context, url, error) => const AppImagePlaceholder(width: 240, height: 150),
-                                width: 240,
-                                height: 150,
-                                fit: BoxFit.cover
-                              ),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: CachedNetworkImage(
+                              imageUrl: place.image,
+                              placeholder: (context, url) => const AppImagePlaceholder(width: 240, height: 150),
+                              errorWidget: (context, url, error) => const AppImagePlaceholder(width: 240, height: 150),
+                              width: 240,
+                              height: 150,
+                              fit: BoxFit.cover
                             ),
                           ),
+                        ),
                       ],
                     ),
                   ),
@@ -587,29 +586,42 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
       ),
     );
   }
-}
 
-class _NaverMapSection extends StatelessWidget {
-  const _NaverMapSection({
-    required this.mapControllerCompleter
-  });
-
-  final Completer<NaverMapController> mapControllerCompleter;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _naverMapSection() {
     return NaverMap(
       forceGesture: true,
       options: const NaverMapViewOptions(
-        indoorEnable: true,
-        locationButtonEnable: false,
-        consumeSymbolTapEvents: false,
+      indoorEnable: true,
+      locationButtonEnable: false,
+      consumeSymbolTapEvents: false,
       ),
       onMapReady: (controller) {
-        mapControllerCompleter.complete(controller);
-
+      _mapController = controller;
+      _updateMapMarkers(context.read<RecommendLaneBloc>().state.data);
       },
     );
+  }
+
+  void _updateMapMarkers(RecommendedLaneResponse data) {
+    if (_mapController == null) return;
+
+    _mapController!.clearOverlays();
+    List<LaneSpecificResponse> selectedDayResponses = data.days
+        .firstWhere((dayPlan) => dayPlan.day == _selectedDayIndex + 1)
+        .tourAreas;
+    NaverMapUtil.addMarkersAndPathForLane(
+        _mapController!, selectedDayResponses, context);
+
+    // 카메라 위치 업데이트
+    if (selectedDayResponses.isNotEmpty) {
+      var firstPlace = selectedDayResponses.first.tourAreaResponse;
+      _mapController!.updateCamera(
+        NCameraUpdate.withParams(
+          target: NLatLng(firstPlace.latitude, firstPlace.longitude),
+          zoom: 14,
+        ),
+      );
+    }
   }
 }
 
@@ -620,3 +632,4 @@ String _formatDays(int days) {
     return "${days - 1}박 $days일";
   }
 }
+

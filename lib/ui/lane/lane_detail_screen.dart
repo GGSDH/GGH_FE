@@ -664,14 +664,12 @@ class _LaneDetailViewState extends State<LaneDetailView> {
     // 카메라 위치 업데이트
     if (selectedDayResponses.isNotEmpty) {
       var firstPlace = selectedDayResponses.first.tourAreaResponse;
-      if (firstPlace.latitude != null && firstPlace.longitude != null) {
-        _mapController!.updateCamera(
-          NCameraUpdate.withParams(
-            target: NLatLng(firstPlace.latitude!, firstPlace.longitude!),
-            zoom: 14,
-          ),
-        );
-      }
+      _mapController!.updateCamera(
+        NCameraUpdate.withParams(
+          target: NLatLng(firstPlace.latitude, firstPlace.longitude),
+          zoom: 14,
+        ),
+      );
     }
   }
 }

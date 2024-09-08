@@ -41,18 +41,3 @@ Map<String, dynamic> _$DayPlanToJson(DayPlan instance) => <String, dynamic>{
       'tripAreaNames': instance.tripAreaNames,
       'tourAreas': instance.tourAreas.map((e) => e.toJson()).toList(),
     };
-
-LaneSpecificResponse _$LaneSpecificResponseFromJson(
-        Map<String, dynamic> json) =>
-    LaneSpecificResponse(
-      sequence: (json['sequence'] as num).toInt(),
-      tourArea: RecommendedTourAreaResponse.fromJson(
-          json['tourAreaResponse'] as Map<String, dynamic>),
-    );
-
-Map<String, dynamic> _$LaneSpecificResponseToJson(
-        LaneSpecificResponse instance) =>
-    <String, dynamic>{
-      'sequence': instance.sequence,
-      'tourAreaResponse': instance.tourArea.toJson(),
-    };
