@@ -9,6 +9,7 @@ import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../data/models/sigungu_code.dart';
 import '../../data/repository/trip_repository.dart';
+import '../../data/repository/favorite_repository.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
@@ -23,24 +24,21 @@ class RecommendedLaneScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => RecommendedLaneBloc(
         tripRepository: GetIt.instance<TripRepository>(),
+        favoriteRepository: GetIt.instance<FavoriteRepository>(),
       )..add(RecommendedLaneInitialize()),
       child: BlocSideEffectListener<RecommendedLaneBloc,
           RecommendedLaneSideEffect>(
         listener: (context, sideEffect) {
           if (sideEffect is RecommendedLaneShowError) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(sideEffect.message),
-              ),
+              SnackBar(content: Text(sideEffect.message)),
             );
           }
         },
         child: BlocBuilder<RecommendedLaneBloc, RecommendedLaneState>(
           builder: (context, state) {
             if (state.isLoading) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
+              return const Center(child: CircularProgressIndicator());
             } else {
               return Scaffold(
                 body: Material(
@@ -75,15 +73,17 @@ class RecommendedLaneScreen extends StatelessWidget {
                               ElevatedButton(
                                 onPressed: () async {
                                   final result = await GoRouter.of(context)
-                                      .push<List<String>>(Uri(
-                                    path: Routes.areaFilter.path,
-                                    queryParameters: {
-                                      'selectedAreas': state
-                                          .selectedSigunguCodes
-                                          .map((e) => SigunguCode.toJson(e))
-                                          .join(','),
-                                    },
-                                  ).toString());
+                                      .push<List<String>>(
+                                    Uri(
+                                      path: Routes.areaFilter.path,
+                                      queryParameters: {
+                                        'selectedAreas': state
+                                            .selectedSigunguCodes
+                                            .map((e) => SigunguCode.toJson(e))
+                                            .join(','),
+                                      },
+                                    ).toString(),
+                                  );
 
                                   if (result != null) {
                                     context.read<RecommendedLaneBloc>().add(
@@ -130,17 +130,35 @@ class RecommendedLaneScreen extends StatelessWidget {
                           child: ListView.builder(
                             itemCount: state.lanes.length,
                             itemBuilder: (context, index) {
-                              return LaneListItem(
-                                onClick: () => {},
-                                onLike: () => {},
-                                onUnlike: () => {},
-                                category: state.lanes[index].category.title,
-                                title: state.lanes[index].laneName,
-                                description: '',
-                                image: state.lanes[index].image,
-                                period: "당일치기",
-                                likeCount: state.lanes[index].likeCount,
-                                isLiked: false,
+                              final lane = state.lanes[index];
+                              return InkWell(
+                                onTap: () {
+                                  GoRouter.of(context).push(
+                                      '${Routes.lanes.path}/${lane.laneId}');
+                                },
+                                child: LaneListItem(
+                                  onClick: () {
+                                    GoRouter.of(context).push(
+                                        '${Routes.lanes.path}/${lane.laneId}');
+                                  },
+                                  onLike: () {
+                                    context
+                                        .read<RecommendedLaneBloc>()
+                                        .add(LikeLane(lane.laneId));
+                                  },
+                                  onUnlike: () {
+                                    context
+                                        .read<RecommendedLaneBloc>()
+                                        .add(UnlikeLane(lane.laneId));
+                                  },
+                                  category: lane.category.title,
+                                  title: lane.laneName,
+                                  description: '',
+                                  image: lane.image,
+                                  period: lane.getPeriodString(),
+                                  likeCount: lane.likeCount,
+                                  isLiked: lane.likedByMe,
+                                ),
                               );
                             },
                           ),
