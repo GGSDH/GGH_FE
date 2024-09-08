@@ -352,99 +352,113 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
     );
   }
 
+  void _moveCameraToLocation(TourAreaSummary tourArea) {
+    if (_mapController != null) {
+      _mapController!.updateCamera(
+        NCameraUpdate.withParams(
+          target: NLatLng(tourArea.latitude, tourArea.longitude),
+          zoom: 13,
+        ),
+      );
+    }
+  }
+
   Widget _placeDetailItemInBottomSheet(TourAreaSummary tourArea) {
-    return SizedBox(
-      width: 300,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 20,
-                height: 20,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
+    return GestureDetector(
+      onTap: () => _moveCameraToLocation(tourArea),
+      child: SizedBox(
+        width: 300,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: const Color(0xFFFBB12C),
+                      width: 1,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    height: 1,
                     color: const Color(0xFFFBB12C),
-                    width: 1,
                   ),
                 ),
-              ),
-              Expanded(
-                child: Container(
-                  height: 1,
-                  color: const Color(0xFFFBB12C),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  GoRouter.of(context).push("${Routes.stations.path}/${tourArea.tourAreaId}");
-                },
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: CachedNetworkImage(
-                    imageUrl: tourArea.image,
-                    placeholder: (context, url) => const AppImagePlaceholder(width: 80, height: 80),
-                    errorWidget: (context, url, error) => const AppImagePlaceholder(width: 80, height: 80),
-                    height: 80,
-                    width: 80,
-                    fit: BoxFit.cover,
+              ],
+            ),
+            const SizedBox(height: 14),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    GoRouter.of(context).push("${Routes.stations.path}/${tourArea.tourAreaId}");
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: CachedNetworkImage(
+                      imageUrl: tourArea.image,
+                      placeholder: (context, url) => const AppImagePlaceholder(width: 80, height: 80),
+                      errorWidget: (context, url, error) => const AppImagePlaceholder(width: 80, height: 80),
+                      height: 80,
+                      width: 80,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 14),  // 텍스트와 이미지 간격을 위해 간격 추가
-              Flexible(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 7),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        tourArea.tourAreaName,
-                        style: TextStyles.titleMedium.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: ColorStyles.gray800),
-                        overflow: TextOverflow.ellipsis,  // 길면 줄임표로 처리
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        "${tourArea.sigunguCode.value} | ${tourArea.tripTheme.title}",
-                        style: TextStyles.bodyMedium.copyWith(
-                            color: ColorStyles.gray500,
-                            fontWeight: FontWeight.w400),
-                        overflow: TextOverflow.ellipsis,  // 길면 줄임표로 처리
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          SvgPicture.asset(
-                            "assets/icons/ic_heart_filled.svg",
-                            width: 18,
-                            height: 18,
-                          ),
-                          const SizedBox(width: 2),
-                          Text(
-                            tourArea.likeCnt.toString(),
-                            style: TextStyles.bodyXSmall.copyWith(
-                                color: ColorStyles.gray600,
-                                fontWeight: FontWeight.w400),
-                          ),
-                        ],
-                      ),
-                    ],
+                const SizedBox(width: 14),  // 텍스트와 이미지 간격을 위해 간격 추가
+                Flexible(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 7),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          tourArea.tourAreaName,
+                          style: TextStyles.titleMedium.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: ColorStyles.gray800),
+                          overflow: TextOverflow.ellipsis,  // 길면 줄임표로 처리
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          "${tourArea.sigunguCode.value} | ${tourArea.tripTheme.title}",
+                          style: TextStyles.bodyMedium.copyWith(
+                              color: ColorStyles.gray500,
+                              fontWeight: FontWeight.w400),
+                          overflow: TextOverflow.ellipsis,  // 길면 줄임표로 처리
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            SvgPicture.asset(
+                              "assets/icons/ic_heart_filled.svg",
+                              width: 18,
+                              height: 18,
+                            ),
+                            const SizedBox(width: 2),
+                            Text(
+                              tourArea.likeCnt.toString(),
+                              style: TextStyles.bodyXSmall.copyWith(
+                                  color: ColorStyles.gray600,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

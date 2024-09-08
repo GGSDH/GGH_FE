@@ -498,7 +498,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
 
   Widget _placeDetailItemInBottomSheet(TourAreaSummary laneTourArea) {
     return GestureDetector(
-      onTap: () => {_moveCameraToLocation(laneTourArea)},
+      onTap: () => _moveCameraToLocation(laneTourArea),
       child: SizedBox(
         width: 300,
         child: Column(
