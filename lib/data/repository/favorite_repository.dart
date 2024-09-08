@@ -9,4 +9,6 @@ abstract class FavoriteRepository {
   Future<ApiResult<bool>> removeFavoriteLane(int laneId);
   Future<ApiResult<bool>> addFavoriteTourArea(int tourAreaId);
   Future<ApiResult<bool>> removeFavoriteTourArea(int tourAreaId);
+  Future<ApiResult<bool>> addFavoriteAiLane(int laneId);
+  Future<ApiResult<bool>> removeFavoriteAiLane(int laneId);
 }

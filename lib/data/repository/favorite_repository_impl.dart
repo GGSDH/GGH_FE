@@ -1,5 +1,4 @@
 import 'package:gyeonggi_express/data/datasource/favorite_datasource.dart';
-import 'package:gyeonggi_express/data/datasource/favorite_datasource_impl.dart';
 import 'package:gyeonggi_express/data/models/api_result.dart';
 import 'package:gyeonggi_express/data/models/response/lane_response.dart';
 import 'package:gyeonggi_express/data/models/response/tour_area_summary_response.dart';
@@ -38,5 +37,15 @@ class FavoriteRepositoryImpl implements FavoriteRepository {
   @override
   Future<ApiResult<bool>> removeFavoriteTourArea(int tourAreaId) {
     return _favoriteDataSource.removeFavoriteTourArea(tourAreaId);
+  }
+
+  @override
+  Future<ApiResult<bool>> addFavoriteAiLane(int laneId) {
+    return _favoriteDataSource.addFavoriteAiLane(laneId);
+  }
+
+  @override
+  Future<ApiResult<bool>> removeFavoriteAiLane(int laneId) {
+    return _favoriteDataSource.removeFavoriteAiLane(laneId);
   }
 }

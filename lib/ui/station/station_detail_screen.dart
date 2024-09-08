@@ -84,18 +84,6 @@ class StationDetailScreen extends StatelessWidget {
                                     : "market://details?id=com.nhn.android.nmap";
                                 await launchUrl(Uri.parse(store), mode: LaunchMode.externalApplication);
                               }
-                              /*
-                              try {
-                                await launchUrl(
-                                  Uri.parse(url),
-                                  mode: LaunchMode.externalApplication,
-                                );
-                              } catch (e) {
-                                final store = Platform.isIOS
-                                    ? "http://itunes.apple.com/app/id311867728?mt=8"
-                                    : "market://details?id=com.nhn.android.nmap";
-                                launchUrl(Uri.parse(store), mode: LaunchMode.externalApplication);
-                              }*/
                             },
                           ),
                           ActionBarMenuItem(

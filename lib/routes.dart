@@ -234,6 +234,7 @@ enum Routes {
                         // Bloc 생성
                         final bloc = RecommendLaneBloc(
                           tripRepository: GetIt.instance<TripRepository>(),
+                          favoriteRepository: GetIt.instance<FavoriteRepository>(),
                         );
 
                         // 이벤트 추가

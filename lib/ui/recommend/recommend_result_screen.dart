@@ -15,7 +15,6 @@ import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../data/models/response/recommended_lane_response.dart';
 import '../../data/models/response/recommended_tour_area_response.dart';
-import '../../data/models/response/tour_area_response.dart';
 import '../../data/models/trip_theme.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
@@ -68,27 +67,32 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                     children: [
                       Column(
                         children: [
-                          SizedBox(
-                            height: 56,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 20), // 우측에 20dp 간격 추가
-                                  child: GestureDetector(
-                                    onTap: () => {
-                                      GoRouter.of(context).go(Routes.recommend.path)
-                                    },
-                                    child: SvgPicture.asset(
-                                      "assets/icons/ic_close_24px.svg",
-                                      width: 20,
-                                      height: 20,
-                                    ),
-                                  ),
+                          AppActionBar(
+                            onBackPressed: () {
+                              GoRouter.of(context).go(Routes.recommend.path);
+                            },
+                            menuItems: [
+                              ActionBarMenuItem(
+                                icon: SvgPicture.asset(
+                                  (state.isLikedByMe) ? "assets/icons/ic_heart_filled.svg" : "assets/icons/ic_heart.svg",
+                                  width: 24,
+                                  height: 24,
+                                  colorFilter: ColorFilter.mode(
+                                      (state.isLikedByMe) ? Colors.red : Colors.black, BlendMode.srcIn),
                                 ),
-                              ],
-                            ),
+                                onPressed: () => {
+                                  if (state.isLikedByMe) {
+                                    context.read<RecommendLaneBloc>().add(
+                                      RecommendLaneUnlike(state.data.id),
+                                    )
+                                  } else {
+                                    context.read<RecommendLaneBloc>().add(
+                                      RecommendLaneLike(state.data.id),
+                                    )
+                                  }
+                                },
+                              ),
+                            ],
                           ),
 
                           Padding(

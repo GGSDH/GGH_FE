@@ -53,4 +53,16 @@ class FavoriteDatasourceImpl implements FavoriteDataSource {
         () => _dio.post('v1/tour-area/$tourAreaId/unlike'),
         (data) => data as bool);
   }
+
+  @override
+  Future<ApiResult<bool>> addFavoriteAiLane(int laneId) {
+    return _dio.makeRequest<bool>(
+        () => _dio.post('v1/lane/aiLane/$laneId/like'), (data) => data as bool);
+  }
+
+  @override
+  Future<ApiResult<bool>> removeFavoriteAiLane(int laneId) {
+    return _dio.makeRequest<bool>(
+        () => _dio.post('v1/lane/aiLane/$laneId/unlike'), (data) => data as bool);
+  }
 }

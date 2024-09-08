@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
@@ -82,18 +80,6 @@ class _LaneDetailViewState extends State<LaneDetailView> {
                     ),
                     onPressed: () {},
                   ),
-                  ActionBarMenuItem(
-                    icon: SvgPicture.asset(
-                      "assets/icons/ic_share.svg",
-                      width: 24,
-                      height: 24,
-                      colorFilter: const ColorFilter.mode(
-                        ColorStyles.gray800,
-                        BlendMode.srcIn,
-                      ),
-                    ),
-                    onPressed: () {},
-                  )
                 ],
                 rightText: "",
               ),
