@@ -187,91 +187,132 @@ enum Routes {
                               create: (context) => CategoryDetailBloc(
                                 tripRepository:
                                     GetIt.instance<TripRepository>(),
+                                favoriteRepository:
+                                    GetIt.instance<FavoriteRepository>(),
                               ),
                               child: CategoryDetailScreen(category: category),
                             );
                           }),
                     ]),
-              ]
-            ),
-
-            StatefulShellBranch(
-              routes: [
-                GoRoute(
-                  path: Routes.recommend.path,
-                  name: Routes.recommend.name,
-                  builder: (context, state) => const RecommendScreen(),
-                  routes: [
-                    // BlocProvider를 상위에서 제공하여 하위 라우트들에 동일한 Bloc을 공유합니다.
-                    GoRoute(
-                      path: Routes.recommendSelectRegion.path,
-                      name: Routes.recommendSelectRegion.name,
-                      parentNavigatorKey: _rootNavigatorKey,
-                      builder: (context, state) => const RecommendSelectRegionScreen()
-                    ),
-                    GoRoute(
-                      path: Routes.recommendSelectPeriod.path,
-                      name: Routes.recommendSelectPeriod.name,
-                      parentNavigatorKey: _rootNavigatorKey,
-                      builder: (context, state) => RecommendSelectPeriodScreen(
-                        sigunguCodes: state.uri.queryParameters['selectedSigunguCodes']?.split(',').map((e) => SigunguCode.fromJson(e)).toList() ?? []
+              ]),
+              StatefulShellBranch(
+                routes: [
+                  GoRoute(
+                    path: Routes.recommend.path,
+                    name: Routes.recommend.name,
+                    builder: (context, state) => const RecommendScreen(),
+                    routes: [
+                      // BlocProvider를 상위에서 제공하여 하위 라우트들에 동일한 Bloc을 공유합니다.
+                      GoRoute(
+                          path: Routes.recommendSelectRegion.path,
+                          name: Routes.recommendSelectRegion.name,
+                          parentNavigatorKey: _rootNavigatorKey,
+                          builder: (context, state) =>
+                              const RecommendSelectRegionScreen()),
+                      GoRoute(
+                        path: Routes.recommendSelectPeriod.path,
+                        name: Routes.recommendSelectPeriod.name,
+                        parentNavigatorKey: _rootNavigatorKey,
+                        builder: (context, state) =>
+                            RecommendSelectPeriodScreen(
+                                sigunguCodes: state.uri
+                                        .queryParameters['selectedSigunguCodes']
+                                        ?.split(',')
+                                        .map((e) => SigunguCode.fromJson(e))
+                                        .toList() ??
+                                    []),
                       ),
-                    ),
-                    GoRoute(
-                      path: Routes.recommendSelectTheme.path,
-                      name: Routes.recommendSelectTheme.name,
-                      parentNavigatorKey: _rootNavigatorKey,
-                      builder: (context, state) => RecommendSelectThemeScreen(
-                        sigunguCodes: state.uri.queryParameters['selectedSigunguCodes']?.split(',').map((e) => SigunguCode.fromJson(e)).toList() ?? [],
-                        days: int.tryParse(state.uri.queryParameters['selectedDays'] ?? '') ?? 1
+                      GoRoute(
+                        path: Routes.recommendSelectTheme.path,
+                        name: Routes.recommendSelectTheme.name,
+                        parentNavigatorKey: _rootNavigatorKey,
+                        builder: (context, state) => RecommendSelectThemeScreen(
+                            sigunguCodes: state
+                                    .uri.queryParameters['selectedSigunguCodes']
+                                    ?.split(',')
+                                    .map((e) => SigunguCode.fromJson(e))
+                                    .toList() ??
+                                [],
+                            days: int.tryParse(
+                                    state.uri.queryParameters['selectedDays'] ??
+                                        '') ??
+                                1),
                       ),
-                    ),
-                    GoRoute(
-                      path: Routes.recommendResult.path,
-                      name: Routes.recommendResult.name,
-                      parentNavigatorKey: _rootNavigatorKey,
-                      builder: (context, state) {
-                        // Bloc 생성
-                        final bloc = RecommendLaneBloc(
-                          tripRepository: GetIt.instance<TripRepository>(),
-                          favoriteRepository: GetIt.instance<FavoriteRepository>(),
-                        );
+                      GoRoute(
+                          path: Routes.recommendResult.path,
+                          name: Routes.recommendResult.name,
+                          parentNavigatorKey: _rootNavigatorKey,
+                          builder: (context, state) {
+                            // Bloc 생성
+                            final bloc = RecommendLaneBloc(
+                              tripRepository: GetIt.instance<TripRepository>(),
+                              favoriteRepository:
+                                  GetIt.instance<FavoriteRepository>(),
+                            );
 
-                        // 이벤트 추가
-                        bloc.add(
-                          RecommendLaneInitialize(
-                              selectedSigunguCodes: state.uri.queryParameters['selectedSigunguCodes']?.split(',').map((e) => SigunguCode.fromJson(e)).toList() ?? [],
-                              selectedDays: int.tryParse(state.uri.queryParameters['selectedDays'] ?? '') ?? 1,
-                              selectedTripThemes: state.uri.queryParameters['selectedTripThemes']?.split(',').map((e) => TripTheme.fromJson(e)).toList() ?? []
-                          ),
-                        );
+                            // 이벤트 추가
+                            bloc.add(
+                              RecommendLaneInitialize(
+                                  selectedSigunguCodes: state
+                                          .uri
+                                          .queryParameters[
+                                              'selectedSigunguCodes']
+                                          ?.split(',')
+                                          .map((e) => SigunguCode.fromJson(e))
+                                          .toList() ??
+                                      [],
+                                  selectedDays: int.tryParse(
+                                          state.uri.queryParameters[
+                                                  'selectedDays'] ??
+                                              '') ??
+                                      1,
+                                  selectedTripThemes: state.uri
+                                          .queryParameters['selectedTripThemes']
+                                          ?.split(',')
+                                          .map((e) => TripTheme.fromJson(e))
+                                          .toList() ??
+                                      []),
+                            );
 
-                        return BlocProvider(
-                          create: (context) => bloc,
-                          child: RecommendResultScreen(
-                            sigunguCodes: state.uri.queryParameters['selectedSigunguCodes']?.split(',').map((e) => SigunguCode.fromJson(e)).toList() ?? [],
-                            days: int.tryParse(state.uri.queryParameters['selectedDays'] ?? '') ?? 1,
-                            tripThemes: state.uri.queryParameters['selectedTripThemes']?.split(',').map((e) => TripTheme.fromJson(e)).toList() ?? [],
-                          ),
-                        );
-                      }
-                    ),
-                  ],
-                ),
-              ],
-            ),
-
-            StatefulShellBranch(
+                            return BlocProvider(
+                              create: (context) => bloc,
+                              child: RecommendResultScreen(
+                                sigunguCodes: state.uri
+                                        .queryParameters['selectedSigunguCodes']
+                                        ?.split(',')
+                                        .map((e) => SigunguCode.fromJson(e))
+                                        .toList() ??
+                                    [],
+                                days: int.tryParse(state.uri
+                                            .queryParameters['selectedDays'] ??
+                                        '') ??
+                                    1,
+                                tripThemes: state.uri
+                                        .queryParameters['selectedTripThemes']
+                                        ?.split(',')
+                                        .map((e) => TripTheme.fromJson(e))
+                                        .toList() ??
+                                    [],
+                              ),
+                            );
+                          }),
+                    ],
+                  ),
+                ],
+              ),
+              StatefulShellBranch(
                 routes: [
                   GoRoute(
                     path: Routes.photobook.path,
                     name: Routes.photobook.name,
                     builder: (context, state) => BlocProvider(
-                      create: (context) => PhotobookBloc(
-                        photobookRepository: GetIt.instance<PhotobookRepository>(),
-                      )..add(FetchPhotobooks())..add(FetchPhotoTickets()),
-                      child: const Scaffold(body: PhotobookScreen())
-                    ),
+                        create: (context) => PhotobookBloc(
+                              photobookRepository:
+                                  GetIt.instance<PhotobookRepository>(),
+                            )
+                              ..add(FetchPhotobooks())
+                              ..add(FetchPhotoTickets()),
+                        child: const Scaffold(body: PhotobookScreen())),
                     routes: [
                       GoRoute(
                         path: Routes.addPhotobook.path,
@@ -333,10 +374,12 @@ enum Routes {
                                     state.uri.queryParameters['endDate'] ?? '';
                                 final location =
                                     state.uri.queryParameters['location'] ?? '';
-                                final selectedPhotoPath =
-                                    state.uri.queryParameters['selectedPhotoPath'] ?? '';
-                                final selectedPhotoId =
-                                    state.uri.queryParameters['selectedPhotoId'] ?? '';
+                                final selectedPhotoPath = state.uri
+                                        .queryParameters['selectedPhotoPath'] ??
+                                    '';
+                                final selectedPhotoId = state.uri
+                                        .queryParameters['selectedPhotoId'] ??
+                                    '';
 
                                 return BlocProvider(
                                   create: (context) => AddPhotoTicketBloc(
@@ -349,14 +392,12 @@ enum Routes {
                                       location,
                                       selectedPhotoPath,
                                       selectedPhotoId,
-                                    )
-                                  ),
+                                    )),
                                   child: const AddPhotoTicketScreen(),
                                 );
                               },
                             )
-                          ]
-                      ),
+                          ]),
                       GoRoute(
                           path: Routes.photobookCard.path,
                           name: Routes.photobookCard.name,
@@ -444,12 +485,13 @@ enum Routes {
                 return const Text('Invalid station ID');
               }
               return BlocProvider(
-                create: (context) => StationDetailBloc(
-                  tourAreaRepository: GetIt.instance<TourAreaRepository>(),
-                  favoriteRepository: GetIt.instance<FavoriteRepository>(),
-                )..add(InitializeStationDetail(stationId)),
-                child: StationDetailScreen(stationId: stationId)
-              );
+                  create: (context) => StationDetailBloc(
+                        tourAreaRepository:
+                            GetIt.instance<TourAreaRepository>(),
+                        favoriteRepository:
+                            GetIt.instance<FavoriteRepository>(),
+                      )..add(InitializeStationDetail(stationId)),
+                  child: StationDetailScreen(stationId: stationId));
             }),
         GoRoute(
             path: '${Routes.lanes.path}/:laneId',

@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gyeonggi_express/data/repository/favorite_repository.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../data/models/response/tour_area_response.dart';
@@ -6,15 +7,15 @@ import '../../data/models/sigungu_code.dart';
 import '../../data/models/trip_theme.dart';
 import '../../data/repository/trip_repository.dart';
 
-final class CategoryDetailState {
+class CategoryDetailState {
   final bool isLoading;
   final List<TourAreaResponse> tourAreas;
   final TripTheme selectedCategory;
   final List<SigunguCode> selectedSigunguCodes;
   final int totalCount;
-  final int pageNumber; // 현재 페이지 번호
-  final int pageSize; // 페이지 크기
-  final bool hasReachedMax; // 더 이상 데이터가 없는지 여부
+  final int pageNumber;
+  final int pageSize;
+  final bool hasReachedMax;
 
   CategoryDetailState({
     required this.isLoading,
@@ -28,15 +29,15 @@ final class CategoryDetailState {
   });
 
   factory CategoryDetailState.initial() => CategoryDetailState(
-    isLoading: false,
-    tourAreas: [],
-    selectedCategory: TripTheme.NATURAL,
-    selectedSigunguCodes: [],
-    totalCount: 0,
-    pageNumber: 0,
-    pageSize: 20,
-    hasReachedMax: false,
-  );
+        isLoading: false,
+        tourAreas: [],
+        selectedCategory: TripTheme.NATURAL,
+        selectedSigunguCodes: [],
+        totalCount: 0,
+        pageNumber: 0,
+        pageSize: 20,
+        hasReachedMax: false,
+      );
 
   CategoryDetailState copyWith({
     bool? isLoading,
@@ -61,43 +62,61 @@ final class CategoryDetailState {
   }
 }
 
-sealed class CategoryDetailEvent { }
-final class SelectCategory extends CategoryDetailEvent {
-  final TripTheme tripTheme;
+sealed class CategoryDetailEvent {}
 
+class SelectCategory extends CategoryDetailEvent {
+  final TripTheme tripTheme;
   SelectCategory(this.tripTheme);
 }
-final class SelectSigunguCodes extends CategoryDetailEvent {
-  final List<SigunguCode> sigunguCodes;
 
+class SelectSigunguCodes extends CategoryDetailEvent {
+  final List<SigunguCode> sigunguCodes;
   SelectSigunguCodes(this.sigunguCodes);
 }
-final class LoadMoreTourAreas extends CategoryDetailEvent { }
 
-sealed class CategoryDetailSideEffect { }
-final class CategoryDetailShowError extends CategoryDetailSideEffect {
+class LoadMoreTourAreas extends CategoryDetailEvent {}
+
+class LikeTourArea extends CategoryDetailEvent {
+  final int tourAreaId;
+  LikeTourArea(this.tourAreaId);
+}
+
+class UnlikeTourArea extends CategoryDetailEvent {
+  final int tourAreaId;
+  UnlikeTourArea(this.tourAreaId);
+}
+
+sealed class CategoryDetailSideEffect {}
+
+class CategoryDetailShowError extends CategoryDetailSideEffect {
   final String message;
-
   CategoryDetailShowError(this.message);
 }
 
-class CategoryDetailBloc extends SideEffectBloc<CategoryDetailEvent, CategoryDetailState, CategoryDetailSideEffect> {
+class CategoryDetailBloc extends SideEffectBloc<CategoryDetailEvent,
+    CategoryDetailState, CategoryDetailSideEffect> {
   final TripRepository _tripRepository;
+  final FavoriteRepository _favoriteRepository;
 
   CategoryDetailBloc({
     required TripRepository tripRepository,
-  }) : _tripRepository = tripRepository,
-       super(CategoryDetailState.initial()) {
+    required FavoriteRepository favoriteRepository,
+  })  : _tripRepository = tripRepository,
+        _favoriteRepository = favoriteRepository,
+        super(CategoryDetailState.initial()) {
     on<SelectCategory>(_onSelectCategory);
     on<SelectSigunguCodes>(_onSelectSigunguCodes);
     on<LoadMoreTourAreas>(_onLoadMoreTourAreas);
+    on<LikeTourArea>(_onLikeTourArea);
+    on<UnlikeTourArea>(_onUnlikeTourArea);
   }
 
   void _onSelectCategory(
     SelectCategory event,
     Emitter<CategoryDetailState> emit,
   ) async {
-    emit(state.copyWith(isLoading: true, selectedCategory: event.tripTheme, pageNumber: 0));
+    emit(state.copyWith(
+        isLoading: true, selectedCategory: event.tripTheme, pageNumber: 0));
 
     try {
       final response = await _tripRepository.getTourAreas(
@@ -108,7 +127,12 @@ class CategoryDetailBloc extends SideEffectBloc<CategoryDetailEvent, CategoryDet
 
       response.when(
         success: (data) {
-          emit(state.copyWith(isLoading: false, tourAreas: data.content, totalCount: data.totalElements, hasReachedMax: data.last));
+          emit(state.copyWith(
+            isLoading: false,
+            tourAreas: data.content,
+            totalCount: data.totalElements,
+            hasReachedMax: data.last,
+          ));
         },
         apiError: (errorMessage, errorCode) {
           emit(state.copyWith(isLoading: false));
@@ -125,18 +149,24 @@ class CategoryDetailBloc extends SideEffectBloc<CategoryDetailEvent, CategoryDet
     SelectSigunguCodes event,
     Emitter<CategoryDetailState> emit,
   ) async {
-    emit(state.copyWith(isLoading: true, selectedSigunguCodes: event.sigunguCodes));
+    emit(state.copyWith(
+        isLoading: true, selectedSigunguCodes: event.sigunguCodes));
 
     try {
       final response = await _tripRepository.getTourAreas(
         page: state.pageNumber,
         sigunguCodes: event.sigunguCodes,
-        tripTheme: state.selectedCategory
+        tripTheme: state.selectedCategory,
       );
 
       response.when(
         success: (data) {
-          emit(state.copyWith(isLoading: false, tourAreas: data.content, totalCount: data.totalElements, hasReachedMax: data.last));
+          emit(state.copyWith(
+            isLoading: false,
+            tourAreas: data.content,
+            totalCount: data.totalElements,
+            hasReachedMax: data.last,
+          ));
         },
         apiError: (errorMessage, errorCode) {
           emit(state.copyWith(isLoading: false));
@@ -161,7 +191,7 @@ class CategoryDetailBloc extends SideEffectBloc<CategoryDetailEvent, CategoryDet
       final response = await _tripRepository.getTourAreas(
         sigunguCodes: state.selectedSigunguCodes,
         tripTheme: state.selectedCategory,
-        page: state.pageNumber + 1
+        page: state.pageNumber + 1,
       );
 
       response.when(
@@ -184,5 +214,57 @@ class CategoryDetailBloc extends SideEffectBloc<CategoryDetailEvent, CategoryDet
       emit(state.copyWith(isLoading: false));
       produceSideEffect(CategoryDetailShowError(e.toString()));
     }
+  }
+
+  void _onLikeTourArea(
+    LikeTourArea event,
+    Emitter<CategoryDetailState> emit,
+  ) async {
+    final result =
+        await _favoriteRepository.addFavoriteTourArea(event.tourAreaId);
+    result.when(
+      success: (_) {
+        final updatedTourAreas = state.tourAreas.map((tourArea) {
+          if (tourArea.tourAreaId == event.tourAreaId) {
+            return tourArea.copyWith(
+              likeCount: tourArea.likeCount + 1,
+              likedByMe: true,
+            );
+          }
+          return tourArea;
+        }).toList();
+        emit(state.copyWith(tourAreas: updatedTourAreas));
+      },
+      apiError: (errorMessage, errorCode) {
+        produceSideEffect(
+            CategoryDetailShowError('Failed to like tour area: $errorMessage'));
+      },
+    );
+  }
+
+  void _onUnlikeTourArea(
+    UnlikeTourArea event,
+    Emitter<CategoryDetailState> emit,
+  ) async {
+    final result =
+        await _favoriteRepository.removeFavoriteTourArea(event.tourAreaId);
+    result.when(
+      success: (_) {
+        final updatedTourAreas = state.tourAreas.map((tourArea) {
+          if (tourArea.tourAreaId == event.tourAreaId) {
+            return tourArea.copyWith(
+              likeCount: tourArea.likeCount - 1,
+              likedByMe: false,
+            );
+          }
+          return tourArea;
+        }).toList();
+        emit(state.copyWith(tourAreas: updatedTourAreas));
+      },
+      apiError: (errorMessage, errorCode) {
+        produceSideEffect(CategoryDetailShowError(
+            'Failed to unlike tour area: $errorMessage'));
+      },
+    );
   }
 }
