@@ -1,76 +1,152 @@
-import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gyeonggi_express/data/models/response/lane_detail_response.dart';
-import 'package:gyeonggi_express/data/models/response/lane_specific_response.dart';
-import 'package:gyeonggi_express/data/models/response/tour_area_summary_response.dart';
+import 'package:gyeonggi_express/data/repository/favorite_repository.dart';
 import 'package:gyeonggi_express/data/repository/lane_repository.dart';
+import 'package:side_effect_bloc/side_effect_bloc.dart';
 
-abstract class LaneDetailEvent extends Equatable {
-  const LaneDetailEvent();
+import '../../data/models/trip_theme.dart';
 
-  @override
-  List<Object> get props => [];
-}
-
-class FetchLaneDetail extends LaneDetailEvent {
-  final int laneId;
-
-  const FetchLaneDetail(this.laneId);
-
-  @override
-  List<Object> get props => [laneId];
-}
-
-abstract class LaneDetailState extends Equatable {
-  const LaneDetailState();
-
-  @override
-  List<Object> get props => [];
-}
-
-class LaneDetailInitial extends LaneDetailState {}
-
-class LaneDetailLoading extends LaneDetailState {}
-
-class LaneDetailLoaded extends LaneDetailState {
+final class LaneDetailState {
+  final bool isLoading;
+  final bool isLikedByMe;
   final LaneDetail laneDetail;
 
-  const LaneDetailLoaded(this.laneDetail);
+  const LaneDetailState({
+    required this.isLoading,
+    required this.isLikedByMe,
+    required this.laneDetail,
+  });
 
-  @override
-  List<Object> get props => [laneDetail];
-}
-
-class LaneDetailError extends LaneDetailState {
-  final String message;
-
-  const LaneDetailError(this.message);
-
-  @override
-  List<Object> get props => [message];
-}
-
-class LaneDetailBloc extends Bloc<LaneDetailEvent, LaneDetailState> {
-  final LaneRepository laneRepository;
-
-  LaneDetailBloc(this.laneRepository) : super(LaneDetailInitial()) {
-    on<FetchLaneDetail>(_onFetchLaneDetail);
+  factory LaneDetailState.initial() {
+    return LaneDetailState(
+      isLoading: false,
+      isLikedByMe: false,
+      laneDetail: LaneDetail(
+        id: 0,
+        days: 0,
+        laneName: '',
+        image: '',
+        laneDescription: '',
+        category: TripTheme.RESTAURANT,
+        laneSpecificResponses: [],
+      ),
+    );
   }
 
-  Future<void> _onFetchLaneDetail(
-    FetchLaneDetail event,
+  LaneDetailState copyWith({
+    bool? isLoading,
+    bool? isLikedByMe,
+    LaneDetail? laneDetail,
+  }) {
+    return LaneDetailState(
+      isLoading: isLoading ?? this.isLoading,
+      isLikedByMe: isLikedByMe ?? this.isLikedByMe,
+      laneDetail: laneDetail ?? this.laneDetail,
+    );
+  }
+}
+
+sealed class LaneDetailEvent { }
+final class LaneDetailInitialize extends LaneDetailEvent {
+  final int laneId;
+
+  LaneDetailInitialize({
+    required this.laneId,
+  });
+}
+final class LaneDetailLike extends LaneDetailEvent {
+  final int laneId;
+
+  LaneDetailLike({
+    required this.laneId,
+  });
+}
+final class LaneDetailUnlike extends LaneDetailEvent {
+  final int laneId;
+
+  LaneDetailUnlike({
+    required this.laneId,
+  });
+}
+
+sealed class LaneDetailSideEffect { }
+final class LaneDetailShowError extends LaneDetailSideEffect {
+  final String message;
+
+  LaneDetailShowError(this.message);
+}
+
+class LaneDetailBloc extends SideEffectBloc<LaneDetailEvent, LaneDetailState, LaneDetailSideEffect> {
+  final LaneRepository _laneRepository;
+  final FavoriteRepository _favoriteRepository;
+
+  LaneDetailBloc({
+    required LaneRepository laneRepository,
+    required FavoriteRepository favoriteRepository,
+  }) : _laneRepository = laneRepository,
+       _favoriteRepository = favoriteRepository,
+       super(LaneDetailState.initial()) {
+    on<LaneDetailInitialize>(_onInitialize);
+    on<LaneDetailLike>(_onLikeLane);
+    on<LaneDetailUnlike>(_onUnlikeLane);
+  }
+
+  void _onInitialize(
+    LaneDetailInitialize event,
     Emitter<LaneDetailState> emit,
   ) async {
-    emit(LaneDetailLoading());
+    emit(state.copyWith(isLoading: true));
+
     try {
-      final result = await laneRepository.getLaneDetail(event.laneId);
-      result.when(
-        success: (data) => emit(LaneDetailLoaded(data)),
-        apiError: (errorMessage, errorCode) =>
-            emit(LaneDetailError(errorMessage)),
+      final response = await _laneRepository.getLaneDetail(event.laneId);
+      response.when(
+        success: (data) => emit(state.copyWith(laneDetail: data)),
+        apiError: (errorMessage, errorCode) {
+          emit(state.copyWith(isLoading: false));
+          produceSideEffect(LaneDetailShowError(errorMessage));
+        }
       );
     } catch (e) {
-      emit(LaneDetailError(e.toString()));
+      emit(state.copyWith(isLoading: false));
+      produceSideEffect(LaneDetailShowError(e.toString()));
+    }
+  }
+
+  void _onLikeLane(
+    LaneDetailLike event,
+    Emitter<LaneDetailState> emit,
+  ) async {
+    try {
+      final response = await _favoriteRepository.addFavoriteLane(event.laneId);
+      response.when(
+        success: (data) {
+          emit(state.copyWith(isLikedByMe: true));
+        },
+        apiError: (errorMessage, errorCode) {
+          produceSideEffect(LaneDetailShowError(errorMessage));
+        }
+      );
+    } catch (e) {
+      produceSideEffect(LaneDetailShowError(e.toString()));
+    }
+  }
+
+  void _onUnlikeLane(
+    LaneDetailUnlike event,
+    Emitter<LaneDetailState> emit,
+  ) async {
+    try {
+      final response = await _favoriteRepository.removeFavoriteLane(event.laneId);
+      response.when(
+        success: (data) {
+          emit(state.copyWith(isLikedByMe: false));
+        },
+        apiError: (errorMessage, errorCode) {
+          produceSideEffect(LaneDetailShowError(errorMessage));
+        }
+      );
+    } catch (e) {
+      produceSideEffect(LaneDetailShowError(e.toString()));
     }
   }
 }

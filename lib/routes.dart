@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:gyeonggi_express/data/repository/lane_repository.dart';
 import 'package:gyeonggi_express/data/repository/photobook_repository.dart';
 import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/router_observer.dart';
@@ -17,6 +18,7 @@ import 'package:gyeonggi_express/ui/home/local_restaurant_screen.dart';
 import 'package:gyeonggi_express/ui/home/popular_destination_bloc.dart';
 import 'package:gyeonggi_express/ui/home/popular_destination_screen.dart';
 import 'package:gyeonggi_express/ui/home/recommended_lane_screen.dart';
+import 'package:gyeonggi_express/ui/lane/lane_detail_bloc.dart';
 import 'package:gyeonggi_express/ui/lane/lane_detail_screen.dart';
 import 'package:gyeonggi_express/ui/login/login_screen.dart';
 import 'package:gyeonggi_express/ui/mypage/mypage_screen.dart';
@@ -501,7 +503,13 @@ enum Routes {
               if (laneId == null) {
                 return const Text('Invalid lane ID');
               }
-              return LaneDetailScreen(laneId: laneId);
+              return BlocProvider(
+                create: (context) => LaneDetailBloc(
+                  laneRepository: GetIt.instance<LaneRepository>(),
+                  favoriteRepository: GetIt.instance<FavoriteRepository>(),
+                )..add(LaneDetailInitialize(laneId: laneId)),
+                child: LaneDetailScreen(laneId: laneId)
+              );
             }),
         GoRoute(
           path: Routes.webView.path,

@@ -1,114 +1,113 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/data/models/response/lane_detail_response.dart';
 import 'package:gyeonggi_express/data/models/response/lane_specific_response.dart';
 import 'package:gyeonggi_express/data/models/response/tour_area_summary_response.dart';
-import 'package:gyeonggi_express/data/repository/lane_repository.dart';
+import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/themes/color_styles.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
 import 'package:gyeonggi_express/ui/component/app/app_action_bar.dart';
 import 'package:gyeonggi_express/ui/lane/lane_detail_bloc.dart';
 import 'package:gyeonggi_express/util/naver_map_util.dart';
+import 'package:side_effect_bloc/side_effect_bloc.dart';
 
-class LaneDetailScreen extends StatelessWidget {
+import '../../routes.dart';
+import '../component/app/app_image_plaeholder.dart';
+
+class LaneDetailScreen extends StatefulWidget {
   final int laneId;
 
   const LaneDetailScreen({super.key, required this.laneId});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => LaneDetailBloc(
-        GetIt.instance<LaneRepository>(),
-      )..add(FetchLaneDetail(laneId)),
-      child: Scaffold(
-        body: BlocBuilder<LaneDetailBloc, LaneDetailState>(
-          builder: (context, state) {
-            if (state is LaneDetailLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is LaneDetailLoaded) {
-              return LaneDetailView(laneDetail: state.laneDetail);
-            } else if (state is LaneDetailError) {
-              return Center(child: Text('Error: ${state.message}'));
-            }
-            return const Center(child: Text('Select a lane to view details'));
-          },
-        ),
-      ),
-    );
-  }
+  _LaneDetailScreenState createState() => _LaneDetailScreenState();
 }
 
-class LaneDetailView extends StatefulWidget {
-  final LaneDetail laneDetail;
-
-  const LaneDetailView({super.key, required this.laneDetail});
-
-  @override
-  State<StatefulWidget> createState() => _LaneDetailViewState();
-}
-
-class _LaneDetailViewState extends State<LaneDetailView> {
+class _LaneDetailScreenState extends State<LaneDetailScreen> {
   NaverMapController? _mapController;
   int _selectedDayIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      child: SafeArea(
-        child: DefaultTabController(
-          length: 2,
-          child: Column(
-            children: [
-              AppActionBar(
-                onBackPressed: () => GoRouter.of(context).pop(),
-                menuItems: [
-                  ActionBarMenuItem(
-                    icon: SvgPicture.asset(
-                      "assets/icons/ic_heart.svg",
-                      width: 24,
-                      height: 24,
-                      colorFilter: const ColorFilter.mode(
-                        ColorStyles.gray800,
-                        BlendMode.srcIn,
+    return BlocSideEffectListener<LaneDetailBloc, LaneDetailSideEffect>(
+      listener: (context, sideEffect) {
+        if (sideEffect is LaneDetailShowError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(sideEffect.message),
+            ),
+          );
+        }
+      },
+      child: BlocBuilder<LaneDetailBloc, LaneDetailState>(
+        builder: (context, state) {
+          return Scaffold(
+            body: Material(
+              color: Colors.white,
+              child: SafeArea(
+                child: DefaultTabController(
+                  length: 2,
+                  child: Column(
+                    children: [
+                      AppActionBar(
+                        onBackPressed: () => GoRouter.of(context).pop(),
+                        menuItems: [
+                          ActionBarMenuItem(
+                            icon: SvgPicture.asset(
+                              (state.isLikedByMe) ? "assets/icons/ic_heart_filled.svg" : "assets/icons/ic_heart.svg",
+                              width: 24,
+                              height: 24,
+                              colorFilter: ColorFilter.mode(
+                                  (state.isLikedByMe) ? Colors.red : Colors.black, BlendMode.srcIn),
+                            ),
+                            onPressed: () => {
+                              if (state.isLikedByMe) {
+                                context.read<LaneDetailBloc>().add(
+                                  LaneDetailUnlike(laneId: state.laneDetail.id)
+                                )
+                              } else {
+                                context.read<LaneDetailBloc>().add(
+                                  LaneDetailLike(laneId: state.laneDetail.id),
+                                )
+                              }
+                            },
+                          ),
+                        ],
                       ),
-                    ),
-                    onPressed: () {},
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(24, 4, 24, 20),
+                        child: _laneHeader(state.laneDetail),
+                      ),
+                      const TabBar(
+                        tabs: [
+                          Tab(text: '코스'),
+                          Tab(text: '지도'),
+                        ],
+                        indicatorColor: ColorStyles.gray900,
+                        indicatorWeight: 1,
+                        indicatorSize: TabBarIndicatorSize.tab,
+                        labelColor: Colors.black,
+                        unselectedLabelColor: ColorStyles.gray400,
+                      ),
+                      Expanded(
+                        child: TabBarView(
+                          children: [
+                            _laneCourseWidget(state.laneDetail),
+                            _mapViewWidget(state.laneDetail),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-                rightText: "",
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 4, 24, 20),
-                child: _laneHeader(),
-              ),
-              const TabBar(
-                tabs: [
-                  Tab(text: '코스'),
-                  Tab(text: '지도'),
-                ],
-                indicatorColor: ColorStyles.gray900,
-                indicatorWeight: 1,
-                indicatorSize: TabBarIndicatorSize.tab,
-                labelColor: Colors.black,
-                unselectedLabelColor: ColorStyles.gray400,
-              ),
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    _laneCourseWidget(widget.laneDetail),
-                    _mapViewWidget(widget.laneDetail),
-                  ],
                 ),
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -132,7 +131,7 @@ class _LaneDetailViewState extends State<LaneDetailView> {
           ),
           onMapReady: (controller) {
             _mapController = controller;
-            _updateMapMarkers();
+            _updateMapMarkers(laneDetail);
           },
         ),
         Positioned(
@@ -181,7 +180,9 @@ class _LaneDetailViewState extends State<LaneDetailView> {
                           ),
                         ),
                         GestureDetector(
-                          onTap: _showBottomSheet,
+                          onTap: () {
+                            _showBottomSheet(laneDetail);
+                          },
                           child: SvgPicture.asset(
                             "assets/icons/ic_chevron_right.svg",
                             width: 24,
@@ -194,7 +195,7 @@ class _LaneDetailViewState extends State<LaneDetailView> {
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
-                        children: widget.laneDetail
+                        children: laneDetail
                             .getTourAreasByDay(_selectedDayIndex + 1)
                             .map((tourArea) =>
                                 _placeDetailItemInBottomSheet(tourArea))
@@ -211,7 +212,7 @@ class _LaneDetailViewState extends State<LaneDetailView> {
     );
   }
 
-  void _showBottomSheet() {
+  void _showBottomSheet(LaneDetail laneDetail) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -240,7 +241,7 @@ class _LaneDetailViewState extends State<LaneDetailView> {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: ListView.builder(
                     shrinkWrap: true,
-                    itemCount: widget.laneDetail.getDaysWithTourAreas().length,
+                    itemCount: laneDetail.getDaysWithTourAreas().length,
                     itemBuilder: (context, idx) {
                       bool isSelected = idx == _selectedDayIndex;
                       return Padding(
@@ -267,7 +268,7 @@ class _LaneDetailViewState extends State<LaneDetailView> {
                             setState(() {
                               _selectedDayIndex = idx;
                             });
-                            _updateMapMarkers();
+                            _updateMapMarkers(laneDetail);
                             Navigator.pop(context);
                           },
                         ),
@@ -283,7 +284,7 @@ class _LaneDetailViewState extends State<LaneDetailView> {
     );
   }
 
-  Widget _laneHeader() {
+  Widget _laneHeader(LaneDetail state) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -300,7 +301,7 @@ class _LaneDetailViewState extends State<LaneDetailView> {
               borderRadius: BorderRadius.circular(100),
             ),
             child: Text(
-              widget.laneDetail.laneName,
+              state.laneName,
               style: TextStyles.titleXSmall.copyWith(
                 color: const Color(0xFFFBB12C),
                 fontWeight: FontWeight.w600,
@@ -310,14 +311,14 @@ class _LaneDetailViewState extends State<LaneDetailView> {
         ),
         const SizedBox(height: 14),
         Text(
-          widget.laneDetail.laneName,
+          state.laneName,
           style: TextStyles.title2ExtraLarge.copyWith(
             fontWeight: FontWeight.w600,
             color: ColorStyles.gray900,
           ),
         ),
         Text(
-          widget.laneDetail.laneName,
+          state.laneName,
           style: TextStyles.bodyLarge.copyWith(
             fontWeight: FontWeight.w400,
             color: ColorStyles.gray500,
@@ -419,54 +420,59 @@ class _LaneDetailViewState extends State<LaneDetailView> {
                     ],
                   ),
                   const SizedBox(height: 14),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        if (laneTourArea.image.isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: Image.network(
-                                laneTourArea.image,
-                                fit: BoxFit.cover,
+                  GestureDetector(
+                    onTap: () {
+                      GoRouter.of(context).push('${Routes.stations.path}/${laneTourArea.tourAreaId}');
+                    },
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          if (laneTourArea.image.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(right: 10),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: Image.network(
+                                  laneTourArea.image,
+                                  fit: BoxFit.cover,
+                                  height: 150,
+                                  width: 240,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      height: 150,
+                                      width: 240,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey,
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: const Center(
+                                        child: Icon(Icons.image_not_supported,
+                                            color: Colors.white60),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            )
+                          else
+                            Padding(
+                              padding: const EdgeInsets.only(right: 10),
+                              child: Container(
                                 height: 150,
                                 width: 240,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    height: 150,
-                                    width: 240,
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey,
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: const Center(
-                                      child: Icon(Icons.image_not_supported,
-                                          color: Colors.white60),
-                                    ),
-                                  );
-                                },
+                                decoration: BoxDecoration(
+                                  color: Colors.grey,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: const Center(
+                                  child: Icon(Icons.image_not_supported,
+                                      color: Colors.white60),
+                                ),
                               ),
                             ),
-                          )
-                        else
-                          Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: Container(
-                              height: 150,
-                              width: 240,
-                              decoration: BoxDecoration(
-                                color: Colors.grey,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: const Center(
-                                child: Icon(Icons.image_not_supported,
-                                    color: Colors.white60),
-                              ),
-                            ),
-                          ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -480,12 +486,10 @@ class _LaneDetailViewState extends State<LaneDetailView> {
   }
 
   void _moveCameraToLocation(TourAreaSummary tourArea) {
-    if (_mapController != null &&
-        tourArea.latitude != null &&
-        tourArea.longitude != null) {
+    if (_mapController != null) {
       _mapController!.updateCamera(
         NCameraUpdate.withParams(
-          target: NLatLng(tourArea.latitude!, tourArea.longitude!),
+          target: NLatLng(tourArea.latitude, tourArea.longitude),
           zoom: 13,
         ),
       );
@@ -525,25 +529,22 @@ class _LaneDetailViewState extends State<LaneDetailView> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                (laneTourArea.image.isNotEmpty)
-                    ? Image.network(
-                        laneTourArea.image,
-                        fit: BoxFit.cover,
-                        height: 80,
-                        width: 80,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            height: 80,
-                            width: 80,
-                            color: Colors.grey,
-                          );
-                        },
-                      )
-                    : Container(
-                        height: 80,
-                        width: 80,
-                        color: Colors.grey,
-                      ),
+                GestureDetector(
+                  onTap: () {
+                    GoRouter.of(context).push("${Routes.stations.path}/${laneTourArea.tourAreaId}");
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: CachedNetworkImage(
+                      imageUrl: laneTourArea.image,
+                      placeholder: (context, url) => const AppImagePlaceholder(width: 80, height: 80),
+                      errorWidget: (context, url, error) => const AppImagePlaceholder(width: 80, height: 80),
+                      height: 80,
+                      width: 80,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
                 Expanded(
                   child: Padding(
                     padding:
@@ -650,12 +651,11 @@ class _LaneDetailViewState extends State<LaneDetailView> {
     );
   }
 
-  void _updateMapMarkers() {
+  void _updateMapMarkers(LaneDetail laneDetail) {
     if (_mapController == null) return;
 
     _mapController!.clearOverlays();
-    List<LaneSpecificResponse> selectedDayResponses = widget
-        .laneDetail.laneSpecificResponses
+    List<LaneSpecificResponse> selectedDayResponses = laneDetail.laneSpecificResponses
         .where((response) => response.day == _selectedDayIndex + 1)
         .toList();
     NaverMapUtil.addMarkersAndPathForLane(

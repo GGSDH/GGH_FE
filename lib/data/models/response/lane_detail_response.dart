@@ -45,6 +45,26 @@ class LaneDetail {
       _$LaneDetailFromJson(json);
   Map<String, dynamic> toJson() => _$LaneDetailToJson(this);
 
+  LaneDetail copyWith({
+    int? id,
+    int? days,
+    String? laneName,
+    String? image,
+    String? laneDescription,
+    TripTheme? category,
+    List<LaneSpecificResponse>? laneSpecificResponses,
+  }) {
+    return LaneDetail(
+      id: id ?? this.id,
+      days: days ?? this.days,
+      laneName: laneName ?? this.laneName,
+      image: image ?? this.image,
+      laneDescription: laneDescription ?? this.laneDescription,
+      category: category ?? this.category,
+      laneSpecificResponses: laneSpecificResponses ?? this.laneSpecificResponses,
+    );
+  }
+
   List<TourAreaSummary> getTourAreasByDay(int day) {
     List<LaneSpecificResponse> responsesForDay =
         laneSpecificResponses.where((response) => response.day == day).toList();
