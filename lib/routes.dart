@@ -6,6 +6,7 @@ import 'package:gyeonggi_express/data/repository/photobook_repository.dart';
 import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/router_observer.dart';
 import 'package:gyeonggi_express/ui/component/app/app_bottom_navigation_bar.dart';
+import 'package:gyeonggi_express/ui/component/web_view_screen.dart';
 import 'package:gyeonggi_express/ui/favorite/favorite_screen.dart';
 import 'package:gyeonggi_express/ui/home/area_filter_screen.dart';
 import 'package:gyeonggi_express/ui/home/category_detail_bloc.dart';
@@ -18,7 +19,6 @@ import 'package:gyeonggi_express/ui/home/popular_destination_screen.dart';
 import 'package:gyeonggi_express/ui/home/recommended_lane_screen.dart';
 import 'package:gyeonggi_express/ui/lane/lane_detail_screen.dart';
 import 'package:gyeonggi_express/ui/login/login_screen.dart';
-import 'package:gyeonggi_express/ui/mypage/mypage_policy_screen.dart';
 import 'package:gyeonggi_express/ui/mypage/mypage_screen.dart';
 import 'package:gyeonggi_express/ui/mypage/mypage_setting_screen.dart';
 import 'package:gyeonggi_express/ui/onboarding/onboarding_complete_screen.dart';
@@ -71,6 +71,8 @@ enum Routes {
   stations,
   lanes,
 
+  webView,
+
   search,
 
   favorites,
@@ -96,9 +98,7 @@ enum Routes {
   addPhotoTicket,
 
   myPage,
-  myPageSetting,
-  myPageServicePolicy,
-  myPagePrivacyPolicy;
+  myPageSetting;
 
   static final GlobalKey<NavigatorState> _rootNavigatorKey =
       GlobalKey<NavigatorState>();
@@ -429,24 +429,6 @@ enum Routes {
                                       state.uri.queryParameters['loginType'] ??
                                           ""),
                                 )),
-                        GoRoute(
-                          path: Routes.myPageServicePolicy.path,
-                          name: Routes.myPageServicePolicy.name,
-                          parentNavigatorKey: _rootNavigatorKey,
-                          builder: (context, state) => MyPagePolicyScreen(
-                            title: state.uri.queryParameters['title'] ?? "",
-                            url: state.uri.queryParameters['url'] ?? "",
-                          ),
-                        ),
-                        GoRoute(
-                          path: Routes.myPagePrivacyPolicy.path,
-                          name: Routes.myPagePrivacyPolicy.name,
-                          parentNavigatorKey: _rootNavigatorKey,
-                          builder: (context, state) => MyPagePolicyScreen(
-                            title: state.uri.queryParameters['title'] ?? "",
-                            url: state.uri.queryParameters['url'] ?? "",
-                          ),
-                        ),
                       ]),
                 ],
               ),
@@ -478,6 +460,14 @@ enum Routes {
               }
               return LaneDetailScreen(laneId: laneId);
             }),
+        GoRoute(
+          path: Routes.webView.path,
+          name: Routes.webView.name,
+          builder: (context, state) => WebViewScreen(
+            title: state.uri.queryParameters['title'] ?? "",
+            url: state.uri.queryParameters['url'] ?? "",
+          ),
+        ),
         GoRoute(
           path: Routes.search.path,
           name: Routes.search.name,

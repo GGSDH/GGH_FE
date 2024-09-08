@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -9,9 +10,9 @@ import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/ui/login/component/page_content.dart';
 import 'package:gyeonggi_express/ui/login/login_bloc.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
+import '../../constants.dart';
 import '../../data/repository/auth_repository.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
@@ -144,14 +145,24 @@ class LoginScreenContent extends StatelessWidget {
                 style: TextStyles.bodySmall.copyWith(
                   color: ColorStyles.gray500,
                 ),
-                children: const <TextSpan>[
+                children: <TextSpan>[
                   TextSpan(
                     text: '서비스 이용약관', // 밑줄 텍스트
-                    style: TextStyle(
+                    style: const TextStyle(
                       decoration: TextDecoration.underline,
                     ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        GoRouter.of(context).push(Uri(
+                            path:
+                            Routes.webView.path,
+                            queryParameters: {
+                              'title': '서비스 이용약관',
+                              'url': Constants.TERMS_OF_USE_URL
+                            }).toString());
+                      },
                   ),
-                  TextSpan(
+                  const TextSpan(
                     text: '에 동의한 것으로 간주합니다', // 기본 스타일이 적용된 텍스트
                   ),
                 ],

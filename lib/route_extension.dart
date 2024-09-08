@@ -29,6 +29,8 @@ extension RoutesExtension on Routes {
         return '/search';
       case Routes.favorites:
         return '/favorites';
+      case Routes.webView:
+        return '/web-view';
 
       case Routes.stations:
         return '/stations';
@@ -73,10 +75,6 @@ extension RoutesExtension on Routes {
         return '/mypage';
       case Routes.myPageSetting:
         return 'setting';
-      case Routes.myPageServicePolicy:
-        return 'policy/service';
-      case Routes.myPagePrivacyPolicy:
-        return 'policy/privacy';
     }
   }
 }

@@ -6,11 +6,11 @@ import 'package:webview_flutter/webview_flutter.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
 
-class MyPagePolicyScreen extends StatefulWidget {
+class WebViewScreen extends StatefulWidget {
   final String title;
   final String url;
 
-  const MyPagePolicyScreen({
+  const WebViewScreen({
     required this.title,
     required this.url,
     super.key
@@ -20,7 +20,7 @@ class MyPagePolicyScreen extends StatefulWidget {
   State<StatefulWidget> createState() => _MyPagePolicyScreenState();
 }
 
-class _MyPagePolicyScreenState extends State<MyPagePolicyScreen> {
+class _MyPagePolicyScreenState extends State<WebViewScreen> {
   late WebViewController _webViewController;
 
   @override
@@ -45,7 +45,7 @@ class _MyPagePolicyScreenState extends State<MyPagePolicyScreen> {
             ),
             Expanded(
               child: WebViewWidget(
-                controller: _webViewController
+                  controller: _webViewController
               ),
             )
           ],
@@ -76,7 +76,7 @@ class _MyPagePolicyScreenState extends State<MyPagePolicyScreen> {
             child: Text(
               widget.title,
               style: TextStyles.titleLarge.copyWith(
-                color: ColorStyles.gray900
+                  color: ColorStyles.gray900
               ),
             ),
           ),

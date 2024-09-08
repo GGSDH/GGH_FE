@@ -68,7 +68,7 @@ class MyPageScreen extends StatelessWidget {
                 onTapLocInfoTerms: () {
                   GoRouter.of(context).push(Uri(
                       path:
-                          "${Routes.myPage.path}/${Routes.myPagePrivacyPolicy.path}",
+                          Routes.webView.path,
                       queryParameters: {
                         'title': '위치정보 이용약관',
                         'url': Constants.LOCATION_INFO_TERMS_URL
@@ -77,7 +77,7 @@ class MyPageScreen extends StatelessWidget {
                 onTapPrivacyPolicy: () {
                   GoRouter.of(context).push(Uri(
                       path:
-                          "${Routes.myPage.path}/${Routes.myPagePrivacyPolicy.path}",
+                          Routes.webView.path,
                       queryParameters: {
                         'title': '개인정보 처리방침',
                         'url': Constants.PRIVACY_POLICY_URL
@@ -86,7 +86,7 @@ class MyPageScreen extends StatelessWidget {
                 onTapTermsOfUse: () {
                   GoRouter.of(context).push(Uri(
                       path:
-                          "${Routes.myPage.path}/${Routes.myPageServicePolicy.path}",
+                          Routes.webView.path,
                       queryParameters: {
                         'title': '서비스 이용약관',
                         'url': Constants.TERMS_OF_USE_URL
