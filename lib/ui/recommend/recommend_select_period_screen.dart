@@ -45,6 +45,7 @@ class _RecommendSelectPeriodScreenState extends State<RecommendSelectPeriodScree
 
     return Scaffold(
         body: Material(
+          color: Colors.white,
             child: SafeArea(
       child: Stack(
         children: [

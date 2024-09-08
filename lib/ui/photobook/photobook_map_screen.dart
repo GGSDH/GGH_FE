@@ -49,6 +49,7 @@ class _PhotobookMapScreenState extends State<PhotobookMapScreen> {
             }
 
             return Scaffold(
+              backgroundColor: Colors.white,
               body: SafeArea(
                 child: Column(
                   children: [

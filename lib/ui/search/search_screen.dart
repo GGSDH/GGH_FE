@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/data/models/response/keyword_search_result_response.dart';
 import 'package:gyeonggi_express/data/models/response/popular_keyword_response.dart';
 import 'package:gyeonggi_express/route_extension.dart';
@@ -41,6 +41,7 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
     return PopScope(
       canPop: true,
       child: Material(
+        color: Colors.white,
         child: Scaffold(
           resizeToAvoidBottomInset: false,
           body: SafeArea(

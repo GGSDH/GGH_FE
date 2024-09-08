@@ -63,6 +63,7 @@ class _PhotobookDetailScreenState extends State<PhotobookDetailScreen> {
             }
 
             return Scaffold(
+              backgroundColor: Colors.white,
               body: SafeArea(
                 child: Column(
                   children: [
