@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,6 +14,7 @@ import 'package:gyeonggi_express/ui/component/lane/lane_list_item.dart';
 import 'package:gyeonggi_express/ui/component/restaurant/restaurant_list_item.dart';
 import 'package:gyeonggi_express/ui/station/station_detail_bloc.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../data/models/response/tour_area_response.dart';
 import '../../routes.dart';
@@ -60,7 +63,40 @@ class StationDetailScreen extends StatelessWidget {
                               colorFilter: const ColorFilter.mode(
                                   Colors.black, BlendMode.srcIn),
                             ),
-                            onPressed: () => print("map clicked"),
+                            onPressed: () async {
+                              String formattedLatitude = state.tourArea.latitude.toStringAsFixed(6);
+                              String formattedLongitude = state.tourArea.longitude.toStringAsFixed(6);
+                              String encodedTourArea = Uri.encodeComponent(state.tourArea.name);
+
+                              final url = "nmap://route/public?dlat=$formattedLatitude&dlng=$formattedLongitude&dname=$encodedTourArea&appname=com.ggsdh.gyeonggiexpress";
+
+                              print(url);
+
+                              final canLaunch = await canLaunchUrl(Uri.parse(url));
+                              if (canLaunch) {
+                                await launchUrl(
+                                  Uri.parse(url),
+                                  mode: LaunchMode.externalApplication,
+                                );
+                              } else {
+                                final store = Platform.isIOS
+                                    ? "http://itunes.apple.com/app/id311867728?mt=8"
+                                    : "market://details?id=com.nhn.android.nmap";
+                                await launchUrl(Uri.parse(store), mode: LaunchMode.externalApplication);
+                              }
+                              /*
+                              try {
+                                await launchUrl(
+                                  Uri.parse(url),
+                                  mode: LaunchMode.externalApplication,
+                                );
+                              } catch (e) {
+                                final store = Platform.isIOS
+                                    ? "http://itunes.apple.com/app/id311867728?mt=8"
+                                    : "market://details?id=com.nhn.android.nmap";
+                                launchUrl(Uri.parse(store), mode: LaunchMode.externalApplication);
+                              }*/
+                            },
                           ),
                           ActionBarMenuItem(
                             icon: SvgPicture.asset(
