@@ -383,15 +383,20 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: CachedNetworkImage(
-                  imageUrl: tourArea.image,
-                  placeholder: (context, url) => const AppImagePlaceholder(width: 80, height: 80),
-                  errorWidget: (context, url, error) => const AppImagePlaceholder(width: 80, height: 80),
-                  height: 80,
-                  width: 80,
-                  fit: BoxFit.cover,
+              GestureDetector(
+                onTap: () {
+                  GoRouter.of(context).push("${Routes.stations.path}/${tourArea.tourAreaId}");
+                },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: CachedNetworkImage(
+                    imageUrl: tourArea.image,
+                    placeholder: (context, url) => const AppImagePlaceholder(width: 80, height: 80),
+                    errorWidget: (context, url, error) => const AppImagePlaceholder(width: 80, height: 80),
+                    height: 80,
+                    width: 80,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               const SizedBox(width: 14),  // 텍스트와 이미지 간격을 위해 간격 추가
@@ -556,25 +561,30 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                     ],
                   ),
                   const SizedBox(height: 14),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 10),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: CachedNetworkImage(
-                              imageUrl: place.image,
-                              placeholder: (context, url) => const AppImagePlaceholder(width: 240, height: 150),
-                              errorWidget: (context, url, error) => const AppImagePlaceholder(width: 240, height: 150),
-                              width: 240,
-                              height: 150,
-                              fit: BoxFit.cover
+                  GestureDetector(
+                    onTap: () {
+                      GoRouter.of(context).push("${Routes.stations.path}/${place.tourAreaId}");
+                    },
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: CachedNetworkImage(
+                                imageUrl: place.image,
+                                placeholder: (context, url) => const AppImagePlaceholder(width: 240, height: 150),
+                                errorWidget: (context, url, error) => const AppImagePlaceholder(width: 240, height: 150),
+                                width: 240,
+                                height: 150,
+                                fit: BoxFit.cover
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 20),
