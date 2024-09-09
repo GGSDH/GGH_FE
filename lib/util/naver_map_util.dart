@@ -1,8 +1,10 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:gyeonggi_express/data/models/response/lane_specific_response.dart';
 import 'package:gyeonggi_express/ui/ext/file_path_extension.dart';
+
 import '../data/models/response/photobook_response.dart';
 import '../themes/color_styles.dart';
 import '../ui/component/app/app_image_plaeholder.dart';
@@ -169,13 +171,9 @@ class NaverMapUtil {
             id: 'lane_${laneResponse.sequence}',
             position: currentLocation,
             icon: markerIcon,
-            size: const Size(48, 48),
+            size: const Size(30, 30),
           );
           controller.addOverlay(marker);
-
-          final circleMarker = _createCircleMarker(
-              'lane_${laneResponse.sequence}', currentLocation);
-          controller.addOverlay(circleMarker);
         } catch (e) {
           print(
               'Error creating marker for sequence ${laneResponse.sequence}: $e');
@@ -188,7 +186,7 @@ class NaverMapUtil {
       final pathOverlay = NPathOverlay(
         id: 'lane_path',
         coords: pathCoords,
-        width: 8,
+        width: 2,
         color: ColorStyles.primary,
       );
       controller.addOverlay(pathOverlay);
