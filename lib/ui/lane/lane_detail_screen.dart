@@ -428,49 +428,20 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
-                          if (laneTourArea.image.isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.only(right: 10),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(20),
-                                child: Image.network(
-                                  laneTourArea.image,
-                                  fit: BoxFit.cover,
-                                  height: 150,
-                                  width: 240,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Container(
-                                      height: 150,
-                                      width: 240,
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey,
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      child: const Center(
-                                        child: Icon(Icons.image_not_supported,
-                                            color: Colors.white60),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            )
-                          else
-                            Padding(
-                              padding: const EdgeInsets.only(right: 10),
-                              child: Container(
-                                height: 150,
+                          Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: CachedNetworkImage(
+                                imageUrl: laneTourArea.image,
+                                placeholder: (context, url) => const AppImagePlaceholder(width: 150, height: 230),
+                                errorWidget: (context, url, error) => const AppImagePlaceholder(width: 150, height: 230),
                                 width: 240,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey,
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: const Center(
-                                  child: Icon(Icons.image_not_supported,
-                                      color: Colors.white60),
-                                ),
-                              ),
+                                height: 150,
+                                fit: BoxFit.cover
+                              )
                             ),
+                          )
                         ],
                       ),
                     ),
