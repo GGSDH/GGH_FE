@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gyeonggi_express/data/models/sigungu_code.dart';
+import 'package:gyeonggi_express/data/repository/favorite_repository.dart';
 import 'package:gyeonggi_express/data/repository/trip_repository.dart';
 import 'package:gyeonggi_express/ui/ext/throttle_util.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
@@ -62,6 +63,16 @@ final class SelectSigunguCodes extends LocalRestaurantEvent {
   SelectSigunguCodes(this.sigunguCodes);
 }
 final class LocalRestaurantFetched extends LocalRestaurantEvent { }
+final class LocalRestaurantLike extends LocalRestaurantEvent {
+  final int restaurantId;
+
+  LocalRestaurantLike(this.restaurantId);
+}
+final class LocalRestaurantUnlike extends LocalRestaurantEvent {
+  final int restaurantId;
+
+  LocalRestaurantUnlike(this.restaurantId);
+}
 
 sealed class LocalRestaurantSideEffect { }
 final class LocalRestaurantShowError extends LocalRestaurantSideEffect {
@@ -72,10 +83,14 @@ final class LocalRestaurantShowError extends LocalRestaurantSideEffect {
 
 class LocalRestaurantBloc extends SideEffectBloc<LocalRestaurantEvent, LocalRestaurantState, LocalRestaurantSideEffect> {
   final TripRepository _tripRepository;
+  final FavoriteRepository _favoriteRepository;
 
   LocalRestaurantBloc({
     required TripRepository tripRepository,
-  }) : _tripRepository = tripRepository, super(LocalRestaurantState.initial()) {
+    required FavoriteRepository favoriteRepository,
+  }) : _tripRepository = tripRepository,
+      _favoriteRepository = favoriteRepository,
+        super(LocalRestaurantState.initial()) {
     on<LocalRestaurantFetched>(
       _onLocalRestaurantFetched,
       transformer: throttleDroppable(throttleDuration),
@@ -84,6 +99,8 @@ class LocalRestaurantBloc extends SideEffectBloc<LocalRestaurantEvent, LocalRest
       _onSelectSigunguCodes,
       transformer: throttleDroppable(throttleDuration),
     );
+    on<LocalRestaurantLike>(_onLikeRestaurant);
+    on<LocalRestaurantUnlike>(_onUnlikeRestaurant);
   }
 
   void _onLocalRestaurantFetched(
@@ -145,5 +162,74 @@ class LocalRestaurantBloc extends SideEffectBloc<LocalRestaurantEvent, LocalRest
       emit(state.copyWith(isLoading: false));
       produceSideEffect(LocalRestaurantShowError(e.toString()));
     }
+  }
+
+  void _onLikeRestaurant(
+    LocalRestaurantLike event,
+    Emitter<LocalRestaurantState> emit,
+  ) async {
+    emit(state.copyWith(isLoading: true));
+
+    try {
+      final response = await _favoriteRepository.addFavoriteTourArea(event.restaurantId);
+
+      response.when(
+        success: (data) {
+          emit(
+              state.copyWith(
+                  isLoading: false,
+                  localRestaurants: state.localRestaurants.map((restaurant) {
+                    if (restaurant.tourAreaId == event.restaurantId) {
+                      return restaurant.copyWith(likedByMe: true, likeCount: restaurant.likeCount + 1);
+                    }
+                    return restaurant;
+                  }).toList()
+              )
+          );
+        },
+        apiError: (errorMessage, errorCode) {
+          emit(state.copyWith(isLoading: false));
+          produceSideEffect(LocalRestaurantShowError(errorMessage));
+        },
+      );
+    } catch (e) {
+      emit(state.copyWith(isLoading: false));
+      produceSideEffect(LocalRestaurantShowError(e.toString()));
+    }
+  }
+
+  void _onUnlikeRestaurant(
+    LocalRestaurantUnlike event,
+    Emitter<LocalRestaurantState> emit,
+  ) async {
+    emit(state.copyWith(isLoading: true));
+
+    try {
+      final response = await _favoriteRepository.removeFavoriteTourArea(event.restaurantId);
+
+      response.when(
+        success: (data) {
+          emit(
+              state.copyWith(
+                  isLoading: false,
+                  localRestaurants: state.localRestaurants.map((restaurant) {
+                    if (restaurant.tourAreaId == event.restaurantId) {
+                      return restaurant.copyWith(likedByMe: false, likeCount: restaurant.likeCount - 1);
+                    }
+                    return restaurant;
+                  }).toList()
+              )
+          );
+        },
+        apiError: (errorMessage, errorCode) {
+          emit(state.copyWith(isLoading: false));
+          produceSideEffect(LocalRestaurantShowError(errorMessage));
+        },
+      );
+    } catch (e) {
+      emit(state.copyWith(isLoading: false));
+      produceSideEffect(LocalRestaurantShowError(e.toString()));
+    }
+
   }
 }

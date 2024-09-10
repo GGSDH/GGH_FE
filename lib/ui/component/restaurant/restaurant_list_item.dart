@@ -29,18 +29,18 @@ class RestaurantListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Stack(
-                  children: [
-                    GestureDetector(
-                      onTap: onClick,
-                      child: ClipRRect(
+    return GestureDetector(
+      onTap: onClick,
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Stack(
+                    children: [
+                      ClipRRect(
                         borderRadius: BorderRadius.circular(4),
                         child: CachedNetworkImage(
                           imageUrl: image ?? "",
@@ -53,54 +53,54 @@ class RestaurantListItem extends StatelessWidget {
                           fit: BoxFit.cover,
                         ),
                       ),
-                    ),
-                    Positioned(
-                      right: 10,
-                      top: 10,
-                      child: GestureDetector(
-                        onTap: isLiked ? onUnlike : onLike,
-                        child: SvgPicture.asset(
-                          isLiked
-                              ? "assets/icons/ic_heart_filled.svg"
-                              : "assets/icons/ic_heart_white.svg",
-                          width: 24,
-                          height: 24,
+                      Positioned(
+                        right: 10,
+                        top: 10,
+                        child: GestureDetector(
+                          onTap: isLiked ? onUnlike : onLike,
+                          child: SvgPicture.asset(
+                            isLiked
+                                ? "assets/icons/ic_heart_filled.svg"
+                                : "assets/icons/ic_heart_white.svg",
+                            width: 24,
+                            height: 24,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: 200,
-                  child: Text(
-                    name,
-                    style: TextStyles.titleMedium.copyWith(
-                      color: ColorStyles.gray900,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    ],
                   ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    SvgPicture.asset("assets/icons/ic_heart_filled.svg",
-                        width: 18, height: 18),
-                    const SizedBox(width: 2),
-                    Text(
-                      "$likeCount | $location",
-                      style: TextStyles.bodyMedium.copyWith(
-                        color: ColorStyles.gray500,
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: 200,
+                    child: Text(
+                      name,
+                      style: TextStyles.titleMedium.copyWith(
+                        color: ColorStyles.gray900,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ],
-                )
-              ],
-            ),
-          ],
-        ),
-      ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SvgPicture.asset("assets/icons/ic_heart_filled.svg",
+                          width: 18, height: 18),
+                      const SizedBox(width: 2),
+                      Text(
+                        "$likeCount | $location",
+                        style: TextStyles.bodyMedium.copyWith(
+                          color: ColorStyles.gray500,
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

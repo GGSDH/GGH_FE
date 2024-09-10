@@ -172,7 +172,9 @@ enum Routes {
                           builder: (context, state) => BlocProvider(
                                 create: (context) => LocalRestaurantBloc(
                                   tripRepository:
-                                      GetIt.instance<TripRepository>(),
+                                    GetIt.instance<TripRepository>(),
+                                  favoriteRepository:
+                                    GetIt.instance<FavoriteRepository>()
                                 )..add(LocalRestaurantFetched()),
                                 child: const LocalRestaurantScreen(),
                               )),
