@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -11,7 +13,7 @@ import '../../../routes.dart';
 import '../../../themes/text_styles.dart';
 import 'add_photobook_bloc.dart';
 
-class AddPhotobookLoadingScreen extends StatelessWidget {
+class AddPhotobookLoadingScreen extends StatefulWidget {
   final String startDate;
   final String endDate;
   final String title;
@@ -24,15 +26,61 @@ class AddPhotobookLoadingScreen extends StatelessWidget {
   });
 
   @override
+  _AddPhotobookLoadingScreenState createState() => _AddPhotobookLoadingScreenState();
+}
+
+class _AddPhotobookLoadingScreenState extends State<AddPhotobookLoadingScreen> {
+  final ScrollController _scrollController = ScrollController();
+  final assetPaths = [
+    "assets/icons/ic_loading_photo_one.svg",
+    "assets/icons/ic_loading_photo_two.svg",
+    "assets/icons/ic_loading_photo_three.svg",
+  ];
+  Timer? _scrollTimer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // 자동 스크롤을 위한 Listener
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 10) {
+        // 끝에 도달하면 다시 처음으로 이동
+        _scrollController.jumpTo(0);
+      }
+    });
+
+    _startAutoScroll();
+  }
+
+  @override
+  void dispose() {
+    _scrollTimer?.cancel();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _startAutoScroll() {
+    _scrollTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      _scrollController.animateTo(
+        _scrollController.position.pixels + 300,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => AddPhotobookBloc(
         photobookRepository: GetIt.instance<PhotobookRepository>(),
       )..add(
         AddPhotobookUpload(
-          title: title,
-          startDate: DateTime.parse(startDate),
-          endDate: DateTime.parse(endDate),
+          title: widget.title,
+          startDate: DateTime.parse(widget.startDate),
+          endDate: DateTime.parse(widget.endDate),
         ),
       ),
       child: BlocSideEffectListener<AddPhotobookBloc, AddPhotobookSideEffect>(
@@ -73,8 +121,31 @@ class AddPhotobookLoadingScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 100),
                         SvgPicture.asset(
-                          "assets/icons/img_add_photobook_loading_illust.svg",
-                          fit: BoxFit.fill,
+                          "assets/icons/ic_camera.svg",
+                          width: 186,
+                          height: 137,
+                          fit: BoxFit.cover,
+                        ),
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          height: 174,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            controller: _scrollController,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              final actualIndex = index % assetPaths.length;
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                child: SvgPicture.asset(
+                                  assetPaths[actualIndex],
+                                  width: 131,
+                                  height: 174,
+                                  fit: BoxFit.cover,
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ],
                     ),
