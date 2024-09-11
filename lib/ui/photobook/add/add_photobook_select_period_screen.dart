@@ -204,8 +204,11 @@ class _AddPhotobookSelectPeriodScreenState extends State<AddPhotobookSelectPerio
                     await openAppSettings();
                   }
                   else if (status.isGranted) {
+                    final startDateTime = DateTime(startDate!.year, startDate!.month, startDate!.day, 0, 0, 0);
+                    final endDateTime = DateTime(endDate!.year, endDate!.month, endDate!.day, 23, 59, 59);
+
                     GoRouter.of(context).push(
-                        "${Routes.photobook.path}/${Routes.addPhotobook.path}/${Routes.addPhotobookLoading.path}?startDate=$startDate&endDate=$endDate&title=${titleController.text}"
+                        "${Routes.photobook.path}/${Routes.addPhotobook.path}/${Routes.addPhotobookLoading.path}?startDate=$startDateTime&endDate=$endDateTime&title=${titleController.text}"
                     );
                   }
                   else {

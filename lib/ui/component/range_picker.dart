@@ -303,6 +303,8 @@ class Day extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isAfterToday = day.isAfter(DateTime.now());
+
     bool isSelected = startDate != null &&
         endDate != null &&
         day.isAfter(startDate!.subtract(const Duration(hours: 6))) &&
@@ -327,14 +329,16 @@ class Day extends StatelessWidget {
       bottomRight: isEndDay ? const Radius.circular(30) : Radius.zero,
     );
 
-    final textColor = isStartDay || isEndDay
+    final textColor = isAfterToday
+        ? ColorStyles.gray300
+        : isStartDay || isEndDay
         ? ColorStyles.gray50
         : isToday
         ? ColorStyles.primary
         : ColorStyles.gray700;
 
     return GestureDetector(
-      onTap: () => onDaySelected(day),
+      onTap: !isAfterToday ? () => onDaySelected(day) : null,
       child: Container(
         decoration: BoxDecoration(
           borderRadius: (isSelected && !isStartDay && !isEndDay) ? BorderRadius.zero : borderRadius,

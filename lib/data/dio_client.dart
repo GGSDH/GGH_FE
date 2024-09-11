@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import '../config.dart';
 import '../constants.dart';
@@ -23,14 +24,14 @@ class DioClient {
       ..httpClientAdapter = IOHttpClientAdapter()
       ..interceptors.addAll([
         TokenInterceptor(storage: storage),
-        /*PrettyDioLogger(
+        PrettyDioLogger(
           requestHeader: true,
           requestBody: true,
           responseBody: true,
           responseHeader: false,
           error: true,
           compact: true,
-        )*/
+        )
       ]);
   }
 
