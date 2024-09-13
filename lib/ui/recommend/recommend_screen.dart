@@ -1,11 +1,10 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/themes/color_styles.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
 import 'package:gyeonggi_express/ui/component/app/app_button.dart';
-import 'package:gyeonggi_express/ui/recommend/recommend_lane_bloc.dart';
 
 import '../../routes.dart';
 
@@ -34,9 +33,10 @@ class RecommendScreen extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           Expanded(
-            child: Image.asset(
-              "assets/images/img_bg_recommend.png",
+            child: SvgPicture.asset(
+              "assets/icons/img_bg_recommend.svg",
               fit: BoxFit.contain,
+              width: double.infinity,
             ),
           ),
           Padding(
