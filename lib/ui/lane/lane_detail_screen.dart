@@ -295,15 +295,15 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
               border: Border.all(
-                color: const Color(0xFFFBB12C),
+                color: ColorStyles.primary,
                 width: 1,
               ),
               borderRadius: BorderRadius.circular(100),
             ),
             child: Text(
-              state.laneName,
+              state.category.title,
               style: TextStyles.titleXSmall.copyWith(
-                color: const Color(0xFFFBB12C),
+                color: ColorStyles.primary,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -336,7 +336,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
           Container(
             width: 1,
             height: 14,
-            color: const Color(0xFFFBB12C),
+            color: ColorStyles.primary,
           ),
           const SizedBox(width: 31),
           const Expanded(child: SizedBox(height: 14)),
@@ -360,7 +360,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: const Color(0xFFFBB12C),
+                      color: ColorStyles.primary,
                       width: 1,
                     ),
                   ),
@@ -368,7 +368,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                 Expanded(
                   child: Container(
                     width: 1,
-                    color: const Color(0xFFFBB12C),
+                    color: ColorStyles.primary,
                   ),
                 ),
               ],
@@ -483,7 +483,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: const Color(0xFFFBB12C),
+                      color: ColorStyles.primary,
                       width: 1,
                     ),
                   ),
@@ -491,7 +491,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                 Expanded(
                   child: Container(
                     height: 1,
-                    color: const Color(0xFFFBB12C),
+                    color: ColorStyles.primary,
                   ),
                 ),
               ],

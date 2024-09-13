@@ -302,7 +302,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
               border: Border.all(
-                color: const Color(0xFFFBB12C),
+                color: ColorStyles.primary,
                 width: 1,
               ),
               borderRadius: BorderRadius.circular(100),
@@ -310,7 +310,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
             child: Text(
               category,
               style: TextStyles.titleXSmall.copyWith(
-                color: const Color(0xFFFBB12C),
+                color: ColorStyles.primary,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -343,7 +343,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
           Container(
             width: 1,
             height: 14,
-            color: const Color(0xFFFBB12C),
+            color: ColorStyles.primary,
           ),
           const SizedBox(width: 31),
           const Expanded(child: SizedBox(height: 14)),
@@ -379,7 +379,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: const Color(0xFFFBB12C),
+                      color: ColorStyles.primary,
                       width: 1,
                     ),
                   ),
@@ -387,7 +387,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                 Expanded(
                   child: Container(
                     height: 1,
-                    color: const Color(0xFFFBB12C),
+                    color: ColorStyles.primary,
                   ),
                 ),
               ],
@@ -515,7 +515,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: const Color(0xFFFBB12C),
+                      color: ColorStyles.primary,
                       width: 1,
                     ),
                   ),
@@ -523,7 +523,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                 Expanded(
                   child: Container(
                     width: 1,
-                    color: const Color(0xFFFBB12C),
+                    color: ColorStyles.primary,
                   ),
                 ),
               ],
