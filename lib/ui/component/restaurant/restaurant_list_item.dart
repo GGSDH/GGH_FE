@@ -84,8 +84,16 @@ class RestaurantListItem extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      SvgPicture.asset("assets/icons/ic_heart_filled.svg",
-                          width: 18, height: 18),
+                      SvgPicture.asset(
+                        isLiked
+                            ? "assets/icons/ic_heart_filled.svg"
+                            : "assets/icons/ic_heart_white.svg",
+                        width: 18,
+                        height: 18,
+                        colorFilter: ColorFilter.mode(
+                          isLiked ? ColorStyles.error
+                            : ColorStyles.gray400, BlendMode.srcIn)
+                      ),
                       const SizedBox(width: 2),
                       Text(
                         "$likeCount | $location",
