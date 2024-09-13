@@ -65,6 +65,17 @@ class _PhotobookCardScreenState extends State<PhotobookCardScreen> {
           builder: (context, state) {
             pageCount = state.photobookDetailCards.length;
 
+            if (state.isLoading) {
+              const Material(
+                color: Colors.white,
+                child: SafeArea(
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+              );
+            }
+
             return Material(
               color: Colors.white,
               child: SafeArea(
@@ -323,6 +334,11 @@ class Page extends StatelessWidget {
                 width: double.infinity, height: double.infinity),
             errorWidget: const AppImagePlaceholder(
                 width: double.infinity, height: double.infinity),
+          ),
+          Container(
+            color: Colors.black.withOpacity(0.08),
+            width: double.infinity,
+            height: double.infinity,
           ),
           Padding(
             padding: const EdgeInsets.all(24),
