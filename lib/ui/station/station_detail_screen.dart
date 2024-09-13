@@ -185,7 +185,7 @@ class StationDetailScreen extends StatelessWidget {
             title: lane.name,
             description: '',
             image: lane.photo,
-            period: '',
+            period: '당일치기',
             likeCount: lane.likeCount,
             isLiked: lane.likedByMe,
           ),
