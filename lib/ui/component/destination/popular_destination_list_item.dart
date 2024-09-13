@@ -33,7 +33,7 @@ class PopularDestinationListItem extends StatelessWidget {
                 Stack(
                   children: [
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: BorderRadius.circular(8),
                       child: CachedNetworkImage(
                         imageUrl: image ?? "",
                         placeholder: (context, url) => const AppImagePlaceholder(width: 200, height: 145),
@@ -44,16 +44,19 @@ class PopularDestinationListItem extends StatelessWidget {
                       ),
                     ),
                     Container(
-                        padding: const EdgeInsets.all(10),
+                        width: 25,
+                        height: 25,
                         decoration: const BoxDecoration(
                           color: ColorStyles.gray800,
                           borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(8),
                               bottomRight: Radius.circular(8)),
                         ),
-                        child: Text("$rank",
-                            style: TextStyles.titleXSmall
-                                .copyWith(color: ColorStyles.grayWhite)))
+                        child: Center(
+                          child: Text("$rank",
+                              style: TextStyles.titleXSmall
+                                  .copyWith(color: ColorStyles.grayWhite)),
+                        ))
                   ],
                 ),
                 const SizedBox(height: 12),
