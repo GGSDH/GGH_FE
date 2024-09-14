@@ -43,28 +43,33 @@ class AreaFilterScreenState extends State<AreaFilterScreen> {
              ),
              const SizedBox(height: 20),
              Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 24
-                ),
-                child: Wrap(
-                 spacing: 6,
-                 runSpacing: 6,
-                 children: chips.map((chip) => areaChip(chip)).toList(),
+               child: Container(
+                 width: MediaQuery.of(context).size.width,
+                 padding: const EdgeInsets.symmetric(horizontal: 20),
+                 child: SingleChildScrollView(
+                   child: Column(
+                     crossAxisAlignment: CrossAxisAlignment.start,
+                     children: [
+                       const SizedBox(height: 20),
+                       Wrap(
+                         spacing: 6,
+                         children: chips.map((chip) => areaChip(chip)).toList(),
+                       ),
+                       const SizedBox(height: 20),
+                     ],
+                   ),
+                 ),
+               ),
+             ),
+              Padding(
+                padding: const EdgeInsets.all(14),
+                child: AppButton(
+                  text: '다음',
+                  onPressed: () {
+                    GoRouter.of(context).pop(_selectedAreas.toList());
+                  },
                 ),
               ),
-             ),
-             Padding(
-               padding: const EdgeInsets.all(14),
-               child: AppButton(
-                 text: '다음',
-                 onPressed: () {
-                    GoRouter.of(context).pop(_selectedAreas.map((e) => SigunguCode.toJson(e)).toList());
-                 },
-                 isEnabled: _selectedAreas.isNotEmpty,
-               ),
-             )
            ],
          ),
        ),
