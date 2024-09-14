@@ -115,7 +115,7 @@ class _AddPhotobookLoadingScreenState extends State<AddPhotobookLoadingScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text(
-                          "소중한 추억이 담긴\n포토북을 생성중이예요",
+                          "소중한 추억이 담긴\n포토북을 생성중이에요",
                           style: TextStyles.title2ExtraLarge,
                           textAlign: TextAlign.center,
                         ),

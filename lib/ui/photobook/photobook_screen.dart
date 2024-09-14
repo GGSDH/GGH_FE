@@ -20,7 +20,7 @@ import '../component/photo_ticket_item.dart';
 import '../component/photobook/photobook_list_item.dart';
 
 
-class PhotobookScreen extends StatefulWidget {
+class PhotobookScreen extends StatefulWidget with RouteAware {
   const PhotobookScreen({super.key});
 
   @override
@@ -81,8 +81,8 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware, Tick
                                 path: "${Routes.photobook.path}/${Routes.photobookCard.path}",
                                 queryParameters: { 'photobookId': "${photobook.id}" }
                             ).toString()
-                          ).then((_) {
-                            onLoadPhotobooks();
+                          ).then((result) {
+                            if (result == true) onLoadPhotobooks();
                           });
                         },
                       );
@@ -129,7 +129,7 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware, Tick
         } else if (sideEffect is PhotobookShowBottomSheet) {
           _showBottomSheet(
             sideEffect.photobooks,
-            () => context.read<PhotobookBloc>().add(FetchPhotoTickets())
+            () => context.read<PhotobookBloc>().add(FetchPhotobooks())
           );
         }
       },
@@ -156,14 +156,11 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware, Tick
                                     mapControllerCompleter: _mapControllerCompleter,
                                     photobooks: state.photobooks,
                                     onAddPhotobook: () {
-                                      GoRouter.of(context).push("${Routes.photobook.path}/${Routes.addPhotobook.path}").then((_) {
-                                        context.read<PhotobookBloc>().add(FetchPhotobooks());
-                                      });
+                                      GoRouter.of(context).push("${Routes.photobook.path}/${Routes.addPhotobook.path}");
                                     },
-                                    showPhotobookList: () => _showBottomSheet(
-                                      state.photobooks,
-                                      () => context.read<PhotobookBloc>().add(FetchPhotoTickets())
-                                    ),
+                                    showPhotobookList: () => {
+                                      context.read<PhotobookBloc>().add(FetchPhotobooks()),
+                                    },
                                   ),
                                   _PhotoTicketSection(
                                     photoTickets: state.photoTickets,

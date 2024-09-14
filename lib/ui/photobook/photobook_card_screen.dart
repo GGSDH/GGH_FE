@@ -58,7 +58,7 @@ class _PhotobookCardScreenState extends State<PhotobookCardScreen> {
               ),
             );
           } else if (sideEffect is PhotobookDeleteComplete) {
-            GoRouter.of(context).pop();
+            GoRouter.of(context).pop(true);
           }
         },
         child: BlocBuilder<PhotobookDetailBloc, PhotobookDetailState>(
@@ -79,95 +79,74 @@ class _PhotobookCardScreenState extends State<PhotobookCardScreen> {
             return Material(
               color: Colors.white,
               child: SafeArea(
-                child: Stack(
+                child: Column(
                   children: [
-                    Column(
-                      children: [
-                        AppActionBar(
-                          onBackPressed: () {
-                            GoRouter.of(context).pop();
-                          },
-                          menuItems: [
-                            ActionBarMenuItem(
-                              icon: SvgPicture.asset(
-                                "assets/icons/ic_trash.svg",
-                                width: 24,
-                                height: 24,
-                              ),
-                              onPressed: () {
-                                context.read<PhotobookDetailBloc>().add(
-                                  PhotobookDelete(int.parse(widget.photobookId)),
-                                );
-                              })
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-
-                        state.dominantLocationCity != null && state.dominantLocationCity!.isNotEmpty  ?
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: ColorStyles.primary),
-                            borderRadius: BorderRadius.circular(100),
+                    AppActionBar(
+                      onBackPressed: () {
+                        GoRouter.of(context).go(Routes.photobook.path);
+                      },
+                      menuItems: [
+                        ActionBarMenuItem(
+                          icon: SvgPicture.asset(
+                            "assets/icons/ic_trash.svg",
+                            width: 24,
+                            height: 24,
                           ),
-                          child: Text(
-                            state.dominantLocationCity!,
-                            style: TextStyles.bodyMedium.copyWith(
-                              color: ColorStyles.primary,
-                            ),
-                          )
-                        ) : const SizedBox(height: 32),
-
-                        const SizedBox(height: 14),
-                        Text(
-                          state.title,
-                          style: TextStyles.title2ExtraLarge,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          formatDates(state.startDate, state.endDate),
-                          style: TextStyles.bodyLarge.copyWith(
-                            color: ColorStyles.gray500,
-                          ),
-                        ),
-                        const SizedBox(height: 40),
-                        Expanded(
-                          child: Align(
-                            alignment: Alignment.topCenter,
-                            child: SizedBox(
-                              width: baseCardWidth + 40,
-                              height: baseCardHeight,
-                              child: LayoutBuilder(
-                                builder: (context, constraints) {
-                                  return Stack(
-                                    clipBehavior: Clip.none,
-                                    alignment: Alignment.center,
-                                    children: [
-                                      for (int i = pageCount - 1; i >= currentPage; i--)
-                                        _buildCard(i, state.photobookDetailCards[i]), // 현재 페이지부터 페이지들을 역순으로 쌓음
-                                    ],
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
+                          onPressed: () {
+                            context.read<PhotobookDetailBloc>().add(
+                              PhotobookDelete(int.parse(widget.photobookId)),
+                            );
+                          })
                       ],
                     ),
-                    Positioned(
-                      bottom: 20,
-                      right: 20,
-                      child: GestureDetector(
-                        onTap: () {
-                          GoRouter.of(context).push(
-                              "${Routes.photobook.path}/${Routes.addPhotobook
-                                  .path}");
-                        },
-                        child: SvgPicture.asset(
-                          "assets/icons/ic_add_photo.svg",
-                          width: 52,
-                          height: 52,
-                          fit: BoxFit.fill,
+                    const SizedBox(height: 4),
+
+                    state.dominantLocationCity != null && state.dominantLocationCity!.isNotEmpty  ?
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: ColorStyles.primary),
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      child: Text(
+                        state.dominantLocationCity!,
+                        style: TextStyles.bodyMedium.copyWith(
+                          color: ColorStyles.primary,
+                        ),
+                      )
+                    ) : const SizedBox(height: 32),
+
+                    const SizedBox(height: 14),
+                    Text(
+                      state.title,
+                      style: TextStyles.title2ExtraLarge,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      formatDates(state.startDate, state.endDate),
+                      style: TextStyles.bodyLarge.copyWith(
+                        color: ColorStyles.gray500,
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: SizedBox(
+                          width: baseCardWidth + 40,
+                          height: baseCardHeight,
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              return Stack(
+                                clipBehavior: Clip.none,
+                                alignment: Alignment.center,
+                                children: [
+                                  for (int i = pageCount - 1; i >= currentPage; i--)
+                                    _buildCard(i, state.photobookDetailCards[i]), // 현재 페이지부터 페이지들을 역순으로 쌓음
+                                ],
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),
