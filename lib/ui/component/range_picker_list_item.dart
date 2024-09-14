@@ -193,6 +193,9 @@ class Day extends StatelessWidget {
         day.isAfter(startDate!.subtract(const Duration(hours: 6))) &&
         day.isBefore(endDate!.add(const Duration(hours: 6)));
 
+    bool isToday = day.year == DateTime.now().year &&
+        day.month == DateTime.now().month &&
+        day.day == DateTime.now().day;
     bool isStartDay = startDate != null &&
         startDate!.year == day.year &&
         startDate!.month == day.month &&
@@ -209,6 +212,14 @@ class Day extends StatelessWidget {
       bottomRight: isEndDay ? const Radius.circular(30) : Radius.zero,
     );
 
+    final textColor = isBeforeToday
+        ? ColorStyles.gray300
+        : isStartDay || isEndDay
+        ? ColorStyles.gray50
+        : isToday
+        ? ColorStyles.primary
+        : ColorStyles.gray700;
+
     return Expanded(
       flex: 1,
       child: GestureDetector(
@@ -221,14 +232,23 @@ class Day extends StatelessWidget {
             constraints: const BoxConstraints.expand(),
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              borderRadius: borderRadius,
-              color: isSelected ? Colors.blue.withOpacity(0.1) : Colors.transparent,
+              borderRadius: (isSelected && !isStartDay && !isEndDay) ? BorderRadius.zero : borderRadius,
+              color: isSelected ? ColorStyles.primaryLight : Colors.transparent,
             ),
-            child: Text(
+            child: Container(
+              height: 42,
+              padding: const EdgeInsets.symmetric(vertical: 3.5),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                borderRadius: isStartDay || isEndDay ? BorderRadius.circular(30) : BorderRadius.zero,
+                color: isStartDay || isEndDay ? ColorStyles.primary : Colors.transparent,
+              ),
+              child: Text(
                 day.day.toString(),
                 style: TextStyle(
-                  color: isBeforeToday ? ColorStyles.gray300 : isSelected ? Colors.blue : Colors.black,
+                  color: textColor
                 )
+              ),
             ),
           ),
         ),

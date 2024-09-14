@@ -25,7 +25,7 @@ class RecommendScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 100),
             child: Text(
-              "회원님이 취향을 반영한 노선을 AI가 직접 추천해 드려요!",
+              "회원님이 취향을 반영한 노선을\nAI가 직접 추천해 드려요!",
               style: TextStyles.bodyLarge.copyWith(
                   color: ColorStyles.gray600, fontWeight: FontWeight.w400),
               textAlign: TextAlign.center,

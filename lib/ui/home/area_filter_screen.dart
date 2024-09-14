@@ -41,7 +41,6 @@ class AreaFilterScreenState extends State<AreaFilterScreen> {
                title: '지역 선택',
                onBackPressed: () => GoRouter.of(context).pop(),
              ),
-             const SizedBox(height: 20),
              Expanded(
                child: Container(
                  width: MediaQuery.of(context).size.width,
@@ -61,15 +60,16 @@ class AreaFilterScreenState extends State<AreaFilterScreen> {
                  ),
                ),
              ),
-              Padding(
-                padding: const EdgeInsets.all(14),
-                child: AppButton(
-                  text: '다음',
-                  onPressed: () {
-                    GoRouter.of(context).pop(_selectedAreas.toList());
-                  },
-                ),
-              ),
+             Padding(
+               padding: const EdgeInsets.all(14),
+               child: AppButton(
+                 text: '다음',
+                 onPressed: () {
+                   GoRouter.of(context).pop(_selectedAreas.map((e) => SigunguCode.toJson(e)).toList());
+                 },
+                 isEnabled: _selectedAreas.isNotEmpty,
+               ),
+             )
            ],
          ),
        ),
