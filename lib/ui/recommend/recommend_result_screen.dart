@@ -195,14 +195,17 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                       ],
                     ),
                     const SizedBox(height: 14),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: laneData.days[_selectedDayIndex].tourAreas
-                            .map(
-                                (place) => _placeDetailItemInBottomSheet(place.tourAreaResponse))
-                            .toList(),
-                      ),
+                    SizedBox(
+                      height: 120,
+                      child: PageView.builder(
+                        controller: PageController(),
+                        itemCount: laneData.days[_selectedDayIndex].tourAreas.length,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (context, index) {
+                          final tourArea = laneData.days[_selectedDayIndex].tourAreas;
+                          return _placeDetailItemInBottomSheet(tourArea[index].tourAreaResponse);
+                        },
+                      )
                     )
                   ],
                 ),
@@ -367,7 +370,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
     return GestureDetector(
       onTap: () => _moveCameraToLocation(tourArea),
       child: SizedBox(
-        width: 300,
+        width: double.infinity,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

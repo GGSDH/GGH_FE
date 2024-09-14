@@ -192,14 +192,20 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                       ],
                     ),
                     const SizedBox(height: 14),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: laneDetail
+                    // Provide a fixed height for the PageView
+                    SizedBox(
+                      height: 120, // Adjust the height as necessary
+                      child: PageView.builder(
+                        controller: PageController(),
+                        itemCount: laneDetail
                             .getTourAreasByDay(_selectedDayIndex + 1)
-                            .map((tourArea) =>
-                                _placeDetailItemInBottomSheet(tourArea))
-                            .toList(),
+                            .length,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (context, index) {
+                          final tourArea = laneDetail
+                              .getTourAreasByDay(_selectedDayIndex + 1)[index];
+                          return _placeDetailItemInBottomSheet(tourArea);
+                        },
                       ),
                     )
                   ],
@@ -471,7 +477,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
     return GestureDetector(
       onTap: () => _moveCameraToLocation(laneTourArea),
       child: SizedBox(
-        width: 300,
+        width: double.infinity,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
