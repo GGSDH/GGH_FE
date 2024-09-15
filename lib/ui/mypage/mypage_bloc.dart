@@ -147,7 +147,7 @@ class MyPageBloc extends SideEffectBloc<MyPageEvent, MyPageState, MyPageSideEffe
     try {
       await _storage.delete(key: Constants.ACCESS_TOKEN_KEY);
       produceSideEffect(MyPageShowError("로그아웃 되었습니다."));
-      produceSideEffect(MyPageNavigateToLogin());
+      Future.delayed(const Duration(milliseconds: 500), () => produceSideEffect(MyPageNavigateToLogin()));
     } catch (e) {
       produceSideEffect(MyPageShowError("로그아웃 중 오류가 발생했습니다: ${e.toString()}"));
     }

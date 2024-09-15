@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/route_extension.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../constants.dart';
 import '../../data/models/login_provider.dart';
-import '../../data/repository/auth_repository.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
@@ -21,102 +18,96 @@ class MyPageScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => MyPageBloc(
-        authRepository: GetIt.instance<AuthRepository>(),
-        secureStorage: GetIt.instance<FlutterSecureStorage>(),
-      ),
-      child: BlocSideEffectListener<MyPageBloc, MyPageSideEffect>(
-        listener: (context, sideEffect) {
-          if (sideEffect is MyPageNavigateToSetting) {
-            GoRouter.of(context)
-                .push(Uri(
-              path: "${Routes.myPage.path}/${Routes.myPageSetting.path}",
-              queryParameters: {
-                'nickname': sideEffect.nickname,
-                'loginType': sideEffect.loginType.name
+    return BlocSideEffectListener<MyPageBloc, MyPageSideEffect>(
+      listener: (context, sideEffect) {
+        if (sideEffect is MyPageNavigateToSetting) {
+          GoRouter.of(context)
+              .push(Uri(
+            path: "${Routes.myPage.path}/${Routes.myPageSetting.path}",
+            queryParameters: {
+              'nickname': sideEffect.nickname,
+              'loginType': sideEffect.loginType.name
+            },
+          ).toString())
+              .then((_) {
+            // Pop해서 돌아왔을 때 이벤트 호출
+            context.read<MyPageBloc>().add(MyPageInitialize());
+          });
+        } else if (sideEffect is MyPageShowError) {
+          ToastUtil.showToast(context, sideEffect.message, bottomPadding: 0);
+        } else if (sideEffect is MyPageNavigateToLogin) {
+          GoRouter.of(context).go(Routes.login.path);
+        }
+      },
+      child: BlocBuilder<MyPageBloc, MyPageState>(builder: (context, state) {
+        if (state.isLoading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else {
+          return SafeArea(
+            child: MyPageContent(
+              onTapSetting: () {
+                context.read<MyPageBloc>().add(MyPageSettingButtonClicked(
+                      email: state.email,
+                      nickname: state.nickname,
+                      loginType: state.loginProvider,
+                    ));
               },
-            ).toString())
-                .then((_) {
-              // Pop해서 돌아왔을 때 이벤트 호출
-              context.read<MyPageBloc>().add(MyPageInitialize());
-            });
-          } else if (sideEffect is MyPageShowError) {
-            ToastUtil.showToast(context, sideEffect.message);
-          } else if (sideEffect is MyPageNavigateToLogin) {
-            GoRouter.of(context).go(Routes.login.path);
-          }
-        },
-        child: BlocBuilder<MyPageBloc, MyPageState>(builder: (context, state) {
-          if (state.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else {
-            return SafeArea(
-              child: MyPageContent(
-                onTapSetting: () {
-                  context.read<MyPageBloc>().add(MyPageSettingButtonClicked(
-                        email: state.email,
-                        nickname: state.nickname,
-                        loginType: state.loginProvider,
-                      ));
-                },
-                onTapLocInfoTerms: () {
-                  GoRouter.of(context).push(Uri(
-                      path:
-                          Routes.webView.path,
-                      queryParameters: {
-                        'title': '위치정보 이용약관',
-                        'url': Constants.LOCATION_INFO_TERMS_URL
-                      }).toString());
-                },
-                onTapPrivacyPolicy: () {
-                  GoRouter.of(context).push(Uri(
-                      path:
-                          Routes.webView.path,
-                      queryParameters: {
-                        'title': '개인정보 처리방침',
-                        'url': Constants.PRIVACY_POLICY_URL
-                      }).toString());
-                },
-                onTapTermsOfUse: () {
-                  GoRouter.of(context).push(Uri(
-                      path:
-                          Routes.webView.path,
-                      queryParameters: {
-                        'title': '서비스 이용약관',
-                        'url': Constants.TERMS_OF_USE_URL
-                      }).toString());
-                },
-                onTapLogOut: () {
-                  _showLogoutDialog(
-                    context,
-                    () {
-                      context
-                          .read<MyPageBloc>()
-                          .add(MyPageLogOutButtonClicked());
-                    },
-                  );
-                },
-                onTapWithdrawal: () {
-                  _showWithdrawalDialog(
-                    context,
-                    () {
-                      context
-                          .read<MyPageBloc>()
-                          .add(MyPageWithdrawalButtonClicked());
-                    },
-                  );
-                },
-                nickname: state.nickname,
-                email: state.email,
-                loginProvider: state.loginProvider,
-              ),
-            );
-          }
-        }),
-      ),
+              onTapLocInfoTerms: () {
+                GoRouter.of(context).push(Uri(
+                    path:
+                        Routes.webView.path,
+                    queryParameters: {
+                      'title': '위치정보 이용약관',
+                      'url': Constants.LOCATION_INFO_TERMS_URL
+                    }).toString());
+              },
+              onTapPrivacyPolicy: () {
+                GoRouter.of(context).push(Uri(
+                    path:
+                        Routes.webView.path,
+                    queryParameters: {
+                      'title': '개인정보 처리방침',
+                      'url': Constants.PRIVACY_POLICY_URL
+                    }).toString());
+              },
+              onTapTermsOfUse: () {
+                GoRouter.of(context).push(Uri(
+                    path:
+                        Routes.webView.path,
+                    queryParameters: {
+                      'title': '서비스 이용약관',
+                      'url': Constants.TERMS_OF_USE_URL
+                    }).toString());
+              },
+              onTapLogOut: () {
+                _showLogoutDialog(
+                  context,
+                  () {
+                    context
+                        .read<MyPageBloc>()
+                        .add(MyPageLogOutButtonClicked());
+                  },
+                );
+              },
+              onTapWithdrawal: () {
+                _showWithdrawalDialog(
+                  context,
+                  () {
+                    context
+                        .read<MyPageBloc>()
+                        .add(MyPageWithdrawalButtonClicked());
+                  },
+                );
+              },
+              nickname: state.nickname,
+              email: state.email,
+              loginProvider: state.loginProvider,
+            ),
+          );
+        }
+      }),
     );
   }
 

@@ -122,7 +122,7 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware, Tick
     return BlocSideEffectListener<PhotobookBloc, PhotobookSideEffect>(
       listener: (context, sideEffect) {
         if (sideEffect is PhotobookShowError) {
-          ToastUtil.showToast(context, sideEffect.message);
+          ToastUtil.showToast(context, sideEffect.message, bottomPadding: 0);
         } else if (sideEffect is PhotobookShowBottomSheet) {
           _showBottomSheet(
             sideEffect.photobooks,

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/data/models/response/keyword_search_result_response.dart';
 import 'package:gyeonggi_express/data/models/response/popular_keyword_response.dart';
@@ -11,18 +10,12 @@ import 'package:gyeonggi_express/themes/color_styles.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
 import 'package:gyeonggi_express/ui/search/search_bloc.dart';
 
-import '../../data/repository/search_repository.dart';
-
 class SearchScreen extends StatelessWidget {
   const SearchScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => SearchBloc(GetIt.instance<SearchRepository>())
-        ..add(FetchPopularKeywords()),
-      child: const SearchScreenContent(),
-    );
+    return const SearchScreenContent();
   }
 }
 

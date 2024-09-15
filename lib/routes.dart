@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/data/repository/lane_repository.dart';
@@ -8,6 +9,7 @@ import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/router_observer.dart';
 import 'package:gyeonggi_express/ui/component/app/app_bottom_navigation_bar.dart';
 import 'package:gyeonggi_express/ui/component/web_view_screen.dart';
+import 'package:gyeonggi_express/ui/favorite/favorite_bloc.dart';
 import 'package:gyeonggi_express/ui/favorite/favorite_screen.dart';
 import 'package:gyeonggi_express/ui/home/area_filter_screen.dart';
 import 'package:gyeonggi_express/ui/home/category_detail_bloc.dart';
@@ -17,12 +19,17 @@ import 'package:gyeonggi_express/ui/home/local_restaruant_bloc.dart';
 import 'package:gyeonggi_express/ui/home/local_restaurant_screen.dart';
 import 'package:gyeonggi_express/ui/home/popular_destination_bloc.dart';
 import 'package:gyeonggi_express/ui/home/popular_destination_screen.dart';
+import 'package:gyeonggi_express/ui/home/recommended_lane_bloc.dart';
 import 'package:gyeonggi_express/ui/home/recommended_lane_screen.dart';
 import 'package:gyeonggi_express/ui/lane/lane_detail_bloc.dart';
 import 'package:gyeonggi_express/ui/lane/lane_detail_screen.dart';
+import 'package:gyeonggi_express/ui/login/login_bloc.dart';
 import 'package:gyeonggi_express/ui/login/login_screen.dart';
+import 'package:gyeonggi_express/ui/mypage/mypage_bloc.dart';
 import 'package:gyeonggi_express/ui/mypage/mypage_screen.dart';
+import 'package:gyeonggi_express/ui/mypage/mypage_setting_bloc.dart';
 import 'package:gyeonggi_express/ui/mypage/mypage_setting_screen.dart';
+import 'package:gyeonggi_express/ui/onboarding/onboarding_bloc.dart';
 import 'package:gyeonggi_express/ui/onboarding/onboarding_complete_screen.dart';
 import 'package:gyeonggi_express/ui/onboarding/onboarding_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/add/add_photobook_loading_screen.dart';
@@ -30,6 +37,7 @@ import 'package:gyeonggi_express/ui/photobook/add/add_photobook_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/add/add_photobook_select_period_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_bloc.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_card_screen.dart';
+import 'package:gyeonggi_express/ui/photobook/photobook_detail_bloc.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_detail_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_image_list_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_map_screen.dart';
@@ -44,6 +52,7 @@ import 'package:gyeonggi_express/ui/recommend/recommend_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_select_period_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_select_region_screen.dart';
 import 'package:gyeonggi_express/ui/recommend/recommend_select_theme_screen.dart';
+import 'package:gyeonggi_express/ui/search/search_bloc.dart';
 import 'package:gyeonggi_express/ui/search/search_screen.dart';
 import 'package:gyeonggi_express/ui/splash/splash_screen.dart';
 import 'package:gyeonggi_express/ui/station/station_detail_bloc.dart';
@@ -52,7 +61,9 @@ import 'package:gyeonggi_express/ui/station/station_detail_screen.dart';
 import 'data/models/login_provider.dart';
 import 'data/models/sigungu_code.dart';
 import 'data/models/trip_theme.dart';
+import 'data/repository/auth_repository.dart';
 import 'data/repository/favorite_repository.dart';
+import 'data/repository/search_repository.dart';
 import 'data/repository/tour_area_repository.dart';
 import 'data/repository/trip_repository.dart';
 
@@ -122,11 +133,25 @@ enum Routes {
               GoRoute(
                   path: Routes.login.path,
                   name: Routes.login.name,
-                  builder: (context, state) => const LoginScreen()),
+                  builder: (context, state) => BlocProvider(
+                      create: (context) => LoginBloc(
+                        authRepository: GetIt.instance<AuthRepository>(),
+                        secureStorage: GetIt.instance<FlutterSecureStorage>(),
+                      ),
+                      child: const LoginScreen()
+                  )
+              ),
               GoRoute(
                   path: Routes.onboarding.path,
                   name: Routes.onboarding.name,
-                  builder: (context, state) => const OnboardingScreen()),
+                  builder: (context, state) => BlocProvider(
+                    create: (context) => OnboardingBloc(
+                      authRepository: GetIt.instance.get<AuthRepository>(),
+                      secureStorage: GetIt.instance.get<FlutterSecureStorage>(),
+                    ),
+                    child: const OnboardingScreen()
+                  ),
+              ),
               GoRoute(
                 path: Routes.onboardingComplete.path,
                 name: Routes.onboardingComplete.name,
@@ -163,8 +188,13 @@ enum Routes {
                       GoRoute(
                         path: Routes.recommendedLanes.path,
                         name: Routes.recommendedLanes.name,
-                        builder: (context, state) =>
-                            const RecommendedLaneScreen(),
+                        builder: (context, state) => BlocProvider(
+                            create: (context) => RecommendedLaneBloc(
+                              tripRepository: GetIt.instance<TripRepository>(),
+                              favoriteRepository: GetIt.instance<FavoriteRepository>(),
+                            )..add(RecommendedLaneInitialize()),
+                            child: const RecommendedLaneScreen()
+                        ),
                       ),
                       GoRoute(
                           path: Routes.localRestaurants.path,
@@ -254,49 +284,38 @@ enum Routes {
                                   GetIt.instance<FavoriteRepository>(),
                             );
 
+                            final selectedSigunguCodes = state
+                                    .uri.queryParameters['selectedSigunguCodes']
+                                    ?.split(',')
+                                    .map((e) => SigunguCode.fromJson(e))
+                                    .toList() ??
+                                [];
+
+                            final selectedDays = int.tryParse(
+                                    state.uri.queryParameters['selectedDays'] ??
+                                        '') ?? 1;
+
+                            final selectedTripThemes = state.uri
+                                    .queryParameters['selectedTripThemes']
+                                    ?.split(',')
+                                    .map((e) => TripTheme.fromJson(e))
+                                    .toList() ??
+                                [];
+
                             // 이벤트 추가
                             bloc.add(
                               RecommendLaneInitialize(
-                                  selectedSigunguCodes: state
-                                          .uri
-                                          .queryParameters[
-                                              'selectedSigunguCodes']
-                                          ?.split(',')
-                                          .map((e) => SigunguCode.fromJson(e))
-                                          .toList() ??
-                                      [],
-                                  selectedDays: int.tryParse(
-                                          state.uri.queryParameters[
-                                                  'selectedDays'] ??
-                                              '') ??
-                                      1,
-                                  selectedTripThemes: state.uri
-                                          .queryParameters['selectedTripThemes']
-                                          ?.split(',')
-                                          .map((e) => TripTheme.fromJson(e))
-                                          .toList() ??
-                                      []),
+                                  selectedSigunguCodes: selectedSigunguCodes,
+                                  selectedDays: selectedDays,
+                                  selectedTripThemes: selectedTripThemes),
                             );
 
                             return BlocProvider(
                               create: (context) => bloc,
                               child: RecommendResultScreen(
-                                sigunguCodes: state.uri
-                                        .queryParameters['selectedSigunguCodes']
-                                        ?.split(',')
-                                        .map((e) => SigunguCode.fromJson(e))
-                                        .toList() ??
-                                    [],
-                                days: int.tryParse(state.uri
-                                            .queryParameters['selectedDays'] ??
-                                        '') ??
-                                    1,
-                                tripThemes: state.uri
-                                        .queryParameters['selectedTripThemes']
-                                        ?.split(',')
-                                        .map((e) => TripTheme.fromJson(e))
-                                        .toList() ??
-                                    [],
+                                sigunguCodes: selectedSigunguCodes,
+                                days: selectedDays,
+                                tripThemes: selectedTripThemes,
                               ),
                             );
                           }),
@@ -406,32 +425,50 @@ enum Routes {
                           path: Routes.photobookCard.path,
                           name: Routes.photobookCard.name,
                           parentNavigatorKey: _rootNavigatorKey,
-                          builder: (context, state) => PhotobookCardScreen(
+                          builder: (context, state) {
+                            final photobookId = state.uri.queryParameters['photobookId'] ?? '';
+                            return BlocProvider(
+                                create: (context) => PhotobookDetailBloc(
+                                  photobookRepository: GetIt.instance<PhotobookRepository>(),
+                                )..add(PhotobookDetailInitialize(int.parse(photobookId))),
+                                child:PhotobookCardScreen(
                                 photobookId:
                                     state.uri.queryParameters['photobookId'] ??
                                         '',
-                              )),
+                              )
+                            );
+                          }
+                      ),
                       GoRoute(
                           path: Routes.photobookDetail.path,
                           name: Routes.photobookDetail.name,
                           parentNavigatorKey: _rootNavigatorKey,
-                          builder: (context, state) => PhotobookDetailScreen(
-                                photobookId:
-                                    state.uri.queryParameters['photobookId'] ??
-                                        '',
-                                selectedDay:
-                                    state.uri.queryParameters['selectedDay'] ??
-                                        '1',
-                              )),
+                          builder: (context, state) {
+                            final photobookId = state.uri.queryParameters['photobookId'] ?? '';
+                            final selectedDay = state.uri.queryParameters['selectedDay'] ?? '1';
+
+                            return BlocProvider(
+                                create: (context) => PhotobookDetailBloc(
+                                  photobookRepository: GetIt.instance<PhotobookRepository>(),
+                                )..add(PhotobookDetailInitialize(int.parse(photobookId))),
+                                child: PhotobookDetailScreen(
+                                photobookId: photobookId,
+                                selectedDay: selectedDay,
+                              )
+                            );
+                          }
+                      ),
                       GoRoute(
                           path: Routes.photobookMap.path,
                           name: Routes.photobookMap.name,
                           parentNavigatorKey: _rootNavigatorKey,
-                          builder: (context, state) => PhotobookMapScreen(
-                                photobookId:
-                                    state.uri.queryParameters['photobookId'] ??
-                                        '',
-                              )),
+                          builder: (context, state) => BlocProvider(
+                            create: (context) => PhotobookDetailBloc(
+                              photobookRepository: GetIt.instance<PhotobookRepository>(),
+                            )..add(PhotobookDetailInitialize(int.parse(state.uri.queryParameters['photobookId'] ?? ''))),
+                            child: const PhotobookMapScreen()
+                          )
+                      ),
                       GoRoute(
                         path: Routes.photobookImageList.path,
                         name: Routes.photobookImageList.name,
@@ -461,20 +498,36 @@ enum Routes {
                   GoRoute(
                       path: Routes.myPage.path,
                       name: Routes.myPage.name,
-                      builder: (context, state) => const MyPageScreen(),
+                      builder: (context, state) => BlocProvider(
+                        create: (context) => MyPageBloc(
+                          authRepository: GetIt.instance<AuthRepository>(),
+                          secureStorage: GetIt.instance<FlutterSecureStorage>(),
+                        ),
+                        child: const MyPageScreen()
+                      ),
                       routes: [
                         GoRoute(
                             path: Routes.myPageSetting.path,
                             name: Routes.myPageSetting.name,
                             parentNavigatorKey: _rootNavigatorKey,
-                            builder: (context, state) => MyPageSettingScreen(
-                                  nickname:
-                                      state.uri.queryParameters['nickname'] ??
-                                          "",
-                                  loginType: LoginProvider.fromJson(
-                                      state.uri.queryParameters['loginType'] ??
-                                          ""),
-                                )),
+                            builder: (context, state) {
+                              final nickname = state.uri.queryParameters['nickname'] ?? '';
+                              final loginType = LoginProvider.fromJson(state.uri.queryParameters['loginType'] ?? "");
+
+                              return BlocProvider(
+                                create: (context) =>
+                                MyPageSettingBloc(
+                                  authRepository: GetIt.instance<
+                                      AuthRepository>(),
+                                )
+                                  ..add(MyPageSettingInitialize(
+                                    nickname: nickname, loginType: loginType)
+                                  ),
+                                child: MyPageSettingScreen(
+                                  nickname: nickname, loginType: loginType),
+                              );
+                            }
+                        )
                       ]),
                 ],
               ),
@@ -524,12 +577,19 @@ enum Routes {
         GoRoute(
           path: Routes.search.path,
           name: Routes.search.name,
-          builder: (context, state) => const SearchScreen(),
+          builder: (context, state) => BlocProvider(
+            create: (context) => SearchBloc(GetIt.instance<SearchRepository>())..add(FetchPopularKeywords()),
+            child: const SearchScreen(),
+          )
         ),
         GoRoute(
           path: Routes.favorites.path,
           name: Routes.favorites.name,
-          builder: (context, state) => const FavoritesScreen(),
+          builder: (context, state) => BlocProvider(
+            create: (context) =>
+              FavoritesBloc(repository: GetIt.instance<FavoriteRepository>())..add(LoadFavorites()),
+            child: const FavoritesScreen()
+          )
         ),
         GoRoute(
             path: Routes.areaFilter.path,

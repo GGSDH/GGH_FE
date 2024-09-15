@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/ui/home/recommended_lane_bloc.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../data/models/sigungu_code.dart';
-import '../../data/repository/favorite_repository.dart';
-import '../../data/repository/trip_repository.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
@@ -22,13 +19,7 @@ class RecommendedLaneScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => RecommendedLaneBloc(
-        tripRepository: GetIt.instance<TripRepository>(),
-        favoriteRepository: GetIt.instance<FavoriteRepository>(),
-      )..add(RecommendedLaneInitialize()),
-      child: BlocSideEffectListener<RecommendedLaneBloc,
-          RecommendedLaneSideEffect>(
+    return BlocSideEffectListener<RecommendedLaneBloc, RecommendedLaneSideEffect>(
         listener: (context, sideEffect) {
           if (sideEffect is RecommendedLaneShowError) {
             ToastUtil.showToast(context, sideEffect.message);
@@ -187,8 +178,7 @@ class RecommendedLaneScreen extends StatelessWidget {
               );
             }
           },
-        ),
-      ),
+        )
     );
   }
 

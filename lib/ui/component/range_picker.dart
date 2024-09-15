@@ -5,16 +5,15 @@ import 'package:intl/intl.dart';
 
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
+import '../../util/toast_util.dart';
 
 class RangePicker extends StatefulWidget {
   const RangePicker({
     super.key,
-    required this.onConfirmed,
-    required this.onShowSnackBar,
+    required this.onConfirmed
   });
 
   final void Function(DateTime startDate, DateTime endDate) onConfirmed;
-  final void Function(String message) onShowSnackBar;
 
   @override
   _RangePickerState createState() => _RangePickerState();
@@ -50,13 +49,13 @@ class _RangePickerState extends State<RangePicker> {
         endDate = day;
       } else if (day.isBefore(startDate!)) {
         if (endDate!.difference(day).inDays > 5) {
-          widget.onShowSnackBar("앗! 최대 5박 6일까지만 선택할 수 있어요.");
+          ToastUtil.showToast(context, "앗! 최대 5박 6일까지만 선택할 수 있어요.", bottomPadding: 50);
         } else {
           startDate = day;
         }
       } else if (endDate == null || day.isAfter(endDate!)) {
         if (startDate != null && day.difference(startDate!).inDays > 5) {
-          widget.onShowSnackBar("앗! 최대 5박 6일까지만 선택할 수 있어요.");
+          ToastUtil.showToast(context, "앗! 최대 5박 6일까지만 선택할 수 있어요.", bottomPadding: 50);
         } else {
           endDate = day;
         }

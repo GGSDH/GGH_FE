@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/ui/component/app/app_file_image.dart';
@@ -10,7 +9,6 @@ import 'package:gyeonggi_express/ui/photobook/photobook_detail_bloc.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../data/models/response/photobook_response.dart';
-import '../../data/repository/photobook_repository.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
@@ -37,79 +35,74 @@ class _PhotobookDetailScreenState extends State<PhotobookDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => PhotobookDetailBloc(
-        photobookRepository: GetIt.instance<PhotobookRepository>(),
-      )..add(PhotobookDetailInitialize(int.parse(widget.photobookId))),
-      child: BlocSideEffectListener<PhotobookDetailBloc, PhotobookDetailSideEffect>(
-        listener: (context, sideEffect) {
-          if (sideEffect is PhotobookDetailShowError) {
-            ToastUtil.showToast(context, sideEffect.message);
-          } else if (sideEffect is PhotobookFetchComplete) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              // Scroll to the selected day after the widget is built
-              _scrollToSelectedDay();
-            });
-          }
-        },
-        child: BlocBuilder<PhotobookDetailBloc, PhotobookDetailState>(
-          builder: (context, state) {
-            if (state.isLoading) {
-              return const Material(
-                color: Colors.white,
-                child: Center(child: CircularProgressIndicator())
-              );
-            }
-
-            return Scaffold(
-              backgroundColor: Colors.white,
-              body: SafeArea(
-                child: Column(
-                  children: [
-                    AppActionBar(
-                      onBackPressed: () => GoRouter.of(context).pop(),
-                      menuItems: [
-                        ActionBarMenuItem(
-                            icon: SvgPicture.asset(
-                              "assets/icons/ic_map.svg",
-                              width: 24,
-                              height: 24,
-                            ),
-                            onPressed: () {
-                              GoRouter.of(context).push(
-                                  Uri(
-                                    path: "${Routes.photobook.path}/${Routes.photobookMap.path}",
-                                    queryParameters: {
-                                      "photobookId": widget.photobookId,
-                                    },
-                                  ).toString());
-                            })
-                      ],
-                    ),
-                    Expanded(
-                      child: ListView.builder(
-                        controller: _scrollController,
-                        itemCount: state.photobookDailyPhotoGroups.length,
-                        itemBuilder: (context, index) {
-                          final dailyPhotoGroup = state.photobookDailyPhotoGroups[index];
-                          return Column(
-                            key: _dayKeys[index],  // Assign GlobalKey to each day item
-                            children: [
-                              _dayItem(dailyPhotoGroup, index),
-                              ...dailyPhotoGroup.hourlyPhotoGroups.map((hourlyPhotoGroup) {
-                                return _hourItem(hourlyPhotoGroup);
-                              }),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+    return BlocSideEffectListener<PhotobookDetailBloc, PhotobookDetailSideEffect>(
+      listener: (context, sideEffect) {
+        if (sideEffect is PhotobookDetailShowError) {
+          ToastUtil.showToast(context, sideEffect.message);
+        } else if (sideEffect is PhotobookFetchComplete) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            // Scroll to the selected day after the widget is built
+            _scrollToSelectedDay();
+          });
+        }
+      },
+      child: BlocBuilder<PhotobookDetailBloc, PhotobookDetailState>(
+        builder: (context, state) {
+          if (state.isLoading) {
+            return const Material(
+              color: Colors.white,
+              child: Center(child: CircularProgressIndicator())
             );
-          },
-        ),
+          }
+
+          return Scaffold(
+            backgroundColor: Colors.white,
+            body: SafeArea(
+              child: Column(
+                children: [
+                  AppActionBar(
+                    onBackPressed: () => GoRouter.of(context).pop(),
+                    menuItems: [
+                      ActionBarMenuItem(
+                          icon: SvgPicture.asset(
+                            "assets/icons/ic_map.svg",
+                            width: 24,
+                            height: 24,
+                          ),
+                          onPressed: () {
+                            GoRouter.of(context).push(
+                                Uri(
+                                  path: "${Routes.photobook.path}/${Routes.photobookMap.path}",
+                                  queryParameters: {
+                                    "photobookId": widget.photobookId,
+                                  },
+                                ).toString());
+                          })
+                    ],
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      itemCount: state.photobookDailyPhotoGroups.length,
+                      itemBuilder: (context, index) {
+                        final dailyPhotoGroup = state.photobookDailyPhotoGroups[index];
+                        return Column(
+                          key: _dayKeys[index],  // Assign GlobalKey to each day item
+                          children: [
+                            _dayItem(dailyPhotoGroup, index),
+                            ...dailyPhotoGroup.hourlyPhotoGroups.map((hourlyPhotoGroup) {
+                              return _hourItem(hourlyPhotoGroup);
+                            }),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }

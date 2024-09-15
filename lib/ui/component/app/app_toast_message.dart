@@ -6,10 +6,12 @@ import '../../../themes/text_styles.dart';
 
 class AppToastMessage extends StatelessWidget {
   final String message;
+  final double bottomPadding;
 
   const AppToastMessage({
     super.key,
-    required this.message
+    required this.message,
+    this.bottomPadding = 80
   });
 
   @override
@@ -51,7 +53,7 @@ class AppToastMessage extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 80)
+        SizedBox(height: bottomPadding)
       ],
     );
   }

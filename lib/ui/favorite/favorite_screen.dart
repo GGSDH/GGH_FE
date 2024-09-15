@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/data/models/response/lane_response.dart';
 import 'package:gyeonggi_express/data/models/response/tour_area_summary_response.dart';
-import 'package:gyeonggi_express/data/repository/favorite_repository.dart';
 import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/themes/color_styles.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
@@ -20,38 +18,33 @@ class FavoritesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          FavoritesBloc(repository: GetIt.instance<FavoriteRepository>())
-            ..add(LoadFavorites()),
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-          child: DefaultTabController(
-            length: 2,
-            child: Column(
-              children: [
-                const TabBar(
-                  tabs: [
-                    Tab(text: '노선'),
-                    Tab(text: '역'),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: DefaultTabController(
+          length: 2,
+          child: Column(
+            children: [
+              const TabBar(
+                tabs: [
+                  Tab(text: '노선'),
+                  Tab(text: '역'),
+                ],
+                indicatorColor: ColorStyles.gray900,
+                indicatorWeight: 1,
+                indicatorSize: TabBarIndicatorSize.tab,
+                labelColor: Colors.black,
+                unselectedLabelColor: ColorStyles.gray400,
+              ),
+              Expanded(
+                child: TabBarView(
+                  children: [
+                    _buildContent(isLaneTab: true),
+                    _buildContent(isLaneTab: false),
                   ],
-                  indicatorColor: ColorStyles.gray900,
-                  indicatorWeight: 1,
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  labelColor: Colors.black,
-                  unselectedLabelColor: ColorStyles.gray400,
                 ),
-                Expanded(
-                  child: TabBarView(
-                    children: [
-                      _buildContent(isLaneTab: true),
-                      _buildContent(isLaneTab: false),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

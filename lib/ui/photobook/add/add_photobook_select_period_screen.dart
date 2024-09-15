@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/route_extension.dart';
-import 'package:gyeonggi_express/ui/component/app/app_toast_message.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -24,7 +22,6 @@ class AddPhotobookSelectPeriodScreen extends StatefulWidget {
 
 class _AddPhotobookSelectPeriodScreenState extends State<AddPhotobookSelectPeriodScreen> {
   late TextEditingController titleController;
-  late FToast fToast;
   DateTime? startDate;
   DateTime? endDate;
 
@@ -44,9 +41,6 @@ class _AddPhotobookSelectPeriodScreenState extends State<AddPhotobookSelectPerio
                   "startDate": startDate,
                   "endDate": endDate,
                 });
-              },
-              onShowSnackBar: (message) {
-                fToast.showToast(child: AppToastMessage(message: message));
               }
             ),
           ]
@@ -65,8 +59,6 @@ class _AddPhotobookSelectPeriodScreenState extends State<AddPhotobookSelectPerio
   @override
   void initState() {
     super.initState();
-    fToast = FToast();
-    fToast.init(context);
     titleController = TextEditingController();
     titleController.addListener(_onTextChanged);
   }

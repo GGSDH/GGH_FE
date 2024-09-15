@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/data/models/login_provider.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
-import '../../data/repository/auth_repository.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
 import '../../util/toast_util.dart';
@@ -44,16 +42,7 @@ class _MyPageSettingScreenState extends State<MyPageSettingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => MyPageSettingBloc(
-        authRepository: GetIt.instance<AuthRepository>(),
-      )..add(
-        MyPageSettingInitialize(
-          nickname: widget.nickname,
-          loginType: widget.loginType,
-        ),
-      ),
-      child: BlocSideEffectListener<MyPageSettingBloc, MyPageSettingSideEffect>(
+    return  BlocSideEffectListener<MyPageSettingBloc, MyPageSettingSideEffect>(
         listener: (context, sideEffect) {
           if (sideEffect is MyPageSettingShowError) {
             ToastUtil.showToast(context, sideEffect.message);
@@ -80,8 +69,7 @@ class _MyPageSettingScreenState extends State<MyPageSettingScreen> {
             }
           },
         ),
-      ),
-    );
+      );
   }
 }
 

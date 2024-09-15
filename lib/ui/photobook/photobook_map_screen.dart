@@ -3,23 +3,19 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/ui/component/app/app_action_bar.dart';
 import 'package:gyeonggi_express/ui/photobook/photobook_detail_bloc.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../constants.dart';
-import '../../data/repository/photobook_repository.dart';
 import '../../util/naver_map_util.dart';
 import '../../util/toast_util.dart';
 
 class PhotobookMapScreen extends StatefulWidget {
-  final String photobookId;
 
   const PhotobookMapScreen({
     super.key,
-    required this.photobookId,
   });
 
   @override
@@ -31,42 +27,37 @@ class _PhotobookMapScreenState extends State<PhotobookMapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => PhotobookDetailBloc(
-        photobookRepository: GetIt.instance<PhotobookRepository>(),
-      )..add(PhotobookDetailInitialize(int.parse(widget.photobookId))),
-      child: BlocSideEffectListener<PhotobookDetailBloc, PhotobookDetailSideEffect>(
-        listener: (context, sideEffect) {
-          if (sideEffect is PhotobookDetailShowError) {
-            ToastUtil.showToast(context, sideEffect.message);
+    return BlocSideEffectListener<PhotobookDetailBloc, PhotobookDetailSideEffect>(
+      listener: (context, sideEffect) {
+        if (sideEffect is PhotobookDetailShowError) {
+          ToastUtil.showToast(context, sideEffect.message);
+        }
+      },
+      child: BlocBuilder<PhotobookDetailBloc, PhotobookDetailState>(
+        builder: (context, state) {
+          if (state.isLoading) {
+            return const Center(child: CircularProgressIndicator());
           }
-        },
-        child: BlocBuilder<PhotobookDetailBloc, PhotobookDetailState>(
-          builder: (context, state) {
-            if (state.isLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
 
-            return Scaffold(
-              backgroundColor: Colors.white,
-              body: SafeArea(
-                child: Column(
-                  children: [
-                    AppActionBar(
-                      onBackPressed: () => GoRouter.of(context).pop(),
+          return Scaffold(
+            backgroundColor: Colors.white,
+            body: SafeArea(
+              child: Column(
+                children: [
+                  AppActionBar(
+                    onBackPressed: () => GoRouter.of(context).pop(),
+                  ),
+                  Expanded(
+                    child: _MapSection(
+                      mapControllerCompleter: _mapControllerCompleter,
+                      photobookDetailCards: state.photobookDetailCards,
                     ),
-                    Expanded(
-                      child: _MapSection(
-                        mapControllerCompleter: _mapControllerCompleter,
-                        photobookDetailCards: state.photobookDetailCards,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }

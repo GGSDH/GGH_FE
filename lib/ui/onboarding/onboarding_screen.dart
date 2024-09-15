@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
@@ -10,7 +8,6 @@ import 'package:gyeonggi_express/ui/component/app/app_button.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../data/models/response/onboarding_response.dart';
-import '../../data/repository/auth_repository.dart';
 import '../../routes.dart';
 import '../../util/toast_util.dart';
 import 'component/select_grid.dart';
@@ -22,32 +19,26 @@ class OnboardingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => OnboardingBloc(
-        authRepository: GetIt.instance.get<AuthRepository>(),
-        secureStorage: GetIt.instance.get<FlutterSecureStorage>(),
-      ),
-      child: BlocSideEffectListener<OnboardingBloc, OnboardingSideEffect>(
-        listener: (context, sideEffect) {
-          if (sideEffect is OnboardingComplete) {
-            GoRouter.of(context).go(Routes.onboardingComplete.path);
-          } else if (sideEffect is OnboardingShowError) {
-            ToastUtil.showToast(context, sideEffect.message);
+    return BlocSideEffectListener<OnboardingBloc, OnboardingSideEffect>(
+      listener: (context, sideEffect) {
+        if (sideEffect is OnboardingComplete) {
+          GoRouter.of(context).go(Routes.onboardingComplete.path);
+        } else if (sideEffect is OnboardingShowError) {
+          ToastUtil.showToast(context, sideEffect.message);
+        }
+      },
+      child: BlocBuilder<OnboardingBloc, OnboardingState>(
+        builder: (context, state) {
+          if (state.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else {
+            return OnboardingScreenContent(
+              selectedThemes: state.selectedThemes,
+              themes: state.themes,
+              onboardingBloc: context.read<OnboardingBloc>(),
+            );
           }
-        },
-        child: BlocBuilder<OnboardingBloc, OnboardingState>(
-          builder: (context, state) {
-            if (state.isLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else {
-              return OnboardingScreenContent(
-                selectedThemes: state.selectedThemes,
-                themes: state.themes,
-                onboardingBloc: context.read<OnboardingBloc>(),
-              );
-            }
-          }
-        )
+        }
       )
     );
   }
@@ -119,9 +110,9 @@ class OnboardingScreenContent extends StatelessWidget {
               onPressed: () {
                 BlocProvider.of<OnboardingBloc>(context).add(OnboardingNextButtonClicked(selectedThemes: selectedThemes));
               },
-              isEnabled: selectedThemes.isNotEmpty,
+              isEnabled: selectedThemes.length >= 2,
               onIllegalPressed: () {
-                ToastUtil.showToast(context, "여행 테마를 선택해 주세요");
+                ToastUtil.showToast(context, "여행 테마를 2개 이상 선택해 주세요");
               },
             ),
           ),

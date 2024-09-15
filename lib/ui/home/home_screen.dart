@@ -38,7 +38,7 @@ class HomeScreen extends StatelessWidget {
       child: BlocSideEffectListener<HomeBloc, HomeSideEffect>(
         listener: (context, sideEffect) {
           if (sideEffect is HomeShowError) {
-            ToastUtil.showToast(context, sideEffect.message);
+            ToastUtil.showToast(context, sideEffect.message, bottomPadding: 0);
           }
         },
         child: BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
