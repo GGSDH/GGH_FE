@@ -7,6 +7,7 @@ import 'package:gyeonggi_express/ui/component/range_picker_list_item.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
+import '../../util/toast_util.dart';
 import '../component/app/app_action_bar.dart';
 import '../component/app/app_button.dart';
 
@@ -117,21 +118,13 @@ class _RecommendSelectPeriodScreenState extends State<RecommendSelectPeriodScree
                                     endDate = day;
                                   } else if (day.isBefore(startDate!)) {
                                     if (endDate!.difference(day).inDays > 5) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text("앗! 최대 5박 6일까지만 가능해요.")
-                                        )
-                                      );
+                                      ToastUtil.showToast(context, "앗! 최대 5박 6일까지만 가능해요.");
                                     } else {
                                       startDate = day;
                                     }
                                   } else if (day.isAfter(endDate!)) {
                                     if (day.difference(startDate!).inDays > 5) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text("앗! 최대 5박 6일까지만 가능해요.")
-                                        )
-                                      );
+                                      ToastUtil.showToast(context, "앗! 최대 5박 6일까지만 가능해요.");
                                     } else {
                                       endDate = day;
                                     }

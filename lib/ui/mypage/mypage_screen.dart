@@ -13,6 +13,7 @@ import '../../data/repository/auth_repository.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
+import '../../util/toast_util.dart';
 import 'mypage_bloc.dart';
 
 class MyPageScreen extends StatelessWidget {
@@ -41,11 +42,7 @@ class MyPageScreen extends StatelessWidget {
               context.read<MyPageBloc>().add(MyPageInitialize());
             });
           } else if (sideEffect is MyPageShowError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(sideEffect.message),
-              ),
-            );
+            ToastUtil.showToast(context, sideEffect.message);
           } else if (sideEffect is MyPageNavigateToLogin) {
             GoRouter.of(context).go(Routes.login.path);
           }

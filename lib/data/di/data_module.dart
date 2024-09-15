@@ -29,7 +29,6 @@ import 'package:gyeonggi_express/data/repository/tour_area_repository.dart';
 import 'package:gyeonggi_express/data/repository/tour_area_repository_impl.dart';
 import 'package:gyeonggi_express/data/repository/trip_repository.dart';
 import 'package:gyeonggi_express/data/repository/trip_repository_impl.dart';
-import 'package:gyeonggi_express/ui/recommend/recommend_lane_bloc.dart';
 
 final getIt = GetIt.instance;
 
@@ -83,7 +82,6 @@ void setupLocator() {
         () => SearchRepositoryImpl(getIt<SearchDatasource>()),
   );
 
-  // Register other services
   getIt.registerLazySingleton<FlutterSecureStorage>(
         () => const FlutterSecureStorage(),
   );

@@ -13,6 +13,7 @@ import '../../data/repository/photobook_repository.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
+import '../../util/toast_util.dart';
 import '../component/app/app_file_image.dart';
 import '../component/app/app_image_plaeholder.dart';
 
@@ -52,11 +53,7 @@ class _PhotobookCardScreenState extends State<PhotobookCardScreen> {
       child: BlocSideEffectListener<PhotobookDetailBloc, PhotobookDetailSideEffect>(
         listener: (context, sideEffect) {
           if (sideEffect is PhotobookDetailShowError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(sideEffect.message),
-              ),
-            );
+            ToastUtil.showToast(context, sideEffect.message);
           } else if (sideEffect is PhotobookDeleteComplete) {
             GoRouter.of(context).pop(true);
           }

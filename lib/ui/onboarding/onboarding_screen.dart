@@ -12,6 +12,7 @@ import 'package:side_effect_bloc/side_effect_bloc.dart';
 import '../../data/models/response/onboarding_response.dart';
 import '../../data/repository/auth_repository.dart';
 import '../../routes.dart';
+import '../../util/toast_util.dart';
 import 'component/select_grid.dart';
 import 'onboarding_bloc.dart';
 
@@ -31,11 +32,7 @@ class OnboardingScreen extends StatelessWidget {
           if (sideEffect is OnboardingComplete) {
             GoRouter.of(context).go(Routes.onboardingComplete.path);
           } else if (sideEffect is OnboardingShowError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(sideEffect.message)
-              )
-            );
+            ToastUtil.showToast(context, sideEffect.message);
           }
         },
         child: BlocBuilder<OnboardingBloc, OnboardingState>(
@@ -124,9 +121,7 @@ class OnboardingScreenContent extends StatelessWidget {
               },
               isEnabled: selectedThemes.isNotEmpty,
               onIllegalPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('여행 테마를 선택해 주세요')),
-                );
+                ToastUtil.showToast(context, "여행 테마를 선택해 주세요");
               },
             ),
           ),

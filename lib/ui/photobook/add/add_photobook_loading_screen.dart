@@ -12,6 +12,7 @@ import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../../routes.dart';
 import '../../../themes/text_styles.dart';
+import '../../../util/toast_util.dart';
 import 'add_photobook_bloc.dart';
 
 class AddPhotobookLoadingScreen extends StatefulWidget {
@@ -89,11 +90,7 @@ class _AddPhotobookLoadingScreenState extends State<AddPhotobookLoadingScreen> {
       child: BlocSideEffectListener<AddPhotobookBloc, AddPhotobookSideEffect>(
         listener: (context, sideEffect) {
           if (sideEffect is AddPhotobookShowError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(sideEffect.message),
-              ),
-            );
+            ToastUtil.showToast(context, sideEffect.message);
           } else if (sideEffect is AddPhotobookComplete) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               GoRouter.of(context).go(

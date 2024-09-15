@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -12,6 +13,7 @@ import 'package:side_effect_bloc/side_effect_bloc.dart';
 import '../../../routes.dart';
 import '../../../themes/color_styles.dart';
 import '../../../themes/text_styles.dart';
+import '../../../util/toast_util.dart';
 
 class SelectPhotoTicketScreen extends StatefulWidget {
   const SelectPhotoTicketScreen({super.key});
@@ -40,9 +42,7 @@ class _SelectPhotoTicketScreenState extends State<SelectPhotoTicketScreen> {
     return BlocSideEffectListener<SelectPhotoTicketBloc, SelectPhotoTicketSideEffect>(
       listener: (context, sideEffect) {
         if (sideEffect is SelectPhotoTicketShowError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(sideEffect.message)),
-          );
+          ToastUtil.showToast(context, sideEffect.message);
         }
       },
       child: BlocBuilder<SelectPhotoTicketBloc, SelectPhotoTicketState>(

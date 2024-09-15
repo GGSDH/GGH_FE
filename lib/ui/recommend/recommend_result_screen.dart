@@ -18,6 +18,7 @@ import '../../data/models/trip_theme.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../util/naver_map_util.dart';
+import '../../util/toast_util.dart';
 import '../component/app/app_image_plaeholder.dart';
 
 class RecommendResultScreen extends StatefulWidget {
@@ -45,11 +46,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
     return BlocSideEffectListener<RecommendLaneBloc, RecommendLaneSideEffect>(
       listener: (BuildContext context, RecommendLaneSideEffect sideEffect) {
         if (sideEffect is RecommendLaneShowError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(sideEffect.message),
-            ),
-          );
+          ToastUtil.showToast(context, sideEffect.message);
         }
       },
       child: BlocBuilder<RecommendLaneBloc, RecommendLaneState>(

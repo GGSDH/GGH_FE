@@ -14,36 +14,45 @@ class AppToastMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 24, 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(100),
-        boxShadow: const [
-          BoxShadow(
-            color: ColorStyles.gray700,
-            offset: Offset(0, 2),
-            blurRadius: 10,
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.fromLTRB(16, 12, 24, 12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(100),
+            boxShadow: const [
+              BoxShadow(
+                color: ColorStyles.gray400,
+                offset: Offset(0, 2),
+                blurRadius: 10,
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SvgPicture.asset(
-            "assets/icons/ic_error.svg",
-            width: 24,
-            height: 24
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                "assets/icons/ic_error.svg",
+                width: 24,
+                height: 24
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  message,
+                  style: TextStyles.titleMedium.copyWith(
+                    color: ColorStyles.gray900,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 8),
-          Text(
-            message,
-            style: TextStyles.titleMedium.copyWith(
-              color: ColorStyles.gray900,
-            ),
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 80)
+      ],
     );
   }
 }

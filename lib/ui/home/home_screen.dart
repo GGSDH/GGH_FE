@@ -19,6 +19,7 @@ import '../../data/repository/trip_repository.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
+import '../../util/toast_util.dart';
 import 'home_bloc.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -37,11 +38,7 @@ class HomeScreen extends StatelessWidget {
       child: BlocSideEffectListener<HomeBloc, HomeSideEffect>(
         listener: (context, sideEffect) {
           if (sideEffect is HomeShowError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(sideEffect.message),
-              ),
-            );
+            ToastUtil.showToast(context, sideEffect.message);
           }
         },
         child: BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {

@@ -13,6 +13,7 @@ import '../../data/repository/trip_repository.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
+import '../../util/toast_util.dart';
 import '../component/app/app_action_bar.dart';
 import '../component/lane/lane_list_item.dart';
 
@@ -30,9 +31,7 @@ class RecommendedLaneScreen extends StatelessWidget {
           RecommendedLaneSideEffect>(
         listener: (context, sideEffect) {
           if (sideEffect is RecommendedLaneShowError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(sideEffect.message)),
-            );
+            ToastUtil.showToast(context, sideEffect.message);
           }
         },
         child: BlocBuilder<RecommendedLaneBloc, RecommendedLaneState>(

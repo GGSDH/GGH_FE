@@ -18,6 +18,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../data/models/response/tour_area_response.dart';
 import '../../routes.dart';
+import '../../util/toast_util.dart';
 import '../component/app/app_image_plaeholder.dart';
 
 class StationDetailScreen extends StatelessWidget {
@@ -30,9 +31,7 @@ class StationDetailScreen extends StatelessWidget {
     return BlocSideEffectListener<StationDetailBloc, StationDetailSideEffect>(
       listener: (context, sideEffect) {
         if (sideEffect is StationDetailShowError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(sideEffect.message)),
-          );
+          ToastUtil.showToast(context, sideEffect.message);
         }
       },
       child: BlocBuilder<StationDetailBloc, StationDetailState>(

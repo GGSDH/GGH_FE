@@ -16,6 +16,7 @@ import 'package:gyeonggi_express/util/naver_map_util.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../routes.dart';
+import '../../util/toast_util.dart';
 import '../component/app/app_image_plaeholder.dart';
 
 class LaneDetailScreen extends StatefulWidget {
@@ -36,11 +37,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
     return BlocSideEffectListener<LaneDetailBloc, LaneDetailSideEffect>(
       listener: (context, sideEffect) {
         if (sideEffect is LaneDetailShowError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(sideEffect.message),
-            ),
-          );
+          ToastUtil.showToast(context, sideEffect.message);
         }
       },
       child: BlocBuilder<LaneDetailBloc, LaneDetailState>(

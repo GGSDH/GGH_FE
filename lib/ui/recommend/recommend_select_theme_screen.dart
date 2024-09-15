@@ -6,6 +6,7 @@ import 'package:gyeonggi_express/route_extension.dart';
 import '../../data/models/trip_theme.dart';
 import '../../routes.dart';
 import '../../themes/text_styles.dart';
+import '../../util/toast_util.dart';
 import '../component/app/app_action_bar.dart';
 import '../component/app/app_button.dart';
 import '../onboarding/component/select_grid.dart';
@@ -74,11 +75,7 @@ class _RecommendSelectThemeScreenState extends State<RecommendSelectThemeScreen>
                               selectedThemes.remove(themeId);
                             } else {
                               if (selectedThemes.length >= 2) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text("앗! 최대 2개까지만 선택 가능해요.")
-                                    )
-                                );
+                                ToastUtil.showToast(context, "앗! 최대 2개까지만 선택 가능해요.");
                               } else {
                                 selectedThemes.add(themeId);
                               }
@@ -112,9 +109,7 @@ class _RecommendSelectThemeScreenState extends State<RecommendSelectThemeScreen>
                     },
                     isEnabled: selectedThemes.isNotEmpty,
                     onIllegalPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('여행 테마를 선택해 주세요')),
-                      );
+                      ToastUtil.showToast(context, "여행 테마를 선택해 주세요");
                     },
                   ),
                 ),

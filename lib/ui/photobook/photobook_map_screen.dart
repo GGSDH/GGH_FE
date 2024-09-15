@@ -12,6 +12,7 @@ import 'package:side_effect_bloc/side_effect_bloc.dart';
 import '../../constants.dart';
 import '../../data/repository/photobook_repository.dart';
 import '../../util/naver_map_util.dart';
+import '../../util/toast_util.dart';
 
 class PhotobookMapScreen extends StatefulWidget {
   final String photobookId;
@@ -37,9 +38,7 @@ class _PhotobookMapScreenState extends State<PhotobookMapScreen> {
       child: BlocSideEffectListener<PhotobookDetailBloc, PhotobookDetailSideEffect>(
         listener: (context, sideEffect) {
           if (sideEffect is PhotobookDetailShowError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(sideEffect.message)),
-            );
+            ToastUtil.showToast(context, sideEffect.message);
           }
         },
         child: BlocBuilder<PhotobookDetailBloc, PhotobookDetailState>(

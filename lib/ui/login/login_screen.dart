@@ -17,6 +17,7 @@ import '../../data/repository/auth_repository.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
+import '../../util/toast_util.dart';
 import 'component/social_login_button.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -62,11 +63,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
               } else if (sideEffect is LoginNavigateToOnboarding) {
                 GoRouter.of(context).push(Routes.onboarding.path);
               } else if (sideEffect is LoginShowError) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(sideEffect.message),
-                  ),
-                );
+                ToastUtil.showToast(context, sideEffect.message);
               }
             },
           ),

@@ -11,6 +11,7 @@ import '../../data/models/sigungu_code.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
+import '../../util/toast_util.dart';
 import '../component/app/app_action_bar.dart';
 import '../component/app/app_image_plaeholder.dart';
 import 'local_restaruant_bloc.dart';
@@ -56,9 +57,7 @@ class _LocalRestaurantScreenState extends State<LocalRestaurantScreen> {
     return BlocSideEffectListener<LocalRestaurantBloc, LocalRestaurantSideEffect>(
       listener: (context, sideEffect) {
         if (sideEffect is LocalRestaurantShowError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(sideEffect.message)),
-          );
+          ToastUtil.showToast(context, sideEffect.message);
         }
       },
       child: BlocBuilder<LocalRestaurantBloc, LocalRestaurantState>(

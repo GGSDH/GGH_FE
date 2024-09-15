@@ -16,6 +16,7 @@ import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
 import '../../util/naver_map_util.dart';
+import '../../util/toast_util.dart';
 import '../component/photo_ticket_item.dart';
 import '../component/photobook/photobook_list_item.dart';
 
@@ -121,11 +122,7 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware, Tick
     return BlocSideEffectListener<PhotobookBloc, PhotobookSideEffect>(
       listener: (context, sideEffect) {
         if (sideEffect is PhotobookShowError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(sideEffect.message),
-            ),
-          );
+          ToastUtil.showToast(context, sideEffect.message);
         } else if (sideEffect is PhotobookShowBottomSheet) {
           _showBottomSheet(
             sideEffect.photobooks,

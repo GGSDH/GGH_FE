@@ -9,6 +9,7 @@ import 'package:gyeonggi_express/ui/home/popular_destination_bloc.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../data/models/response/popular_destination_response.dart';
+import '../../util/toast_util.dart';
 import '../component/app/app_image_plaeholder.dart';
 
 class PopularDestinationScreen extends StatelessWidget {
@@ -19,9 +20,7 @@ class PopularDestinationScreen extends StatelessWidget {
     return BlocSideEffectListener<PopularDestinationBloc, PopularDestinationSideEffect>(
       listener: (context, sideEffect) {
         if (sideEffect is PopularDestinationShowError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(sideEffect.message)),
-          );
+          ToastUtil.showToast(context, sideEffect.message);
         }
       },
       child: BlocBuilder<PopularDestinationBloc, PopularDestinationState>(

@@ -9,6 +9,7 @@ import '../../../data/models/response/onboarding_response.dart';
 import '../../../data/repository/auth_repository.dart';
 import '../../../routes.dart';
 import '../../../themes/text_styles.dart';
+import '../../../util/toast_util.dart';
 import '../../component/app/app_action_bar.dart';
 import '../../component/app/app_button.dart';
 import '../../onboarding/component/select_grid.dart';
@@ -29,11 +30,7 @@ class AddPhotobookSelectThemeScreen extends StatelessWidget {
           if (sideEffect is AddPhotobookSelectThemeComplete) {
             GoRouter.of(context).go("${Routes.photobook.path}/${Routes.addPhotobook.path}/${Routes.addPhotobookLoading.path}");
           } else if (sideEffect is AddPhotobookSelectThemeShowError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(sideEffect.message)
-              )
-            );
+            ToastUtil.showToast(context, sideEffect.message);
           }
         },
         child: BlocBuilder<AddPhotobookSelectThemeBloc, AddPhotobookSelectThemeState>(
@@ -121,9 +118,7 @@ class AddPhotobookSelectThemeScreenContent extends StatelessWidget {
                   },
                   isEnabled: selectedThemes.isNotEmpty,
                   onIllegalPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('여행 테마를 선택해 주세요')),
-                    );
+                    ToastUtil.showToast(context, "여행 테마를 선택해 주세요");
                   },
                 ),
               ),

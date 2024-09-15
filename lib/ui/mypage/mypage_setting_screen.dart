@@ -9,6 +9,7 @@ import 'package:side_effect_bloc/side_effect_bloc.dart';
 import '../../data/repository/auth_repository.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
+import '../../util/toast_util.dart';
 import '../component/app/app_text_field.dart';
 import 'mypage_setting_bloc.dart';
 
@@ -55,11 +56,7 @@ class _MyPageSettingScreenState extends State<MyPageSettingScreen> {
       child: BlocSideEffectListener<MyPageSettingBloc, MyPageSettingSideEffect>(
         listener: (context, sideEffect) {
           if (sideEffect is MyPageSettingShowError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(sideEffect.message),
-              ),
-            );
+            ToastUtil.showToast(context, sideEffect.message);
           } else if (sideEffect is MyPageSettingNavigateToMyPage) {
             GoRouter.of(context).pop();
           }

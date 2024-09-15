@@ -4,9 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/route_extension.dart';
-import 'package:gyeonggi_express/ui/component/app/app_action_bar.dart';
 import 'package:gyeonggi_express/themes/color_styles.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
+import 'package:gyeonggi_express/ui/component/app/app_action_bar.dart';
 import 'package:gyeonggi_express/ui/component/app/app_image_plaeholder.dart';
 import 'package:gyeonggi_express/ui/home/category_detail_bloc.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
@@ -14,6 +14,7 @@ import 'package:side_effect_bloc/side_effect_bloc.dart';
 import '../../data/models/sigungu_code.dart';
 import '../../data/models/trip_theme.dart';
 import '../../routes.dart';
+import '../../util/toast_util.dart';
 
 class CategoryDetailScreen extends StatefulWidget {
   final TripTheme category;
@@ -55,9 +56,7 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen>
     return BlocSideEffectListener<CategoryDetailBloc, CategoryDetailSideEffect>(
       listener: (context, sideEffect) {
         if (sideEffect is CategoryDetailShowError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(sideEffect.message)),
-          );
+          ToastUtil.showToast(context, sideEffect.message);
         }
       },
       child: BlocBuilder<CategoryDetailBloc, CategoryDetailState>(

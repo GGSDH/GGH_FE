@@ -7,6 +7,7 @@ import 'package:gyeonggi_express/ui/component/app/app_button.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
+import '../../util/toast_util.dart';
 import '../component/app/app_action_bar.dart';
 
 class RecommendSelectRegionScreen extends StatefulWidget {
@@ -102,9 +103,7 @@ class RecommendSelectRegionState extends State<RecommendSelectRegionScreen> {
             _selectedAreas.remove(code);
           } else {
             if (_selectedAreas.length >= 2) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("앗! 최대 2곳까지만 선택 가능해요."))
-              );
+              ToastUtil.showToast(context, "앗! 최대 2곳까지만 선택 가능해요.");
             } else {
               _selectedAreas.add(code);
             }
