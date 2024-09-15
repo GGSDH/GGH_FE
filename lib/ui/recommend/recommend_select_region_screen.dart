@@ -24,67 +24,69 @@ class RecommendSelectRegionState extends State<RecommendSelectRegionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      child: SafeArea(
-        child: Column(
-          children: [
-            AppActionBar(
-              onBackPressed: () => GoRouter.of(context).pop(),
-              rightText: '1/3',
-            ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: Container(
-                width: MediaQuery.of(context).size.width,// Padding을 Expanded 바깥으로 이동
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "어디를 여행하고 싶으신가요?",
-                        style: TextStyles.headlineXSmall.copyWith(
-                          color: ColorStyles.gray900,
+    return Scaffold(
+      body: Material(
+        color: Colors.white,
+        child: SafeArea(
+          child: Column(
+            children: [
+              AppActionBar(
+                onBackPressed: () => GoRouter.of(context).pop(),
+                rightText: '1/3',
+              ),
+              const SizedBox(height: 20),
+              Expanded(
+                child: Container(
+                  width: MediaQuery.of(context).size.width,// Padding을 Expanded 바깥으로 이동
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "어디를 여행하고 싶으신가요?",
+                          style: TextStyles.headlineXSmall.copyWith(
+                            color: ColorStyles.gray900,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        "가고 싶은 모든 여행지를 선택해 주세요.",
-                        style: TextStyles.bodyLarge.copyWith(
-                          color: ColorStyles.gray600,
+                        const SizedBox(height: 4),
+                        Text(
+                          "가고 싶은 모든 여행지를 최대 2곳만 선택해 주세요",
+                          style: TextStyles.bodyLarge.copyWith(
+                            color: ColorStyles.gray600,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      Wrap(
-                        spacing: 6,
-                        runSpacing: 6,
-                        children: chips.map((chip) => areaChip(chip)).toList(),
-                      ),
-                      const SizedBox(height: 20)
-                    ],
+                        const SizedBox(height: 20),
+                        Wrap(
+                          spacing: 6,
+                          runSpacing: 6,
+                          children: chips.map((chip) => areaChip(chip)).toList(),
+                        ),
+                        const SizedBox(height: 20)
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(14),
-              child: AppButton(
-                text: '다음',
-                onPressed: () {
-                  GoRouter.of(context).push(
-                    Uri(
-                      path: "${Routes.recommend.path}/${Routes.recommendSelectPeriod.path}",
-                      queryParameters: {
-                        "selectedSigunguCodes": _selectedAreas.map((e) => SigunguCode.toJson(e)).join(","),
-                      }
-                    ).toString()
-                  );
-                },
-                isEnabled: _selectedAreas.isNotEmpty,
+              Padding(
+                padding: const EdgeInsets.all(14),
+                child: AppButton(
+                  text: '다음',
+                  onPressed: () {
+                    GoRouter.of(context).push(
+                      Uri(
+                        path: "${Routes.recommend.path}/${Routes.recommendSelectPeriod.path}",
+                        queryParameters: {
+                          "selectedSigunguCodes": _selectedAreas.map((e) => SigunguCode.toJson(e)).join(","),
+                        }
+                      ).toString()
+                    );
+                  },
+                  isEnabled: _selectedAreas.isNotEmpty,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -99,7 +101,13 @@ class RecommendSelectRegionState extends State<RecommendSelectRegionScreen> {
           if (isSelected) {
             _selectedAreas.remove(code);
           } else {
-            _selectedAreas.add(code);
+            if (_selectedAreas.length >= 2) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("앗! 최대 2곳까지만 선택 가능해요."))
+              );
+            } else {
+              _selectedAreas.add(code);
+            }
           }
         });
       },

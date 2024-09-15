@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -41,6 +42,8 @@ class _AddPhotobookLoadingScreenState extends State<AddPhotobookLoadingScreen> {
   @override
   void initState() {
     super.initState();
+
+    log("startDate: ${widget.startDate}, endDate: ${widget.endDate}");
 
     // 자동 스크롤을 위한 Listener
     _scrollController.addListener(() {

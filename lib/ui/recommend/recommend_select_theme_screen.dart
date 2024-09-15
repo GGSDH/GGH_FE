@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/data/models/sigungu_code.dart';
 import 'package:gyeonggi_express/route_extension.dart';
-import 'package:gyeonggi_express/ui/recommend/recommend_lane_bloc.dart';
-import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../data/models/trip_theme.dart';
 import '../../routes.dart';
@@ -76,7 +73,15 @@ class _RecommendSelectThemeScreenState extends State<RecommendSelectThemeScreen>
                             if (selectedThemes.contains(themeId)) {
                               selectedThemes.remove(themeId);
                             } else {
-                              selectedThemes.add(themeId);
+                              if (selectedThemes.length >= 2) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text("앗! 최대 2개까지만 선택 가능해요.")
+                                    )
+                                );
+                              } else {
+                                selectedThemes.add(themeId);
+                              }
                             }
                           });
                         },

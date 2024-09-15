@@ -67,7 +67,7 @@ class _RecommendSelectPeriodScreenState extends State<RecommendSelectPeriodScree
                           style: TextStyles.headlineXSmall
                               .copyWith(color: ColorStyles.gray900)),
                       const SizedBox(height: 4),
-                      Text('일정을 선택해 주세요',
+                      Text('첫 날과 마지막 날을 선택해 주세요',
                           style: TextStyles.bodyLarge
                               .copyWith(color: ColorStyles.gray600)),
                       const SizedBox(height: 10),
@@ -116,9 +116,25 @@ class _RecommendSelectPeriodScreenState extends State<RecommendSelectPeriodScree
                                     startDate = day;
                                     endDate = day;
                                   } else if (day.isBefore(startDate!)) {
-                                    startDate = day;
+                                    if (endDate!.difference(day).inDays > 5) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text("앗! 최대 5박 6일까지만 가능해요.")
+                                        )
+                                      );
+                                    } else {
+                                      startDate = day;
+                                    }
                                   } else if (day.isAfter(endDate!)) {
-                                    endDate = day;
+                                    if (day.difference(startDate!).inDays > 5) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text("앗! 최대 5박 6일까지만 가능해요.")
+                                        )
+                                      );
+                                    } else {
+                                      endDate = day;
+                                    }
                                   } else {
                                     startDate = day;
                                     endDate = day;

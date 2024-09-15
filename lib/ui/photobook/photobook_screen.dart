@@ -343,8 +343,6 @@ class _PhotoTicketSection extends StatelessWidget {
                       AddPhotoTicketItem(
                         onTap: () {
                           GoRouter.of(context).push("${Routes.photobook.path}/${Routes.selectPhotoTicket.path}").then((result) {
-                            print('result : $result');
-
                             if (result == true) {
                               context.read<PhotobookBloc>().add(FetchPhotoTickets());
                               tabController.animateTo(1);
