@@ -8,8 +8,8 @@ import 'package:gyeonggi_express/ui/home/recommended_lane_bloc.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../data/models/sigungu_code.dart';
-import '../../data/repository/trip_repository.dart';
 import '../../data/repository/favorite_repository.dart';
+import '../../data/repository/trip_repository.dart';
 import '../../routes.dart';
 import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
@@ -127,7 +127,7 @@ class RecommendedLaneScreen extends StatelessWidget {
                           ),
                         ),
                         Expanded(
-                          child: ListView.builder(
+                          child: state.lanes.isNotEmpty ? ListView.builder(
                             itemCount: state.lanes.length,
                             itemBuilder: (context, index) {
                               final lane = state.lanes[index];
@@ -161,6 +161,24 @@ class RecommendedLaneScreen extends StatelessWidget {
                                 ),
                               );
                             },
+                          ) : Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const SizedBox(height: 80),
+                              SvgPicture.asset(
+                                'assets/icons/ic_search_empty.svg',
+                                width: 80,
+                                height: 80,
+                              ),
+                              const SizedBox(height: 16),
+                              const Text(
+                                "정보를 수집하고 있습니다.",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
