@@ -9,10 +9,12 @@ import '../../themes/text_styles.dart';
 class RangePicker extends StatefulWidget {
   const RangePicker({
     super.key,
-    required this.onConfirmed
+    required this.onConfirmed,
+    required this.onShowSnackBar,
   });
 
   final void Function(DateTime startDate, DateTime endDate) onConfirmed;
+  final void Function(String message) onShowSnackBar;
 
   @override
   _RangePickerState createState() => _RangePickerState();
@@ -43,11 +45,21 @@ class _RangePickerState extends State<RangePicker> {
 
   void _onDaySelected(DateTime day) {
     setState(() {
-      if (startDate == null || (endDate != null && day.isBefore(startDate!))) {
+      if (startDate == null || endDate == null) {
         startDate = day;
-        endDate = null;
-      } else if (endDate == null || day.isAfter(endDate!)) {
         endDate = day;
+      } else if (day.isBefore(startDate!)) {
+        if (endDate!.difference(day).inDays > 5) {
+          widget.onShowSnackBar("앗! 최대 5박 6일까지만 선택할 수 있어요.");
+        } else {
+          startDate = day;
+        }
+      } else if (endDate == null || day.isAfter(endDate!)) {
+        if (startDate != null && day.difference(startDate!).inDays > 5) {
+          widget.onShowSnackBar("앗! 최대 5박 6일까지만 선택할 수 있어요.");
+        } else {
+          endDate = day;
+        }
       } else {
         startDate = day;
         endDate = null;

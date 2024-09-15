@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/route_extension.dart';
+import 'package:gyeonggi_express/ui/component/app/app_toast_message.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -22,6 +24,7 @@ class AddPhotobookSelectPeriodScreen extends StatefulWidget {
 
 class _AddPhotobookSelectPeriodScreenState extends State<AddPhotobookSelectPeriodScreen> {
   late TextEditingController titleController;
+  late FToast fToast;
   DateTime? startDate;
   DateTime? endDate;
 
@@ -42,6 +45,9 @@ class _AddPhotobookSelectPeriodScreenState extends State<AddPhotobookSelectPerio
                   "endDate": endDate,
                 });
               },
+              onShowSnackBar: (message) {
+                fToast.showToast(child: AppToastMessage(message: message));
+              }
             ),
           ]
         );
@@ -59,6 +65,8 @@ class _AddPhotobookSelectPeriodScreenState extends State<AddPhotobookSelectPerio
   @override
   void initState() {
     super.initState();
+    fToast = FToast();
+    fToast.init(context);
     titleController = TextEditingController();
     titleController.addListener(_onTextChanged);
   }
@@ -80,148 +88,150 @@ class _AddPhotobookSelectPeriodScreenState extends State<AddPhotobookSelectPerio
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      child: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AppActionBar(
-              onBackPressed: () {
-                GoRouter.of(context).pop();
-              },
-              rightText: '1/2',
-            ),
-
-            const SizedBox(height: 40),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                "포토북으로 만들고 싶은 여행 기간과\n제목을 입력해 주세요",
-                style: TextStyles.headlineXSmall.copyWith(
-                  color: ColorStyles.gray900,
-                ),
+    return Scaffold(
+      body: Material(
+        color: Colors.white,
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AppActionBar(
+                onBackPressed: () {
+                  GoRouter.of(context).pop();
+                },
+                rightText: '1/2',
               ),
-            ),
 
-            const SizedBox(height: 38),
+              const SizedBox(height: 40),
 
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                "기간",
-                style: TextStyles.bodyLarge.copyWith(
-                  color: ColorStyles.gray900,
-                )
-              ),
-            ),
-
-            const SizedBox(height: 8),
-
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16, vertical: 12
-                ),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: ColorStyles.gray300,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  "포토북으로 만들고 싶은 여행 기간과\n제목을 입력해 주세요",
+                  style: TextStyles.headlineXSmall.copyWith(
+                    color: ColorStyles.gray900,
                   ),
-                  borderRadius: BorderRadius.circular(8),
                 ),
-                child: Row(
-                  children: [
-                    Text(
-                      startDate != null && endDate != null
-                          ? "${dateFormat.format(startDate!)} ~ ${dateFormat.format(endDate!)}"
-                          : "기간을 선택해 주세요",
-                      style: TextStyles.bodyLarge.copyWith(
-                        color: startDate != null && endDate != null
-                          ? ColorStyles.gray900
-                          : ColorStyles.gray500,
-                      ),
+              ),
+
+              const SizedBox(height: 38),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  "기간",
+                  style: TextStyles.bodyLarge.copyWith(
+                    color: ColorStyles.gray900,
+                  )
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16, vertical: 12
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: ColorStyles.gray300,
                     ),
-
-                    const Spacer(),
-
-                    GestureDetector(
-                      onTap: () {
-                        _showRangePicker(context);
-                      },
-                      child: SvgPicture.asset(
-                        "assets/icons/ic_calendar.svg",
-                        width: 20,
-                        height: 20,
-                        fit: BoxFit.fill,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        startDate != null && endDate != null
+                            ? "${dateFormat.format(startDate!)} ~ ${dateFormat.format(endDate!)}"
+                            : "기간을 선택해 주세요",
+                        style: TextStyles.bodyLarge.copyWith(
+                          color: startDate != null && endDate != null
+                            ? ColorStyles.gray900
+                            : ColorStyles.gray500,
+                        ),
                       ),
-                    ),
-                  ],
+
+                      const Spacer(),
+
+                      GestureDetector(
+                        onTap: () {
+                          _showRangePicker(context);
+                        },
+                        child: SvgPicture.asset(
+                          "assets/icons/ic_calendar.svg",
+                          width: 20,
+                          height: 20,
+                          fit: BoxFit.fill,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
 
-            const SizedBox(height: 32),
+              const SizedBox(height: 32),
 
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                "제목",
-                style: TextStyles.bodyLarge.copyWith(
-                  color: ColorStyles.gray900,
-                )
-              ),
-            ),
-
-            const SizedBox(height: 8),
-
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: AppTextField(
-                controller: titleController,
-                hintText: "Ex. 감성힐링선",
-                hintStyle: TextStyles.bodyLarge.copyWith(
-                  color: ColorStyles.gray500,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  "제목",
+                  style: TextStyles.bodyLarge.copyWith(
+                    color: ColorStyles.gray900,
+                  )
                 ),
-                suffixIconAsset: "assets/icons/ic_clear.svg",
-                onSuffixIconPressed: () {
-                  titleController.clear();
-                },
               ),
-            ),
 
-            const Spacer(),
+              const SizedBox(height: 8),
 
-            Padding(
-              padding: const EdgeInsets.all(14),
-              child: AppButton(
-                text: "다음",
-                onPressed: () async {
-                  final status = await Permission.photos.request();
-
-                  if (status.isPermanentlyDenied) {
-                    await openAppSettings();
-                  }
-                  else if (status.isGranted) {
-                    final startDateTime = DateTime(startDate!.year, startDate!.month, startDate!.day, 0, 0, 0);
-                    final endDateTime = DateTime(endDate!.year, endDate!.month, endDate!.day, 23, 59, 59);
-
-                    GoRouter.of(context).push(
-                        "${Routes.photobook.path}/${Routes.addPhotobook.path}/${Routes.addPhotobookLoading.path}?startDate=$startDateTime&endDate=$endDateTime&title=${titleController.text}"
-                    );
-                  }
-                  else {
-                    print("권한이 거부되었습니다.");
-                  }
-                },
-                isEnabled: startDate != null && endDate != null && titleController.text.isNotEmpty,
-                onIllegalPressed: () {},
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: AppTextField(
+                  controller: titleController,
+                  hintText: "Ex. 감성힐링선",
+                  hintStyle: TextStyles.bodyLarge.copyWith(
+                    color: ColorStyles.gray500,
+                  ),
+                  suffixIconAsset: "assets/icons/ic_clear.svg",
+                  onSuffixIconPressed: () {
+                    titleController.clear();
+                  },
+                ),
               ),
-            ),
-          ],
-        ),
-      )
+
+              const Spacer(),
+
+              Padding(
+                padding: const EdgeInsets.all(14),
+                child: AppButton(
+                  text: "다음",
+                  onPressed: () async {
+                    final status = await Permission.photos.request();
+
+                    if (status.isPermanentlyDenied) {
+                      await openAppSettings();
+                    }
+                    else if (status.isGranted) {
+                      final startDateTime = DateTime(startDate!.year, startDate!.month, startDate!.day, 0, 0, 0);
+                      final endDateTime = DateTime(endDate!.year, endDate!.month, endDate!.day, 23, 59, 59);
+
+                      GoRouter.of(context).push(
+                          "${Routes.photobook.path}/${Routes.addPhotobook.path}/${Routes.addPhotobookLoading.path}?startDate=$startDateTime&endDate=$endDateTime&title=${titleController.text}"
+                      );
+                    }
+                    else {
+                      print("권한이 거부되었습니다.");
+                    }
+                  },
+                  isEnabled: startDate != null && endDate != null && titleController.text.isNotEmpty,
+                  onIllegalPressed: () {},
+                ),
+              ),
+            ],
+          ),
+        )
+      ),
     );
   }
 }
