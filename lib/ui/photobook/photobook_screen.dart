@@ -160,6 +160,7 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware, Tick
                                     },
                                   ),
                                   _PhotoTicketSection(
+                                    photobookCount: state.photobooks.length,
                                     photoTickets: state.photoTickets,
                                     tabController: _tabController
                                   )
@@ -303,10 +304,12 @@ class _PhotobookSection extends StatelessWidget {
 }
 
 class _PhotoTicketSection extends StatelessWidget {
+  final int photobookCount;
   final List<PhotoTicketResponse> photoTickets;
   final TabController tabController;
 
   _PhotoTicketSection({
+    required this.photobookCount,
     required this.photoTickets,
     required this.tabController,
   });
@@ -332,7 +335,7 @@ class _PhotoTicketSection extends StatelessWidget {
               aspectRatio: 0.9,
               child: PageView.builder(
                 controller: _controller,
-                itemCount: photoTickets.length + 1,
+                itemCount: (photobookCount == photoTickets.length) ? photoTickets.length : photoTickets.length + 1,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
