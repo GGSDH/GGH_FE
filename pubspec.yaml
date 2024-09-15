@@ -61,6 +61,7 @@ dependencies:
   stream_transform: ^2.1.0
   equatable: ^2.0.5
   url_launcher: ^6.3.0
+  fluttertoast: ^8.2.8
 
 dev_dependencies:
   flutter_test:
