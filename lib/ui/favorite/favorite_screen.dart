@@ -61,7 +61,7 @@ class FavoritesScreen extends StatelessWidget {
         } else {
           final items = isLaneTab ? state.lanes : state.tourAreas;
           if (items.isEmpty) {
-            return _buildEmptyState(isLaneTab);
+            return _buildEmptyState(context, isLaneTab);
           }
           return ListView.builder(
             itemCount: items.length,
@@ -85,7 +85,7 @@ class FavoritesScreen extends StatelessWidget {
                   image: lane.image,
                   period: lane.getPeriodString(),
                   likeCount: lane.likeCount,
-                  isLiked: true,
+                  isLiked: lane.likedByMe,
                 );
               } else {
                 final tourArea = items[index] as TourAreaSummary;
@@ -119,7 +119,7 @@ class FavoritesScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState(bool isLaneTab) {
+  Widget _buildEmptyState(BuildContext context, bool isLaneTab) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -149,7 +149,13 @@ class FavoritesScreen extends StatelessWidget {
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () {
-              // TODO: Implement navigation to appropriate screen
+              if (isLaneTab) {
+                GoRouter.of(context)
+                    .go("${Routes.home.path}/${Routes.recommendedLanes.path}");
+              } else {
+                GoRouter.of(context).go(
+                    "${Routes.home.path}/${Routes.popularDestinations.path}");
+              }
             },
             style: ElevatedButton.styleFrom(
               foregroundColor: Colors.white,

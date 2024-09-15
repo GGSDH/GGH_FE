@@ -109,7 +109,8 @@ class FavoritesBloc extends Bloc<FavoritesEvent, FavoritesState> {
       success: (_) {
         final updatedLanes = state.lanes.map((lane) {
           if (lane.laneId == event.laneId) {
-            return lane.copyWith(likeCount: lane.likeCount + 1);
+            return lane.copyWith(
+                likeCount: lane.likeCount + 1, likedByMe: true);
           }
           return lane;
         }).toList();
@@ -127,7 +128,8 @@ class FavoritesBloc extends Bloc<FavoritesEvent, FavoritesState> {
       success: (_) {
         final updatedLanes = state.lanes.map((lane) {
           if (lane.laneId == event.laneId) {
-            return lane.copyWith(likeCount: lane.likeCount - 1);
+            return lane.copyWith(
+                likeCount: lane.likeCount - 1, likedByMe: false);
           }
           return lane;
         }).toList();
