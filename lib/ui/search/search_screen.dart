@@ -94,6 +94,8 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
                           );
                         } else if (state is SearchResultsLoaded) {
                           return SearchResults(results: state.results);
+                        } else if (state is NoSearchResults) {
+                          return NoResultsFound(searchTerm: state.searchTerm);
                         } else if (state is SearchError) {
                           return Center(child: Text(state.message));
                         } else {
@@ -355,6 +357,37 @@ class SearchResults extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class NoResultsFound extends StatelessWidget {
+  final String searchTerm;
+
+  const NoResultsFound({super.key, required this.searchTerm});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(width: 80, height: 80),
+          SvgPicture.asset(
+            'assets/icons/ic_no_results.svg',
+            width: 80,
+            height: 80,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            '검색 결과가 없습니다.',
+            style: TextStyles.titleMedium.copyWith(
+              color: ColorStyles.gray900,
+              fontWeight: FontWeight.w600,
+            ),
+          )
+        ],
+      ),
     );
   }
 }

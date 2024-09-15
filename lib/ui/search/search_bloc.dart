@@ -13,7 +13,6 @@ class FetchPopularKeywords extends SearchEvent {}
 
 class PerformSearch extends SearchEvent {
   final String keyword;
-
   PerformSearch(this.keyword);
 
   @override
@@ -22,7 +21,6 @@ class PerformSearch extends SearchEvent {
 
 class ClearSearch extends SearchEvent {}
 
-// States
 abstract class SearchState extends Equatable {
   @override
   List<Object> get props => [];
@@ -34,7 +32,6 @@ class SearchLoading extends SearchState {}
 
 class PopularKeywordsLoaded extends SearchState {
   final List<PopularKeyword> keywords;
-
   PopularKeywordsLoaded(this.keywords);
 
   @override
@@ -43,16 +40,22 @@ class PopularKeywordsLoaded extends SearchState {
 
 class SearchResultsLoaded extends SearchState {
   final List<KeywordSearchResult> results;
-
   SearchResultsLoaded(this.results);
 
   @override
   List<Object> get props => [results];
 }
 
+class NoSearchResults extends SearchState {
+  final String searchTerm;
+  NoSearchResults(this.searchTerm);
+
+  @override
+  List<Object> get props => [searchTerm];
+}
+
 class SearchError extends SearchState {
   final String message;
-
   SearchError(this.message);
 
   @override
@@ -88,9 +91,20 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     emit(SearchLoading());
     final result = await repository.search(event.keyword);
     result.when(
-      success: (searchResults) => emit(SearchResultsLoaded(searchResults)),
-      apiError: (errorMessage, errorCode) =>
-          emit(SearchError('$errorMessage (Code: $errorCode)')),
+      success: (searchResults) {
+        if (searchResults.isEmpty) {
+          emit(NoSearchResults(event.keyword));
+        } else {
+          emit(SearchResultsLoaded(searchResults));
+        }
+      },
+      apiError: (errorMessage, errorCode) {
+        if (errorCode == '404') {
+          emit(NoSearchResults(event.keyword));
+        } else {
+          emit(SearchError('$errorMessage (Code: $errorCode)'));
+        }
+      },
     );
   }
 
