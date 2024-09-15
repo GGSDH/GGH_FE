@@ -17,6 +17,7 @@ import '../../themes/color_styles.dart';
 import '../../themes/text_styles.dart';
 import '../../util/naver_map_util.dart';
 import '../../util/toast_util.dart';
+import '../component/app/app_button.dart';
 import '../component/photo_ticket_item.dart';
 import '../component/photobook/photobook_list_item.dart';
 
@@ -316,9 +317,76 @@ class _PhotoTicketSection extends StatelessWidget {
 
   final PageController _controller = PageController(viewportFraction: 0.8);
 
+  Widget _buildNoPhotoTicketItem(
+    BuildContext context
+  ) {
+    return Column(
+      children: [
+        Expanded(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "여행의 소중한 순간을\n포토티켓에 담아보세요.",
+                  style: TextStyles.title2ExtraLarge.copyWith(
+                    color: ColorStyles.gray900,
+                  ),
+                  textAlign: TextAlign.center
+                ),
+                const SizedBox(height: 40),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset(
+                      "assets/icons/ic_loading_photo_one.svg",
+                      width: 105,
+                      height: 141,
+                      fit: BoxFit.cover,
+                    ),
+                    const SizedBox(width: 10),
+                    SvgPicture.asset(
+                      "assets/icons/ic_loading_photo_two.svg",
+                      width: 105,
+                      height: 141,
+                      fit: BoxFit.cover,
+                    ),
+                    const SizedBox(width: 10),
+                    SvgPicture.asset(
+                      "assets/icons/ic_loading_photo_three.svg",
+                      width: 105,
+                      height: 141,
+                      fit: BoxFit.cover,
+                    ),
+                  ],
+                )
+              ],
+            ),
+          )
+        ),
+        Text(
+          "하나의 포토북에 하나의 포토티켓이 발행돼요.",
+          style: TextStyles.bodyMedium.copyWith(
+            color: ColorStyles.gray600,
+          )
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(14, 14, 14, 20),
+          child: AppButton(
+            text: '바로가기',
+            onPressed: () {
+              GoRouter.of(context).push("${Routes.photobook.path}/${Routes.addPhotobook.path}");
+            }
+          ),
+        )
+      ]
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return (photobookCount == 0) ? _buildNoPhotoTicketItem(context) :
+    Stack(
       children: [
         Positioned(
           bottom: -100,
