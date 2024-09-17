@@ -378,12 +378,10 @@ class NoResultsFound extends StatelessWidget {
             width: 80,
             height: 80,
           ),
-          const SizedBox(height: 16),
           Text(
             '검색 결과가 없습니다.',
             style: TextStyles.titleMedium.copyWith(
               color: ColorStyles.gray900,
-              fontWeight: FontWeight.w600,
             ),
           )
         ],
