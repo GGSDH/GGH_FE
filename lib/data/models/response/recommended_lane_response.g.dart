@@ -15,6 +15,8 @@ RecommendedLaneResponse _$RecommendedLaneResponseFromJson(
           .map((e) => DayPlan.fromJson(e as Map<String, dynamic>))
           .toList(),
       id: (json['id'] as num).toInt(),
+      sigunguCode: RecommendedLaneResponse._sigunguCodeFromJson(
+          json['sigunguCode'] as List),
     );
 
 Map<String, dynamic> _$RecommendedLaneResponseToJson(
@@ -24,6 +26,8 @@ Map<String, dynamic> _$RecommendedLaneResponseToJson(
       'description': instance.description,
       'days': instance.days.map((e) => e.toJson()).toList(),
       'id': instance.id,
+      'sigunguCode':
+          RecommendedLaneResponse._sigunguCodeToJson(instance.sigunguCode),
     };
 
 DayPlan _$DayPlanFromJson(Map<String, dynamic> json) => DayPlan(

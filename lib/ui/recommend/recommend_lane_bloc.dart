@@ -27,6 +27,7 @@ final class RecommendLaneState {
         description: '',
         days: [],
         id: 0,
+        sigunguCode: [],
       ),
     );
   }

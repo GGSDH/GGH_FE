@@ -55,7 +55,7 @@ class _RecommendSelectThemeScreenState extends State<RecommendSelectThemeScreen>
                           ),
                           SizedBox(height: 4),
                           Text(
-                            "원하는 여행 테마를 선택해 주세요.",
+                            "원하는 여행 테마를 최대 2개 선택해 주세요.",
                             style: TextStyles.bodyLarge
                           ),
                         ],
