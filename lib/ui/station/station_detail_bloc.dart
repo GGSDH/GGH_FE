@@ -36,6 +36,7 @@ final class StationDetailState {
       contentType: TourContentType.RESTAURANT,
       tripTheme: TripTheme.NATURAL,
       sigungu: SigunguCode.ANSAN,
+      description: "",
     ),
     lanes: [],
     otherTourAreas: [],

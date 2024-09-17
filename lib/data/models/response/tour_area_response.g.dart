@@ -21,6 +21,7 @@ TourAreaResponse _$TourAreaResponseFromJson(Map<String, dynamic> json) =>
       likeCount: (json['likeCount'] as num).toInt(),
       likedByMe: json['likedByMe'] as bool,
       contentType: TourContentType.fromJson(json['contentType'] as String),
+      description: json['description'] as String,
     );
 
 Map<String, dynamic> _$TourAreaResponseToJson(TourAreaResponse instance) =>
@@ -38,4 +39,5 @@ Map<String, dynamic> _$TourAreaResponseToJson(TourAreaResponse instance) =>
       'likeCount': instance.likeCount,
       'likedByMe': instance.likedByMe,
       'contentType': TourContentType.toJson(instance.contentType),
+      'description': instance.description,
     };

@@ -1,5 +1,6 @@
 import 'package:gyeonggi_express/data/models/tour_content_type.dart';
 import 'package:json_annotation/json_annotation.dart';
+
 import '../sigungu_code.dart';
 import '../trip_theme.dart';
 
@@ -53,6 +54,9 @@ class TourAreaResponse {
       toJson: TourContentType.toJson)
   final TourContentType contentType;
 
+  @JsonKey(name: 'description')
+  final String description;
+
   TourAreaResponse({
     required this.tourAreaId,
     required this.name,
@@ -67,6 +71,7 @@ class TourAreaResponse {
     required this.likeCount,
     required this.likedByMe,
     required this.contentType,
+    required this.description,
   });
 
   // fromJson 메서드 생성
@@ -90,6 +95,7 @@ class TourAreaResponse {
     int? likeCount,
     bool? likedByMe,
     TourContentType? contentType,
+    String? description,
   }) {
     return TourAreaResponse(
       tourAreaId: tourAreaId ?? this.tourAreaId,
@@ -105,6 +111,7 @@ class TourAreaResponse {
       likeCount: likeCount ?? this.likeCount,
       likedByMe: likedByMe ?? this.likedByMe,
       contentType: contentType ?? this.contentType,
+      description: description ?? this.description,
     );
   }
 }

@@ -69,8 +69,6 @@ class StationDetailScreen extends StatelessWidget {
 
                               final url = "nmap://route/public?dlat=$formattedLatitude&dlng=$formattedLongitude&dname=$encodedTourArea&appname=com.ggsdh.gyeonggiexpress";
 
-                              print(url);
-
                               final canLaunch = await canLaunchUrl(Uri.parse(url));
                               if (canLaunch) {
                                 await launchUrl(
@@ -219,6 +217,13 @@ class StationDetailScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(tourArea.name, style: TextStyles.title2ExtraLarge),
+          if (tourArea.description.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(
+              tourArea.description,
+              style: TextStyles.bodyLarge.copyWith(color: ColorStyles.gray600)
+            ),
+          ],
           if (tourArea.telNo != null && tourArea.telNo!.isNotEmpty) ...[
             const SizedBox(height: 8),
             Container(
@@ -230,13 +235,13 @@ class StationDetailScreen extends StatelessWidget {
                     Text(
                       "전화",
                       style: TextStyles.titleSmall.copyWith(
-                          color: ColorStyles.gray800, fontWeight: FontWeight.w600),
+                          color: ColorStyles.gray800),
                     ),
                     const SizedBox(width: 8),
                     Text(
                       tourArea.telNo!,
                       style: TextStyles.titleSmall.copyWith(
-                          color: ColorStyles.gray600, fontWeight: FontWeight.w400),
+                          color: ColorStyles.gray600),
                     ),
                   ],
                 ),
