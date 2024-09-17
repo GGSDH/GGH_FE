@@ -7,7 +7,6 @@ import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../../data/models/request/add_photobook_request.dart';
 import '../../../data/repository/photobook_repository.dart';
-import '../../../util/isolate_util.dart';
 
 final class AddPhotobookState {
   final bool isLoading;
@@ -128,65 +127,60 @@ class AddPhotobookBloc extends SideEffectBloc<AddPhotobookEvent, AddPhotobookSta
       List<AssetPathEntity> albums = await PhotoManager.getAssetPathList(type: RequestType.image);
       if (albums.isEmpty) return [];
 
-      // Isolate를 사용한 병렬 처리
-      final List<AddPhotoItem> photos = await computeIsolate(
-        _filterPhotosByMetadata,
-        _IsolatePhotoParams(startDate, endDate, albums),
-      );
+      List<AddPhotoItem> photos = [];
+      Set<String> uniquePaths = {}; // 중복된 파일 경로를 체크하기 위한 Set
+
+      for (var album in albums) {
+        int albumCount = await album.assetCountAsync;
+
+        // 배치 크기 설정
+        int batchSize = 100;
+        for (int i = 0; i < albumCount; i += batchSize) {
+          int end = (i + batchSize > albumCount) ? albumCount : i + batchSize;
+          List<AssetEntity> albumPhotos = await album.getAssetListRange(start: i, end: end);
+
+          for (var asset in albumPhotos) {
+            DateTime assetDate = asset.createDateTime;
+
+            // 날짜 필터링
+            if ((assetDate.isAfter(startDate) || assetDate.isAtSameMomentAs(startDate)) &&
+                (assetDate.isBefore(endDate) || assetDate.isAtSameMomentAs(endDate))) {
+
+              // 파일 로드 전에 중복 확인
+              File? file = await asset.file;
+              if (file != null) {
+                final filePath = extractRelativePath(file.path);
+
+                // 중복된 파일 경로가 아닐 경우에만 처리
+                if (!uniquePaths.contains(filePath)) {
+                  uniquePaths.add(filePath);
+
+                  final latLng = await asset.latlngAsync();
+
+                  if (latLng.latitude == null || latLng.longitude == null) {
+                    continue;
+                  }
+
+                  // 사진 메타데이터와 파일 경로를 AddPhotoItem으로 추가
+                  final item = AddPhotoItem(
+                    timestamp: assetDate.toString(),
+                    latitude: latLng.latitude!,
+                    longitude: latLng.longitude!,
+                    path: filePath,
+                  );
+                  photos.add(item);
+                }
+              }
+            }
+          }
+        }
+      }
 
       return photos;
     } catch (e) {
       print("Error scanning photos: $e");
       return [];
     }
-  }
-
-  // 메타데이터로 필터링하여 필요한 파일만 로드하는 함수
-  Future<List<AddPhotoItem>> _filterPhotosByMetadata(_IsolatePhotoParams params) async {
-    List<AddPhotoItem> photos = [];
-    Set<String> uniquePaths = {};
-
-    for (var album in params.albums) {
-      int albumCount = await album.assetCountAsync;
-      int batchSize = 100;
-
-      for (int i = 0; i < albumCount; i += batchSize) {
-        int end = (i + batchSize > albumCount) ? albumCount : i + batchSize;
-        List<AssetEntity> albumPhotos = await album.getAssetListRange(start: i, end: end);
-
-        for (var asset in albumPhotos) {
-          DateTime assetDate = asset.createDateTime;
-
-          // 메타데이터로 날짜 필터링
-          if ((assetDate.isAfter(params.startDate) || assetDate.isAtSameMomentAs(params.startDate)) &&
-              (assetDate.isBefore(params.endDate) || assetDate.isAtSameMomentAs(params.endDate))) {
-
-            // 필요한 메타데이터만 먼저 처리
-            final latitude = asset.latitude ?? 0;
-            final longitude = asset.longitude ?? 0;
-
-            // 파일 로드 전에 경로 추출 및 중복 확인
-            final filePath = asset.relativePath;  // 메타데이터 기반 파일 경로
-            if (!uniquePaths.contains(filePath)) {
-              uniquePaths.add(filePath!);
-
-              // 필요한 사진만 파일을 로드
-              File? file = await asset.file;
-              if (file != null) {
-                final item = AddPhotoItem(
-                  timestamp: assetDate.toString(),
-                  latitude: latitude,
-                  longitude: longitude,
-                  path: extractRelativePath(file.path),
-                );
-                photos.add(item);
-              }
-            }
-          }
-        }
-      }
-    }
-    return photos;
   }
 
   String extractRelativePath(String filePath) {
@@ -197,12 +191,4 @@ class AddPhotobookBloc extends SideEffectBloc<AddPhotobookEvent, AddPhotobookSta
       return filePath;
     }
   }
-}
-
-class _IsolatePhotoParams {
-  final DateTime startDate;
-  final DateTime endDate;
-  final List<AssetPathEntity> albums;
-
-  _IsolatePhotoParams(this.startDate, this.endDate, this.albums);
 }

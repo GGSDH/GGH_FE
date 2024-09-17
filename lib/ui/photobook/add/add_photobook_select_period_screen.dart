@@ -199,12 +199,15 @@ class _AddPhotobookSelectPeriodScreenState extends State<AddPhotobookSelectPerio
                 child: AppButton(
                   text: "다음",
                   onPressed: () async {
-                    final status = await Permission.photos.request();
+                    // 사진 권한과 위치 권한을 동시에 요청
+                    final photosStatus = await Permission.photos.request();
 
-                    if (status.isPermanentlyDenied) {
+                    // 둘 중 하나라도 영구적으로 거부되면 앱 설정 열기
+                    if (photosStatus.isPermanentlyDenied) {
                       await openAppSettings();
                     }
-                    else if (status.isGranted) {
+                    // 둘 다 권한이 허용된 경우
+                    else if (photosStatus.isGranted) {
                       final startDateTime = DateTime(startDate!.year, startDate!.month, startDate!.day, 0, 0, 0);
                       final endDateTime = DateTime(endDate!.year, endDate!.month, endDate!.day, 23, 59, 59);
 
@@ -212,6 +215,7 @@ class _AddPhotobookSelectPeriodScreenState extends State<AddPhotobookSelectPerio
                           "${Routes.photobook.path}/${Routes.addPhotobook.path}/${Routes.addPhotobookLoading.path}?startDate=$startDateTime&endDate=$endDateTime&title=${titleController.text}"
                       );
                     }
+                    // 권한이 거부된 경우
                     else {
                       print("권한이 거부되었습니다.");
                     }

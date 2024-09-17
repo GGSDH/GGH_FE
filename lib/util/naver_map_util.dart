@@ -158,29 +158,26 @@ class NaverMapUtil {
     laneSpecificResponses.sort((a, b) => a.sequence.compareTo(b.sequence));
 
     for (var laneResponse in laneSpecificResponses) {
-      if (laneResponse.tourAreaResponse.latitude != null &&
-          laneResponse.tourAreaResponse.longitude != null) {
-        final currentLocation = NLatLng(laneResponse.tourAreaResponse.latitude!,
-            laneResponse.tourAreaResponse.longitude!);
-        pathCoords.add(currentLocation);
+      final currentLocation = NLatLng(laneResponse.tourAreaResponse.latitude!,
+          laneResponse.tourAreaResponse.longitude);
+      pathCoords.add(currentLocation);
 
-        try {
-          final markerIcon =
-              await _createSequenceMarker(laneResponse.sequence, context);
-          final marker = NMarker(
-            id: 'lane_${laneResponse.sequence}',
-            position: currentLocation,
-            icon: markerIcon,
-            size: const Size(30, 30),
-          );
-          controller.addOverlay(marker);
-        } catch (e) {
-          print(
-              'Error creating marker for sequence ${laneResponse.sequence}: $e');
-          // You might want to add error handling here, similar to the original code
-        }
+      try {
+        final markerIcon =
+            await _createSequenceMarker(laneResponse.sequence, context);
+        final marker = NMarker(
+          id: 'lane_${laneResponse.sequence}',
+          position: currentLocation,
+          icon: markerIcon,
+          size: const Size(30, 30),
+        );
+        controller.addOverlay(marker);
+      } catch (e) {
+        print(
+            'Error creating marker for sequence ${laneResponse.sequence}: $e');
+        // You might want to add error handling here, similar to the original code
       }
-    }
+        }
 
     if (pathCoords.isNotEmpty) {
       final pathOverlay = NPathOverlay(
