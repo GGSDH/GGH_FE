@@ -410,9 +410,9 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                         ),
                       ),
                       SvgPicture.asset(
-                        "assets/icons/ic_heart_filled.svg",
+                        (laneTourArea.likedByMe) ? "assets/icons/ic_heart_filled.svg" : "assets/icons/ic_heart.svg",
                         width: 18,
-                        height: 18,
+                        height: 18
                       ),
                       const SizedBox(width: 2),
                       Text(laneTourArea.likeCnt.toString(),
@@ -550,7 +550,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                         Row(
                           children: [
                             SvgPicture.asset(
-                              "assets/icons/ic_heart_filled.svg",
+                              (laneTourArea.likedByMe) ? "assets/icons/ic_heart_filled.svg" : "assets/icons/ic_heart.svg",
                               width: 18,
                               height: 18,
                             ),

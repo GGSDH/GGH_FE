@@ -438,7 +438,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                         Row(
                           children: [
                             SvgPicture.asset(
-                              "assets/icons/ic_heart_filled.svg",
+                              (tourArea.likedByMe) ? "assets/icons/ic_heart_filled.svg" : "assets/icons/ic_heart.svg",
                               width: 18,
                               height: 18,
                             ),
@@ -562,7 +562,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                         ),
                       ),
                       SvgPicture.asset(
-                        "assets/icons/ic_heart_filled.svg",
+                        (place.likedByMe) ? "assets/icons/ic_heart_filled.svg" : "assets/icons/ic_heart.svg",
                         width: 18,
                         height: 18,
                       ),
