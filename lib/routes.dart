@@ -54,6 +54,7 @@ import 'package:gyeonggi_express/ui/recommend/recommend_select_region_screen.dar
 import 'package:gyeonggi_express/ui/recommend/recommend_select_theme_screen.dart';
 import 'package:gyeonggi_express/ui/search/search_bloc.dart';
 import 'package:gyeonggi_express/ui/search/search_screen.dart';
+import 'package:gyeonggi_express/ui/splash/splash_bloc.dart';
 import 'package:gyeonggi_express/ui/splash/splash_screen.dart';
 import 'package:gyeonggi_express/ui/station/station_detail_bloc.dart';
 import 'package:gyeonggi_express/ui/station/station_detail_screen.dart';
@@ -124,7 +125,14 @@ enum Routes {
         GoRoute(
             path: Routes.splash.path,
             name: Routes.splash.name,
-            builder: (context, state) => const SplashScreen()),
+            builder: (context, state) => BlocProvider(
+                create: (context) => SplashBloc(
+                  authRepository: GetIt.instance<AuthRepository>(),
+                  storage: GetIt.instance<FlutterSecureStorage>(),
+                ),
+                child: const SplashScreen()
+            )
+        ),
         ShellRoute(
             observers: [RouterObserver()],
             builder: (context, state, child) => Scaffold(
