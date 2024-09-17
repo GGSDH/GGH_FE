@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -88,6 +89,7 @@ class NaverMapUtil {
               _createCircleMarker("${photobook.id}", currentLocation);
           controller.addOverlay(circleMarker);
         } catch (e) {
+          log('Error creating marker for photobook ${photobook.id}: $e');
           final errorMarker = await _createErrorMarker(
               "${photobook.id}", currentLocation, context);
           controller.addOverlay(errorMarker);

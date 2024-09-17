@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
@@ -30,7 +28,7 @@ class PhotobookScreen extends StatefulWidget with RouteAware {
 }
 
 class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware, TickerProviderStateMixin {
-  final Completer<NaverMapController> _mapControllerCompleter = Completer<NaverMapController>();
+  NaverMapController? _mapController;
   late final TabController _tabController;
 
   @override
@@ -150,8 +148,7 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware, Tick
                               child: TabBarView(
                                 controller: _tabController,
                                 children: [
-                                  _PhotobookSection(
-                                    mapControllerCompleter: _mapControllerCompleter,
+                                  _photobookSection(
                                     photobooks: state.photobooks,
                                     onAddPhotobook: () {
                                       GoRouter.of(context).push("${Routes.photobook.path}/${Routes.addPhotobook.path}");
@@ -178,6 +175,81 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware, Tick
           );
         }
       ),
+    );
+  }
+
+  Widget _photobookSection({
+    required List<PhotobookResponse> photobooks,
+    required VoidCallback onAddPhotobook,
+    required VoidCallback showPhotobookList,
+  }) {
+    void addMarkersToMap(List<PhotobookResponse> photobooks) async {
+      if (_mapController == null) return;
+
+      await _mapController!.clearOverlays();
+      NaverMapUtil.addMarkers(_mapController!, photobooks, context);
+    }
+
+    if (_mapController != null) {
+      addMarkersToMap(photobooks);
+    }
+
+    return Stack(
+        children: [
+          NaverMap(
+            options: const NaverMapViewOptions(
+              initialCameraPosition: Constants.DEFAULT_CAMERA_POSITION,
+              indoorEnable: true,
+              locationButtonEnable: false,
+              consumeSymbolTapEvents: false,
+              rotationGesturesEnable: true,
+              scrollGesturesEnable: true,
+              zoomGesturesEnable: true,
+            ),
+            onMapReady: (controller) async {
+              _mapController = controller;
+              addMarkersToMap(photobooks);
+            },
+            forceGesture: true,
+          ),
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: GestureDetector(
+              onTap: onAddPhotobook,
+              child: SvgPicture.asset(
+                "assets/icons/ic_add_photo.svg",
+                width: 52,
+                height: 52,
+                fit: BoxFit.fill,
+              ),
+            ),
+          ),
+          Positioned(
+              bottom: 20,
+              left: 0,
+              right: 0,
+              child: Container(
+                alignment: Alignment.center,
+                child: GestureDetector(
+                  onTap: showPhotobookList,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: ColorStyles.primary,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Text(
+                      "목록 열기",
+                      style: TextStyles.titleSmall.copyWith(
+                        color: ColorStyles.grayWhite,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+          ),
+        ]
     );
   }
 }
@@ -220,86 +292,6 @@ class _TabBarSection extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-
-
-}
-
-class _PhotobookSection extends StatelessWidget {
-  const _PhotobookSection({
-    required this.mapControllerCompleter,
-    required this.photobooks,
-    required this.onAddPhotobook,
-    required this.showPhotobookList,
-  });
-
-  final Completer<NaverMapController> mapControllerCompleter;
-  final List<PhotobookResponse> photobooks;
-  final VoidCallback onAddPhotobook;
-  final VoidCallback showPhotobookList;
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        NaverMap(
-          options: const NaverMapViewOptions(
-            initialCameraPosition: Constants.DEFAULT_CAMERA_POSITION,
-            indoorEnable: true,
-            locationButtonEnable: false,
-            consumeSymbolTapEvents: false,
-            rotationGesturesEnable: true,
-            scrollGesturesEnable: true,
-            zoomGesturesEnable: true,
-          ),
-          onMapReady: (controller) async {
-            if (!mapControllerCompleter.isCompleted) {
-                mapControllerCompleter.complete(controller);
-            }
-
-            await NaverMapUtil.addMarkers(controller, photobooks, context);
-          },
-          forceGesture: true,
-        ),
-        Positioned(
-          bottom: 20,
-          right: 20,
-          child: GestureDetector(
-            onTap: onAddPhotobook,
-            child: SvgPicture.asset(
-              "assets/icons/ic_add_photo.svg",
-              width: 52,
-              height: 52,
-              fit: BoxFit.fill,
-            ),
-          ),
-        ),
-        Positioned(
-          bottom: 20,
-          left: 0,
-          right: 0,
-          child: Container(
-            alignment: Alignment.center,
-            child: GestureDetector(
-              onTap: showPhotobookList,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: ColorStyles.primary,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Text(
-                  "목록 열기",
-                  style: TextStyles.titleSmall.copyWith(
-                    color: ColorStyles.grayWhite,
-                  ),
-                ),
-              ),
-            ),
-          )
-        ),
-      ]
     );
   }
 }
