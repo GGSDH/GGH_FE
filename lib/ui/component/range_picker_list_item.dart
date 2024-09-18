@@ -50,7 +50,9 @@ class RangePickerListItem extends StatelessWidget {
     List<DateTime?> days = [];
     int daysInMonth = lastDayOfMonth.day;
 
-    for (int i = 0; i < firstDayOfMonth.weekday - 1; i++) {
+    int startingEmptyDays = (firstDayOfMonth.weekday % 7); // Sunday should be 0
+
+    for (int i = 0; i < startingEmptyDays; i++) {
       days.add(null);
     }
 
