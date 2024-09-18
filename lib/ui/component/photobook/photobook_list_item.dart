@@ -40,6 +40,8 @@ class PhotobookListItem extends StatelessWidget {
     String formattedDateRange = '${dateFormat.format(start)} ~ ${dateFormat.format(end)}';
     String duration = '${nights}박 ${totalDays}일';
 
+    if (totalDays == 1) return '$formattedDateRange | 당일치기';
+
     // 최종 포맷
     return '$formattedDateRange | $duration';
   }
