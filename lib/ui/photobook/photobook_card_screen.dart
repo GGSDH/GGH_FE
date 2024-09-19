@@ -84,10 +84,16 @@ class _PhotobookCardScreenState extends State<PhotobookCardScreen> {
                           height: 24,
                         ),
                         onPressed: () {
-                          context.read<PhotobookDetailBloc>().add(
-                            PhotobookDelete(int.parse(widget.photobookId)),
+                          _showDeleteDialog(
+                            context,
+                            () {
+                              context.read<PhotobookDetailBloc>().add(
+                                PhotobookDelete(int.parse(widget.photobookId)),
+                              );
+                            }
                           );
-                        })
+                        }
+                      )
                     ],
                   ),
                   const SizedBox(height: 4),
@@ -270,6 +276,88 @@ class _PhotobookCardScreenState extends State<PhotobookCardScreen> {
         swipeOffset = 0.0; // 스와이프 취소 시 초기화
       });
     }
+  }
+
+  void _showDeleteDialog(
+    BuildContext context,
+    VoidCallback onDelete
+  ) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => Dialog(
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            color: Colors.white,
+          ),
+          padding: const EdgeInsets.fromLTRB(20, 30, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "정말로 삭제 하시겠습니까?",
+                style: TextStyles.titleLarge.copyWith(
+                  color: ColorStyles.gray800,
+                )
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: TextButton(
+                        onPressed: () {
+                          GoRouter.of(context).pop();
+                        },
+                        style: TextButton.styleFrom(
+                          backgroundColor: ColorStyles.gray100,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Text(
+                          "취소",
+                          style: TextStyles.titleMedium.copyWith(
+                            color: ColorStyles.gray500,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: TextButton(
+                        onPressed: () {
+                          GoRouter.of(context).pop();
+                          onDelete();
+                        },
+                        style: TextButton.styleFrom(
+                          backgroundColor: ColorStyles.primary,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Text(
+                          "삭제",
+                          style: TextStyles.titleMedium.copyWith(
+                            color: ColorStyles.grayWhite,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      )
+    );
   }
 }
 
