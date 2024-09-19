@@ -39,7 +39,8 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware, Tick
 
   void _showBottomSheet(
     List<PhotobookResponse> photobooks,
-    Function onLoadPhotobooks
+    Function onLoadPhotobooks,
+    VoidCallback onAddPhotobook
   ) {
     showBottomSheet(
       context: context,
@@ -63,50 +64,47 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware, Tick
                   ),
                 ),
                 padding: const EdgeInsets.only(top: 10),
-                child: photobooks.isNotEmpty ?
-                  ListView.builder(
-                    controller: scrollController,
-                    itemCount: photobooks.length,
-                    itemBuilder: (context, index) {
-                      final photobook = photobooks[index];
-                      return PhotobookListItem(
-                        title: photobook.title,
-                        imageFilePath: photobook.mainPhoto?.path ?? '',
-                        startDate: photobook.startDate,
-                        endDate: photobook.endDate,
-                        location: photobook.location?.name ?? '',
-                        onTap: () {
-                          GoRouter.of(context).push(
-                            Uri(
-                                path: "${Routes.photobook.path}/${Routes.photobookCard.path}",
-                                queryParameters: { 'photobookId': "${photobook.id}" }
-                            ).toString()
-                          ).then((result) {
-                            if (result == true) onLoadPhotobooks();
-                          });
-                        },
-                      );
-                    },
-                  ) : Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset(
-                        "assets/icons/ic_empty_photobook.svg",
-                        width: 60,
-                        height: 60,
-                        fit: BoxFit.fill,
-                      ),
-                      const SizedBox(height: 14),
-                      Text(
-                        "앗! 아직 만들어진 포토북이 없어요.",
-                        style: TextStyles.titleSmall.copyWith(
-                          color: ColorStyles.gray500,
-                          fontWeight: FontWeight.w500,
+                child: Stack(
+                  children: [
+                    ListView.builder(
+                      controller: scrollController,
+                      itemCount: photobooks.length,
+                      itemBuilder: (context, index) {
+                        final photobook = photobooks[index];
+                        return PhotobookListItem(
+                          title: photobook.title,
+                          imageFilePath: photobook.mainPhoto?.path ?? '',
+                          startDate: photobook.startDate,
+                          endDate: photobook.endDate,
+                          location: photobook.location?.name ?? '',
+                          onTap: () {
+                            GoRouter.of(context).push(
+                              Uri(
+                                  path: "${Routes.photobook.path}/${Routes.photobookCard.path}",
+                                  queryParameters: { 'photobookId': "${photobook.id}" }
+                              ).toString()
+                            ).then((result) {
+                              if (result == true) onLoadPhotobooks();
+                            });
+                          },
+                        );
+                      },
+                    ),
+
+                    Positioned(
+                      bottom: 20,
+                      right: 20,
+                      child: GestureDetector(
+                        onTap: onAddPhotobook,
+                        child: SvgPicture.asset(
+                          "assets/icons/ic_add_photo.svg",
+                          width: 52,
+                          height: 52,
+                          fit: BoxFit.fill,
                         ),
                       ),
-                    ],
-                  )
+                    ),
+                  ]
                 )
               );
             },
@@ -125,7 +123,8 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware, Tick
         } else if (sideEffect is PhotobookShowBottomSheet) {
           _showBottomSheet(
             sideEffect.photobooks,
-            () => context.read<PhotobookBloc>().add(FetchPhotobooks())
+            () => context.read<PhotobookBloc>().add(FetchPhotobooks()),
+            () => GoRouter.of(context).push("${Routes.photobook.path}/${Routes.addPhotobook.path}")
           );
         }
       },
