@@ -133,7 +133,8 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware, Tick
           return Scaffold(
             body: Material(
               color: Colors.white,
-              child: DefaultTabController(
+              child: (state.photobooks.isEmpty && !state.isLoading) ? _buildNoPhotobooksFoundScreen() :
+              DefaultTabController(
                 length: 2,
                 child: SafeArea(
                   child: Stack(
@@ -147,7 +148,7 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware, Tick
                               child: TabBarView(
                                 controller: _tabController,
                                 children: [
-                                  _photobookSection(
+                                  _buildPhotobookSection(
                                     photobooks: state.photobooks,
                                     onAddPhotobook: () {
                                       GoRouter.of(context).push("${Routes.photobook.path}/${Routes.addPhotobook.path}");
@@ -177,7 +178,7 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware, Tick
     );
   }
 
-  Widget _photobookSection({
+  Widget _buildPhotobookSection({
     required List<PhotobookResponse> photobooks,
     required VoidCallback onAddPhotobook,
     required VoidCallback showPhotobookList,
@@ -249,6 +250,52 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware, Tick
               )
           ),
         ]
+    );
+  }
+
+  Widget _buildNoPhotobooksFoundScreen() {
+    return SafeArea(
+      child: Column(
+        children: [
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  "소중한 추억,\n포토북으로 만들어 보세요!",
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                    color: ColorStyles.gray900,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+
+                const SizedBox(height: 40),
+
+                SvgPicture.asset(
+                  "assets/icons/img_add_photobook_illust.svg",
+                  fit: BoxFit.fill,
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 33),
+
+          Padding(
+            padding: const EdgeInsets.all(14),
+            child: AppButton(
+              text: "포토북 만들기",
+              onPressed: () {
+                GoRouter.of(context).push("${Routes.photobook.path}/${Routes.addPhotobook.path}/${Routes.addPhotobookSelectPeriod.path}");
+              },
+              isEnabled: true,
+              onIllegalPressed: () {},
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
