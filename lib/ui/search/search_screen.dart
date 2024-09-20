@@ -33,11 +33,11 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: true,
-      child: Material(
-        color: Colors.white,
-        child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          body: SafeArea(
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: Material(
+          color: Colors.white,
+          child: SafeArea(
             child: Column(
               children: [
                 Padding(
