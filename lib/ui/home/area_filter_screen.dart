@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gyeonggi_express/data/models/sigungu_code.dart';
 import 'package:gyeonggi_express/ui/component/app/app_button.dart';
@@ -62,12 +63,45 @@ class AreaFilterScreenState extends State<AreaFilterScreen> {
              ),
              Padding(
                padding: const EdgeInsets.all(14),
-               child: AppButton(
-                 text: '다음',
-                 onPressed: () {
-                   GoRouter.of(context).pop(_selectedAreas.map((e) => SigunguCode.toJson(e)).toList());
-                 },
-                 isEnabled: _selectedAreas.isNotEmpty,
+               child: Row(
+                 children: [
+                   GestureDetector(
+                     onTap: () {
+                       setState(() {
+                         _selectedAreas.clear();
+                       });
+                     },
+                     child: Padding(
+                       padding: const EdgeInsets.symmetric(horizontal: 10),
+                       child: Row(
+                         children: [
+                           SvgPicture.asset(
+                             "assets/icons/ic_refresh.svg",
+                             width: 24,
+                             height: 24,
+                           ),
+                           const SizedBox(width: 6),
+                           Text(
+                             "초기화",
+                              style: TextStyles.titleMedium.copyWith(
+                                color: ColorStyles.gray600
+                              ),
+                           )
+                         ]
+                       ),
+                     ),
+                   ),
+                   const SizedBox(width: 10),
+                   Expanded(
+                     child: AppButton(
+                       text: '적응하기',
+                       onPressed: () {
+                         GoRouter.of(context).pop(_selectedAreas.map((e) => SigunguCode.toJson(e)).toList());
+                       },
+                       isEnabled: _selectedAreas.isNotEmpty,
+                     ),
+                   ),
+                 ],
                ),
              )
            ],
