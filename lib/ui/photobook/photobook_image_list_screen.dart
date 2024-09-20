@@ -10,7 +10,7 @@ import 'package:gyeonggi_express/ui/component/app/app_image_plaeholder.dart';
 import '../../themes/text_styles.dart';
 import '../component/app/app_action_bar.dart';
 
-class PhotobookImageListScreen extends StatelessWidget {
+class PhotobookImageListScreen extends StatefulWidget {
   final List<String> filePaths;
 
   const PhotobookImageListScreen({
@@ -19,52 +19,74 @@ class PhotobookImageListScreen extends StatelessWidget {
   });
 
   @override
+  _PhotobookImageListScreenState createState() => _PhotobookImageListScreenState();
+}
+
+class _PhotobookImageListScreenState extends State<PhotobookImageListScreen> {
+  bool _isPopupVisible = false;
+  int _currentIndex = 0;
+
+  void _showPhotoViewPopup(int index) {
+    setState(() {
+      _isPopupVisible = true;
+      _currentIndex = index;
+    });
+  }
+
+  void _hidePhotoViewPopup() {
+    setState(() {
+      _isPopupVisible = false;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.white,
       child: SafeArea(
-        child: Column(
+        child: Stack(
           children: [
-            AppActionBar(
-              title: '전체 보기',
-              onBackPressed: () => GoRouter.of(context).pop(),
-            ),
-            Expanded(
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 2,
-                  mainAxisSpacing: 2,
+            Column(
+              children: [
+                AppActionBar(
+                  title: '전체 보기',
+                  onBackPressed: () => GoRouter.of(context).pop(),
                 ),
-                itemCount: filePaths.length,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          fullscreenDialog: true,
-                            builder: (BuildContext context) {
-                              return PhotoViewPopup(
-                                imageUrls: filePaths,
-                                initialIndex: index,
-                              );
-                          })
+                Expanded(
+                  child: GridView.builder(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 2,
+                      mainAxisSpacing: 2,
+                    ),
+                    itemCount: widget.filePaths.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          _showPhotoViewPopup(index);
+                        },
+                        child: AppFileImage(
+                          imageFilePath: widget.filePaths[index],
+                          width: double.infinity,
+                          height: double.infinity,
+                          placeholder: const AppImagePlaceholder(width: double.infinity, height: double.infinity),
+                          errorWidget: const AppImagePlaceholder(width: double.infinity, height: double.infinity),
+                        ),
                       );
                     },
-                    child: AppFileImage(
-                      imageFilePath: filePaths[index],
-                      width: double.infinity,
-                      height: double.infinity,
-                      placeholder: const AppImagePlaceholder(width: double.infinity, height: double.infinity),
-                      errorWidget: const AppImagePlaceholder(width: double.infinity, height: double.infinity)
-                    ),
-                  );
-                },
-              ),
+                  ),
+                ),
+              ],
             ),
+            if (_isPopupVisible)
+              PhotoViewPopup(
+                imageUrls: widget.filePaths,
+                initialIndex: _currentIndex,
+                onClose: _hidePhotoViewPopup,
+              ),
           ],
         ),
-      )
+      ),
     );
   }
 }
@@ -72,11 +94,13 @@ class PhotobookImageListScreen extends StatelessWidget {
 class PhotoViewPopup extends StatefulWidget {
   final List<String> imageUrls;
   final int initialIndex;
+  final VoidCallback onClose;
 
   const PhotoViewPopup({
     super.key,
     required this.imageUrls,
     required this.initialIndex,
+    required this.onClose,
   });
 
   @override
@@ -125,10 +149,8 @@ class _PhotoViewPopupState extends State<PhotoViewPopup> {
     final itemWidth = (screenWidth - 30) / 4;
     final itemHeight = itemWidth * 0.62;
 
-    return Dialog(
+    return Positioned.fill(
       child: Container(
-        width: double.infinity,
-        height: double.infinity,
         color: Colors.black,
         child: Stack(
           children: [
@@ -154,7 +176,7 @@ class _PhotoViewPopupState extends State<PhotoViewPopup> {
                   return Center(
                     child: SizedBox(
                       width: screenWidth,
-                      height: imageHeight.isFinite ? imageHeight : 300, // Default to 300 if imageHeight is infinite
+                      height: imageHeight.isFinite ? imageHeight : 300,
                       child: AppFileImage(
                         imageFilePath: widget.imageUrls[index],
                         placeholder: AppImagePlaceholder(width: screenWidth, height: 300),
@@ -189,7 +211,7 @@ class _PhotoViewPopupState extends State<PhotoViewPopup> {
                     Positioned(
                       left: 0,
                       child: GestureDetector(
-                        onTap: () => Navigator.of(context).pop(),
+                        onTap: widget.onClose,
                         child: SvgPicture.asset(
                           'assets/icons/ic_close_24px.svg',
                           width: 24,
@@ -255,3 +277,4 @@ class _PhotoViewPopupState extends State<PhotoViewPopup> {
     super.dispose();
   }
 }
+
