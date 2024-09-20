@@ -81,7 +81,7 @@ class PhotobookBloc extends SideEffectBloc<PhotobookEvent, PhotobookState, Photo
                   photobooks: data,
                 )
             );
-            produceSideEffect(PhotobookShowBottomSheet(state.photobooks));
+            if (state.photobooks.isNotEmpty) produceSideEffect(PhotobookShowBottomSheet(state.photobooks));
           },
           apiError: (errorMessage, errorCode) {
             emit(state.copyWith(isLoading: false));
