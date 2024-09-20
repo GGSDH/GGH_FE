@@ -120,7 +120,7 @@ class MyPageScreen extends StatelessWidget {
       builder: (BuildContext context) => Dialog(
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(14),
             color: Colors.white,
           ),
           padding: const EdgeInsets.fromLTRB(20, 30, 20, 20),
@@ -197,7 +197,7 @@ class MyPageScreen extends StatelessWidget {
       builder: (BuildContext context) => Dialog(
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(14),
             color: Colors.white,
           ),
           padding: const EdgeInsets.fromLTRB(20, 30, 20, 20),

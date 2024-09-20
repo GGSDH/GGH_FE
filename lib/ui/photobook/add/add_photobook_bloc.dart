@@ -71,6 +71,7 @@ final class AddPhotobookShowError extends AddPhotobookSideEffect {
 
   AddPhotobookShowError(this.message);
 }
+final class AddPhotobookNoPhotosFound extends AddPhotobookSideEffect { }
 
 class AddPhotobookBloc extends SideEffectBloc<AddPhotobookEvent, AddPhotobookState, AddPhotobookSideEffect> {
   final PhotobookRepository _photobookRepository;
@@ -90,6 +91,12 @@ class AddPhotobookBloc extends SideEffectBloc<AddPhotobookEvent, AddPhotobookSta
 
     try {
       final photos = await scanPhotos(event.startDate, event.endDate);
+
+      if (photos.isEmpty) {
+        emit(state.copyWith(isLoading: false));
+        produceSideEffect(AddPhotobookNoPhotosFound());
+        return;
+      }
 
       final response = await _photobookRepository.addPhotobook(
         title: event.title,

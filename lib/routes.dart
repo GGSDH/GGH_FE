@@ -32,6 +32,7 @@ import 'package:gyeonggi_express/ui/mypage/mypage_setting_screen.dart';
 import 'package:gyeonggi_express/ui/onboarding/onboarding_bloc.dart';
 import 'package:gyeonggi_express/ui/onboarding/onboarding_complete_screen.dart';
 import 'package:gyeonggi_express/ui/onboarding/onboarding_screen.dart';
+import 'package:gyeonggi_express/ui/photobook/add/add_photobook_bloc.dart';
 import 'package:gyeonggi_express/ui/photobook/add/add_photobook_loading_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/add/add_photobook_screen.dart';
 import 'package:gyeonggi_express/ui/photobook/add/add_photobook_select_period_screen.dart';
@@ -370,10 +371,17 @@ enum Routes {
                                 final title =
                                     state.uri.queryParameters['title'] ?? '';
 
-                                return AddPhotobookLoadingScreen(
-                                  startDate: startDate,
-                                  endDate: endDate,
-                                  title: title,
+                                return BlocProvider(
+                                    create: (context) => AddPhotobookBloc(
+                                    photobookRepository: GetIt.instance<PhotobookRepository>(),
+                                  )..add(
+                                    AddPhotobookUpload(
+                                      title: title,
+                                      startDate: DateTime.parse(startDate),
+                                      endDate: DateTime.parse(endDate),
+                                    ),
+                                  ),
+                                  child: const AddPhotobookLoadingScreen()
                                 );
                               }),
                         ],
