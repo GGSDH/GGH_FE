@@ -22,8 +22,21 @@ import '../../themes/text_styles.dart';
 import '../../util/toast_util.dart';
 import 'home_bloc.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,39 +45,56 @@ class HomeScreen extends StatelessWidget {
         authRepository: GetIt.instance<AuthRepository>(),
         tripRepository: GetIt.instance<TripRepository>(),
         favoriteRepository: GetIt.instance<FavoriteRepository>(),
-      )..add(
-          HomeInitialize(),
-        ),
+      )..add(HomeInitialize()),
       child: BlocSideEffectListener<HomeBloc, HomeSideEffect>(
         listener: (context, sideEffect) {
           if (sideEffect is HomeShowError) {
             ToastUtil.showToast(context, sideEffect.message, bottomPadding: 0);
           }
         },
-        child: BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
-          if (state.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else {
-            return SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildBanner(context),
-                  _buildCategories(
-                    (category) {
-                      GoRouter.of(context).push(Uri(
-                        path:
-                            "${Routes.home.path}/${Routes.categoryDetail.path}",
-                        queryParameters: {
-                          'category': TripTheme.toJson(category)
-                        },
-                      ).toString());
-                    },
+        child: BlocBuilder<HomeBloc, HomeState>(
+          builder: (context, state) {
+            if (state.isInitialLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            return RefreshIndicator(
+              onRefresh: () async {
+                context.read<HomeBloc>().add(HomeRefresh());
+                await context
+                    .read<HomeBloc>()
+                    .stream
+                    .firstWhere((state) => !state.isRefreshing);
+                // Explicitly set scroll position to top after refresh
+                if (_scrollController.hasClients) {
+                  _scrollController.animateTo(
+                    0,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeOut,
+                  );
+                }
+              },
+              child: CustomScrollView(
+                controller: _scrollController,
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  if (state.isRefreshing)
+                    const SliverToBoxAdapter(child: LinearProgressIndicator()),
+                  SliverToBoxAdapter(child: _buildBanner(context)),
+                  SliverToBoxAdapter(
+                    child: _buildCategories(
+                      (category) {
+                        GoRouter.of(context).push(Uri(
+                          path:
+                              "${Routes.home.path}/${Routes.categoryDetail.path}",
+                          queryParameters: {
+                            'category': TripTheme.toJson(category)
+                          },
+                        ).toString());
+                      },
+                    ),
                   ),
-                  _buildRecommendBody(
+                  SliverToBoxAdapter(
+                    child: _buildRecommendBody(
                       context: context,
                       userName: state.userName,
                       lanes: state.lanes,
@@ -72,36 +102,38 @@ class HomeScreen extends StatelessWidget {
                         GoRouter.of(context).push(
                             "${Routes.home.path}/${Routes.recommendedLanes.path}");
                       },
-                      onItemClick: (p0) => {
-                            GoRouter.of(context)
-                                .push('${Routes.lanes.path}/$p0')
-                          }),
-                  _buildRestaurantBody(
-                    context: context,
-                    localRestaurants: state.localRestaurants,
-                    onShowMore: () {
-                      GoRouter.of(context).push(
-                          "${Routes.home.path}/${Routes.localRestaurants.path}");
-                    },
-                    onItemClick: (p0) => {
-                      GoRouter.of(context).push('${Routes.stations.path}/$p0')
-                    },
+                      onItemClick: (p0) =>
+                          GoRouter.of(context).push('${Routes.lanes.path}/$p0'),
+                    ),
                   ),
-                  _buildPopularPlaceBody(
-                    popularDestinations: state.popularDestinations,
-                    onShowMore: () {
-                      GoRouter.of(context).push(
-                          "${Routes.home.path}/${Routes.popularDestinations.path}");
-                    },
-                    onItemClick: (p0) => {
-                      GoRouter.of(context).push('${Routes.stations.path}/$p0')
-                    },
-                  )
+                  SliverToBoxAdapter(
+                    child: _buildRestaurantBody(
+                      context: context,
+                      localRestaurants: state.localRestaurants,
+                      onShowMore: () {
+                        GoRouter.of(context).push(
+                            "${Routes.home.path}/${Routes.localRestaurants.path}");
+                      },
+                      onItemClick: (p0) => GoRouter.of(context)
+                          .push('${Routes.stations.path}/$p0'),
+                    ),
+                  ),
+                  SliverToBoxAdapter(
+                    child: _buildPopularPlaceBody(
+                      popularDestinations: state.popularDestinations,
+                      onShowMore: () {
+                        GoRouter.of(context).push(
+                            "${Routes.home.path}/${Routes.popularDestinations.path}");
+                      },
+                      onItemClick: (p0) => GoRouter.of(context)
+                          .push('${Routes.stations.path}/$p0'),
+                    ),
+                  ),
                 ],
               ),
             );
-          }
-        }),
+          },
+        ),
       ),
     );
   }
