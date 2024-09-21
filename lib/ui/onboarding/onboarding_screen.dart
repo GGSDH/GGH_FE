@@ -77,7 +77,7 @@ class OnboardingScreenContent extends StatelessWidget {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      "여행 테마를 선택해 주세요",
+                      "최소 2개 이상의 여행 테마를 선택해 주세요",
                       style: TextStyles.bodyLarge
                     ),
                   ],

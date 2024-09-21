@@ -48,7 +48,7 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware, Tick
       builder: (BuildContext context) {
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTap: () => Navigator.of(context).pop(),
+          onTap: () => GoRouter.of(context).pop(),
           child: DraggableScrollableSheet(
             initialChildSize: 0.3,
             minChildSize: 0.3,
