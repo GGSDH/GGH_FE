@@ -330,7 +330,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
           ),
         ),
         Text(
-          state.laneName,
+          state.laneDescription ?? '',
           style: TextStyles.bodyLarge.copyWith(
             fontWeight: FontWeight.w400,
             color: ColorStyles.gray500,
