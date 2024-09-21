@@ -198,9 +198,8 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                       ],
                     ),
                     const SizedBox(height: 14),
-                    // Provide a fixed height for the PageView
                     SizedBox(
-                      height: 120, // Adjust the height as necessary
+                      height: 120,
                       child: PageView.builder(
                         controller: PageController(),
                         itemCount: laneDetail
@@ -388,58 +387,58 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
             ),
             const SizedBox(width: 20),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(laneTourArea.tourAreaName,
-                      style: TextStyles.titleMedium.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: ColorStyles.gray800)),
-                  const SizedBox(height: 2),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Row(
-                          children: [
-                            Text(laneTourArea.sigunguCode.value,
-                                style: TextStyles.bodyMedium.copyWith(
-                                    color: ColorStyles.gray500,
-                                    fontWeight: FontWeight.w400)),
-                            const SizedBox(width: 4),
-                            Text("|",
-                                style: TextStyles.bodyMedium.copyWith(
-                                    color: ColorStyles.gray300,
-                                    fontWeight: FontWeight.w400)),
-                            const SizedBox(width: 4),
-                            Text(laneTourArea.sigunguCode.value,
-                                style: TextStyles.bodyMedium.copyWith(
-                                    color: ColorStyles.gray500,
-                                    fontWeight: FontWeight.w400)),
-                          ],
+              child: GestureDetector(
+                onTap: () {
+                  GoRouter.of(context).push(
+                      '${Routes.stations.path}/${laneTourArea.tourAreaId}');
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(laneTourArea.tourAreaName,
+                        style: TextStyles.titleMedium.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: ColorStyles.gray800)),
+                    const SizedBox(height: 2),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Text(laneTourArea.sigunguCode.value,
+                                  style: TextStyles.bodyMedium.copyWith(
+                                      color: ColorStyles.gray500,
+                                      fontWeight: FontWeight.w400)),
+                              const SizedBox(width: 4),
+                              Text("|",
+                                  style: TextStyles.bodyMedium.copyWith(
+                                      color: ColorStyles.gray300,
+                                      fontWeight: FontWeight.w400)),
+                              const SizedBox(width: 4),
+                              Text(laneTourArea.sigunguCode.value,
+                                  style: TextStyles.bodyMedium.copyWith(
+                                      color: ColorStyles.gray500,
+                                      fontWeight: FontWeight.w400)),
+                            ],
+                          ),
                         ),
-                      ),
-                      SvgPicture.asset(
-                          (laneTourArea.likedByMe)
-                              ? "assets/icons/ic_heart_filled.svg"
-                              : "assets/icons/ic_heart.svg",
-                          width: 18,
-                          height: 18),
-                      const SizedBox(width: 2),
-                      Text(laneTourArea.likeCnt.toString(),
-                          style: TextStyles.bodyXSmall.copyWith(
-                              color: ColorStyles.gray600,
-                              fontWeight: FontWeight.w400)),
-                      const SizedBox(width: 20),
-                    ],
-                  ),
-                  const SizedBox(height: 14),
-                  GestureDetector(
-                    onTap: () {
-                      GoRouter.of(context).push(
-                          '${Routes.stations.path}/${laneTourArea.tourAreaId}');
-                    },
-                    child: SingleChildScrollView(
+                        SvgPicture.asset(
+                            (laneTourArea.likedByMe)
+                                ? "assets/icons/ic_heart_filled.svg"
+                                : "assets/icons/ic_heart.svg",
+                            width: 18,
+                            height: 18),
+                        const SizedBox(width: 2),
+                        Text(laneTourArea.likeCnt.toString(),
+                            style: TextStyles.bodyXSmall.copyWith(
+                                color: ColorStyles.gray600,
+                                fontWeight: FontWeight.w400)),
+                        const SizedBox(width: 20),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
@@ -462,9 +461,9 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                         ],
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                ],
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
             ),
           ],
@@ -682,7 +681,6 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
     NaverMapUtil.addMarkersAndPathForLane(
         _mapController!, selectedDayResponses, context);
 
-    // 카메라 위치 업데이트
     if (selectedDayResponses.isNotEmpty) {
       var firstPlace = selectedDayResponses.first.tourAreaResponse;
       _mapController!.updateCamera(
