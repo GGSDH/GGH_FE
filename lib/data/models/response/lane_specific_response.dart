@@ -20,6 +20,18 @@ class LaneSpecificResponse {
     required this.day,
   });
 
+  LaneSpecificResponse copyWith({
+    int? sequence,
+    TourAreaSummary? tourAreaResponse,
+    int? day,
+  }) {
+    return LaneSpecificResponse(
+      sequence: sequence ?? this.sequence,
+      tourAreaResponse: tourAreaResponse ?? this.tourAreaResponse,
+      day: day ?? this.day,
+    );
+  }
+
   factory LaneSpecificResponse.fromJson(Map<String, dynamic> json) =>
       _$LaneSpecificResponseFromJson(json);
   Map<String, dynamic> toJson() => _$LaneSpecificResponseToJson(this);

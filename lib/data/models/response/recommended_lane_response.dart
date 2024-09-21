@@ -36,6 +36,38 @@ class RecommendedLaneResponse {
   }
 
   Map<String, dynamic> toJson() => _$RecommendedLaneResponseToJson(this);
+
+  RecommendedLaneResponse updateLikeStatusOfStation(int stationId, bool likeStatus) {
+    final updatedDays = days.map((dayPlan) {
+      final updatedTourAreas = dayPlan.tourAreas.map((tourAreaResponse) {
+        if (tourAreaResponse.tourAreaResponse.tourAreaId == stationId) {
+          final updatedLikedByMe = likeStatus;
+          final updatedLikeCnt = likeStatus
+              ? tourAreaResponse.tourAreaResponse.likeCnt + 1
+              : tourAreaResponse.tourAreaResponse.likeCnt - 1;
+
+          return tourAreaResponse.copyWith(
+            tourAreaResponse: tourAreaResponse.tourAreaResponse.copyWith(
+              likedByMe: updatedLikedByMe,
+              likeCnt: updatedLikeCnt,
+            ),
+          );
+        }
+        return tourAreaResponse;
+      }).toList();
+
+      return dayPlan.copyWith(tourAreas: updatedTourAreas);
+    }).toList();
+
+    // 업데이트된 days 리스트를 가진 새로운 RecommendedLaneResponse 반환
+    return RecommendedLaneResponse(
+      title: title,
+      description: description,
+      days: updatedDays,
+      id: id,
+      sigunguCode: sigunguCode,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -52,6 +84,18 @@ class DayPlan {
 
   factory DayPlan.fromJson(Map<String, dynamic> json) =>
       _$DayPlanFromJson(json);
+
+  DayPlan copyWith({
+    int? day,
+    List<String>? tripAreaNames,
+    List<LaneSpecificResponse>? tourAreas,
+  }) {
+    return DayPlan(
+      day: day ?? this.day,
+      tripAreaNames: tripAreaNames ?? this.tripAreaNames,
+      tourAreas: tourAreas ?? this.tourAreas,
+    );
+  }
 
   Map<String, dynamic> toJson() => _$DayPlanToJson(this);
 }

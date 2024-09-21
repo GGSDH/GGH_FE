@@ -79,11 +79,11 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                                 onPressed: () => {
                                   if (state.isLikedByMe) {
                                     context.read<RecommendLaneBloc>().add(
-                                      RecommendLaneUnlike(state.data.id),
+                                      RecommendLaneUnlike(state.laneData.id),
                                     )
                                   } else {
                                     context.read<RecommendLaneBloc>().add(
-                                      RecommendLaneLike(state.data.id),
+                                      RecommendLaneLike(state.laneData.id),
                                     )
                                   }
                                 },
@@ -94,7 +94,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                           Padding(
                             padding: const EdgeInsets.fromLTRB(24, 4, 24, 20),
                             child: _laneHeader(
-                              state.data.title,
+                              state.laneData.title,
                               _formatDays(widget.days),
                               widget.sigunguCodes.first.value,
                               widget.tripThemes.first.title,
@@ -114,8 +114,8 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                           Expanded(
                             child: TabBarView(
                               children: [
-                                _laneCourseWidget(state.data),
-                                _mapViewWidget(state.data),
+                                _laneCourseWidget(state.laneData),
+                                _mapViewWidget(state.laneData),
                               ],
                             ),
                           ),
@@ -437,10 +437,17 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            SvgPicture.asset(
-                              (tourArea.likedByMe) ? "assets/icons/ic_heart_filled.svg" : "assets/icons/ic_heart.svg",
-                              width: 18,
-                              height: 18,
+                            GestureDetector(
+                              onTap: () {
+                                context.read<RecommendLaneBloc>().add(
+                                  (tourArea.likedByMe) ? StationUnlike(tourArea.tourAreaId) : StationLike(tourArea.tourAreaId),
+                                );
+                              },
+                              child: SvgPicture.asset(
+                                (tourArea.likedByMe) ? "assets/icons/ic_heart_filled.svg" : "assets/icons/ic_heart.svg",
+                                width: 18,
+                                height: 18,
+                              ),
                             ),
                             const SizedBox(width: 2),
                             Text(
@@ -561,10 +568,17 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                           ],
                         ),
                       ),
-                      SvgPicture.asset(
-                        (place.likedByMe) ? "assets/icons/ic_heart_filled.svg" : "assets/icons/ic_heart.svg",
-                        width: 18,
-                        height: 18,
+                      GestureDetector(
+                        onTap: () {
+                          context.read<RecommendLaneBloc>().add(
+                            (place.likedByMe) ? StationUnlike(place.tourAreaId) : StationLike(place.tourAreaId),
+                          );
+                        },
+                        child: SvgPicture.asset(
+                          (place.likedByMe) ? "assets/icons/ic_heart_filled.svg" : "assets/icons/ic_heart.svg",
+                          width: 18,
+                          height: 18,
+                        ),
                       ),
                       const SizedBox(width: 2),
                       Text(place.likeCnt.toString(),
@@ -621,7 +635,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
       ),
       onMapReady: (controller) {
       _mapController = controller;
-      _updateMapMarkers(context.read<RecommendLaneBloc>().state.data);
+      _updateMapMarkers(context.read<RecommendLaneBloc>().state.laneData);
       },
     );
   }

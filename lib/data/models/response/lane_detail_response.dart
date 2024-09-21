@@ -89,4 +89,19 @@ class LaneDetail {
     List<int> sortedDays = daysWithTourAreas.toList()..sort();
     return sortedDays;
   }
+
+  List<LaneSpecificResponse> updateStationLikeStatus(int stationId, bool isLikedByMe) {
+    List<LaneSpecificResponse> updatedResponses = laneSpecificResponses.map((response) {
+      if (response.tourAreaResponse.tourAreaId == stationId) {
+        return response.copyWith(
+          tourAreaResponse: response.tourAreaResponse.copyWith(
+            likedByMe: isLikedByMe, likeCnt: isLikedByMe ? response.tourAreaResponse.likeCnt + 1 : response.tourAreaResponse.likeCnt - 1,
+          ),
+        );
+      }
+      return response;
+    }).toList();
+
+    return updatedResponses;
+  }
 }

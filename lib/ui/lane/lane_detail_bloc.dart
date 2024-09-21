@@ -68,6 +68,20 @@ final class LaneDetailUnlike extends LaneDetailEvent {
     required this.laneId,
   });
 }
+final class StationLike extends LaneDetailEvent {
+  final int stationId;
+
+  StationLike({
+    required this.stationId,
+  });
+}
+final class StationUnlike extends LaneDetailEvent {
+  final int stationId;
+
+  StationUnlike({
+    required this.stationId,
+  });
+}
 
 sealed class LaneDetailSideEffect { }
 final class LaneDetailShowError extends LaneDetailSideEffect {
@@ -89,6 +103,8 @@ class LaneDetailBloc extends SideEffectBloc<LaneDetailEvent, LaneDetailState, La
     on<LaneDetailInitialize>(_onInitialize);
     on<LaneDetailLike>(_onLikeLane);
     on<LaneDetailUnlike>(_onUnlikeLane);
+    on<StationLike>(_onLikeStation);
+    on<StationUnlike>(_onUnlikeStation);
   }
 
   void _onInitialize(
@@ -140,6 +156,48 @@ class LaneDetailBloc extends SideEffectBloc<LaneDetailEvent, LaneDetailState, La
       response.when(
         success: (data) {
           emit(state.copyWith(isLikedByMe: false));
+        },
+        apiError: (errorMessage, errorCode) {
+          produceSideEffect(LaneDetailShowError(errorMessage));
+        }
+      );
+    } catch (e) {
+      produceSideEffect(LaneDetailShowError(e.toString()));
+    }
+  }
+
+  void _onLikeStation(
+    StationLike event,
+    Emitter<LaneDetailState> emit,
+  ) async {
+    try {
+      final response = await _favoriteRepository.addFavoriteTourArea(event.stationId);
+      response.when(
+        success: (data) {
+          emit(state.copyWith(laneDetail: state.laneDetail.copyWith(
+            laneSpecificResponses: state.laneDetail.updateStationLikeStatus(event.stationId, true),
+          )));
+        },
+        apiError: (errorMessage, errorCode) {
+          produceSideEffect(LaneDetailShowError(errorMessage));
+        }
+      );
+    } catch (e) {
+      produceSideEffect(LaneDetailShowError(e.toString()));
+    }
+  }
+
+  void _onUnlikeStation(
+    StationUnlike event,
+    Emitter<LaneDetailState> emit,
+  ) async {
+    try {
+      final response = await _favoriteRepository.removeFavoriteTourArea(event.stationId);
+      response.when(
+        success: (data) {
+          emit(state.copyWith(laneDetail: state.laneDetail.copyWith(
+            laneSpecificResponses: state.laneDetail.updateStationLikeStatus(event.stationId, false),
+          )));
         },
         apiError: (errorMessage, errorCode) {
           produceSideEffect(LaneDetailShowError(errorMessage));

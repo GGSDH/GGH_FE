@@ -423,12 +423,21 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                             ],
                           ),
                         ),
-                        SvgPicture.asset(
-                            (laneTourArea.likedByMe)
-                                ? "assets/icons/ic_heart_filled.svg"
-                                : "assets/icons/ic_heart.svg",
-                            width: 18,
-                            height: 18),
+                        GestureDetector(
+                          onTap: () {
+                            context.read<LaneDetailBloc>().add(
+                                (laneTourArea.likedByMe)
+                                    ? StationUnlike(stationId: laneTourArea.tourAreaId)
+                                    : StationLike(stationId: laneTourArea.tourAreaId)
+                            );
+                          },
+                          child: SvgPicture.asset(
+                              (laneTourArea.likedByMe)
+                                  ? "assets/icons/ic_heart_filled.svg"
+                                  : "assets/icons/ic_heart.svg",
+                              width: 18,
+                              height: 18),
+                        ),
                         const SizedBox(width: 2),
                         Text(laneTourArea.likeCnt.toString(),
                             style: TextStyles.bodyXSmall.copyWith(
@@ -592,12 +601,21 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            SvgPicture.asset(
-                              (laneTourArea.likedByMe)
-                                  ? "assets/icons/ic_heart_filled.svg"
-                                  : "assets/icons/ic_heart.svg",
-                              width: 18,
-                              height: 18,
+                            GestureDetector(
+                              onTap: () {
+                                context.read<LaneDetailBloc>().add(
+                                    (laneTourArea.likedByMe)
+                                        ? StationUnlike(stationId: laneTourArea.tourAreaId)
+                                        : StationLike(stationId: laneTourArea.tourAreaId)
+                                );
+                              },
+                              child: SvgPicture.asset(
+                                (laneTourArea.likedByMe)
+                                    ? "assets/icons/ic_heart_filled.svg"
+                                    : "assets/icons/ic_heart.svg",
+                                width: 18,
+                                height: 18,
+                              )
                             ),
                             const SizedBox(width: 2),
                             Text(laneTourArea.likeCnt.toString(),
