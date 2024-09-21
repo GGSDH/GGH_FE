@@ -92,12 +92,6 @@ class AddPhotobookBloc extends SideEffectBloc<AddPhotobookEvent, AddPhotobookSta
     try {
       final photos = await scanPhotos(event.startDate, event.endDate);
 
-      if (photos.isEmpty) {
-        emit(state.copyWith(isLoading: false));
-        produceSideEffect(AddPhotobookNoPhotosFound());
-        return;
-      }
-
       final response = await _photobookRepository.addPhotobook(
         title: event.title,
         startDate: event.startDate.toString(),
@@ -112,7 +106,12 @@ class AddPhotobookBloc extends SideEffectBloc<AddPhotobookEvent, AddPhotobookSta
         },
         apiError: (errorMessage, errorCode) {
           emit(state.copyWith(isLoading: false));
-          produceSideEffect(AddPhotobookShowError(errorMessage));
+
+          if (errorCode == "400") {
+            produceSideEffect(AddPhotobookNoPhotosFound());
+          } else {
+            produceSideEffect(AddPhotobookShowError(errorMessage));
+          }
         },
       );
     } catch (e) {
