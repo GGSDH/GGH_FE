@@ -7,6 +7,7 @@ import 'package:gyeonggi_express/data/models/response/tour_area_summary_response
 import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/themes/color_styles.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
+import 'package:gyeonggi_express/ui/component/app/app_action_bar.dart';
 import 'package:gyeonggi_express/ui/component/lane/lane_list_item.dart';
 import 'package:gyeonggi_express/ui/component/place/place_list_item.dart';
 import 'package:gyeonggi_express/ui/favorite/favorite_bloc.dart';
@@ -25,6 +26,11 @@ class FavoritesScreen extends StatelessWidget {
         length: 2,
         child: Column(
           children: [
+            AppActionBar(
+              rightText: "",
+              onBackPressed: () => GoRouter.of(context).pop(),
+              menuItems: const [],
+            ),
             const TabBar(
               tabs: [
                 Tab(text: '노선'),
