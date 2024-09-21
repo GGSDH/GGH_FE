@@ -21,33 +21,32 @@ class FavoritesScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: DefaultTabController(
-          length: 2,
-          child: Column(
-            children: [
-              const TabBar(
-                tabs: [
-                  Tab(text: '노선'),
-                  Tab(text: '역'),
+          child: DefaultTabController(
+        length: 2,
+        child: Column(
+          children: [
+            const TabBar(
+              tabs: [
+                Tab(text: '노선'),
+                Tab(text: '역'),
+              ],
+              indicatorColor: ColorStyles.gray900,
+              indicatorWeight: 1,
+              indicatorSize: TabBarIndicatorSize.tab,
+              labelColor: Colors.black,
+              unselectedLabelColor: ColorStyles.gray400,
+            ),
+            Expanded(
+              child: TabBarView(
+                children: [
+                  _buildContent(isLaneTab: true),
+                  _buildContent(isLaneTab: false),
                 ],
-                indicatorColor: ColorStyles.gray900,
-                indicatorWeight: 1,
-                indicatorSize: TabBarIndicatorSize.tab,
-                labelColor: Colors.black,
-                unselectedLabelColor: ColorStyles.gray400,
               ),
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    _buildContent(isLaneTab: true),
-                    _buildContent(isLaneTab: false),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ),
+      )),
     );
   }
 
