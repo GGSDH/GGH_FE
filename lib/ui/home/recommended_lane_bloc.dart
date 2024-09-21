@@ -6,28 +6,34 @@ import '../../data/repository/trip_repository.dart';
 import '../../data/repository/favorite_repository.dart';
 
 final class RecommendedLaneState {
-  final bool isLoading;
+  final bool isInitialLoading;
+  final bool isRefreshing;
   final List<Lane> lanes;
   final List<SigunguCode> selectedSigunguCodes;
 
-  RecommendedLaneState(
-      {required this.isLoading,
-      required this.lanes,
-      required this.selectedSigunguCodes});
+  RecommendedLaneState({
+    required this.isInitialLoading,
+    required this.isRefreshing,
+    required this.lanes,
+    required this.selectedSigunguCodes,
+  });
 
   factory RecommendedLaneState.initial() => RecommendedLaneState(
-        isLoading: true,
+        isInitialLoading: true,
+        isRefreshing: false,
         lanes: [],
         selectedSigunguCodes: [],
       );
 
   RecommendedLaneState copyWith({
-    bool? isLoading,
+    bool? isInitialLoading,
+    bool? isRefreshing,
     List<Lane>? lanes,
     List<SigunguCode>? selectedSigunguCodes,
   }) {
     return RecommendedLaneState(
-      isLoading: isLoading ?? this.isLoading,
+      isInitialLoading: isInitialLoading ?? this.isInitialLoading,
+      isRefreshing: isRefreshing ?? this.isRefreshing,
       lanes: lanes ?? this.lanes,
       selectedSigunguCodes: selectedSigunguCodes ?? this.selectedSigunguCodes,
     );
@@ -53,6 +59,8 @@ final class UnlikeLane extends RecommendedLaneEvent {
   UnlikeLane(this.laneId);
 }
 
+final class RecommendedLaneRefresh extends RecommendedLaneEvent {}
+
 sealed class RecommendedLaneSideEffect {}
 
 final class RecommendedLaneShowError extends RecommendedLaneSideEffect {
@@ -75,27 +83,28 @@ class RecommendedLaneBloc extends SideEffectBloc<RecommendedLaneEvent,
     on<SelectSigunguCodes>(_onSelectSigunguCodes);
     on<LikeLane>(_onLikeLane);
     on<UnlikeLane>(_onUnlikeLane);
+    on<RecommendedLaneRefresh>(_onRecommendedLaneRefresh);
   }
 
   void _onRecommendedLaneInitialize(
     RecommendedLaneInitialize event,
     Emitter<RecommendedLaneState> emit,
   ) async {
-    emit(state.copyWith(isLoading: true));
+    emit(state.copyWith(isInitialLoading: true));
     try {
       final response =
           await _tripRepository.getRecommendedLanes(state.selectedSigunguCodes);
       response.when(
         success: (data) {
-          emit(state.copyWith(isLoading: false, lanes: data));
+          emit(state.copyWith(isInitialLoading: false, lanes: data));
         },
         apiError: (errorMessage, errorCode) {
-          emit(state.copyWith(isLoading: false));
+          emit(state.copyWith(isInitialLoading: false));
           produceSideEffect(RecommendedLaneShowError(errorMessage));
         },
       );
     } catch (e) {
-      emit(state.copyWith(isLoading: false));
+      emit(state.copyWith(isInitialLoading: false));
       produceSideEffect(RecommendedLaneShowError(e.toString()));
     }
   }
@@ -105,21 +114,44 @@ class RecommendedLaneBloc extends SideEffectBloc<RecommendedLaneEvent,
     Emitter<RecommendedLaneState> emit,
   ) async {
     emit(state.copyWith(
-        isLoading: true, selectedSigunguCodes: event.sigunguCodes));
+        isInitialLoading: true, selectedSigunguCodes: event.sigunguCodes));
     try {
       final response =
           await _tripRepository.getRecommendedLanes(event.sigunguCodes);
       response.when(
         success: (data) {
-          emit(state.copyWith(isLoading: false, lanes: data));
+          emit(state.copyWith(isInitialLoading: false, lanes: data));
         },
         apiError: (errorMessage, errorCode) {
-          emit(state.copyWith(isLoading: false));
+          emit(state.copyWith(isInitialLoading: false));
           produceSideEffect(RecommendedLaneShowError(errorMessage));
         },
       );
     } catch (e) {
-      emit(state.copyWith(isLoading: false));
+      emit(state.copyWith(isInitialLoading: false));
+      produceSideEffect(RecommendedLaneShowError(e.toString()));
+    }
+  }
+
+  void _onRecommendedLaneRefresh(
+    RecommendedLaneRefresh event,
+    Emitter<RecommendedLaneState> emit,
+  ) async {
+    emit(state.copyWith(isRefreshing: true));
+    try {
+      final response =
+          await _tripRepository.getRecommendedLanes(state.selectedSigunguCodes);
+      response.when(
+        success: (data) {
+          emit(state.copyWith(isRefreshing: false, lanes: data));
+        },
+        apiError: (errorMessage, errorCode) {
+          emit(state.copyWith(isRefreshing: false));
+          produceSideEffect(RecommendedLaneShowError(errorMessage));
+        },
+      );
+    } catch (e) {
+      emit(state.copyWith(isRefreshing: false));
       produceSideEffect(RecommendedLaneShowError(e.toString()));
     }
   }

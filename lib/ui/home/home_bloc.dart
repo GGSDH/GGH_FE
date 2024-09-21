@@ -9,14 +9,16 @@ import '../../data/repository/auth_repository.dart';
 import '../../data/repository/trip_repository.dart';
 
 final class HomeState {
-  final bool isLoading;
+  final bool isInitialLoading;
+  final bool isRefreshing;
   final String userName;
   final List<Lane> lanes;
   final List<LocalRestaurant> localRestaurants;
   final List<PopularDestination> popularDestinations;
 
   HomeState({
-    required this.isLoading,
+    required this.isInitialLoading,
+    required this.isRefreshing,
     required this.userName,
     required this.lanes,
     required this.localRestaurants,
@@ -24,7 +26,8 @@ final class HomeState {
   });
 
   factory HomeState.initial() => HomeState(
-        isLoading: true,
+        isInitialLoading: true,
+        isRefreshing: false,
         userName: "",
         lanes: [],
         localRestaurants: [],
@@ -32,14 +35,16 @@ final class HomeState {
       );
 
   HomeState copyWith({
-    bool? isLoading,
+    bool? isInitialLoading,
+    bool? isRefreshing,
     String? userName,
     List<Lane>? lanes,
     List<LocalRestaurant>? localRestaurants,
     List<PopularDestination>? popularDestinations,
   }) {
     return HomeState(
-      isLoading: isLoading ?? this.isLoading,
+      isInitialLoading: isInitialLoading ?? this.isInitialLoading,
+      isRefreshing: isRefreshing ?? this.isRefreshing,
       userName: userName ?? this.userName,
       lanes: lanes ?? this.lanes,
       localRestaurants: localRestaurants ?? this.localRestaurants,
@@ -84,6 +89,8 @@ final class HomeShowError extends HomeSideEffect {
   HomeShowError(this.message);
 }
 
+class HomeRefresh extends HomeEvent {}
+
 class HomeBloc extends SideEffectBloc<HomeEvent, HomeState, HomeSideEffect> {
   final AuthRepository _authRepository;
   final TripRepository _tripRepository;
@@ -102,69 +109,66 @@ class HomeBloc extends SideEffectBloc<HomeEvent, HomeState, HomeSideEffect> {
     on<HomeUnlikeLane>(_onUnlikeLane);
     on<HomeLikeTourArea>(_onLikeTourArea);
     on<HomeUnlikeTourArea>(_onUnlikeTourArea);
+    on<HomeRefresh>(_onRefresh);
   }
 
-  void _onInitialize(
-    HomeInitialize event,
-    Emitter<HomeState> emit,
-  ) async {
-    emit(state.copyWith(isLoading: true));
+  void _onInitialize(HomeInitialize event, Emitter<HomeState> emit) async {
+    emit(state.copyWith(isInitialLoading: true));
+    await _fetchAllData(emit);
+    emit(state.copyWith(isInitialLoading: false));
+  }
 
+  void _onRefresh(HomeRefresh event, Emitter<HomeState> emit) async {
+    emit(state.copyWith(isRefreshing: true));
+    await _fetchAllData(emit);
+    emit(state.copyWith(isRefreshing: false));
+  }
+
+  Future<void> _fetchAllData(Emitter<HomeState> emit) async {
     try {
-      final response = await _authRepository.getProfileInfo();
+      final profileResponse = await _authRepository.getProfileInfo();
+      profileResponse.when(
+        success: (profileData) {
+          emit(state.copyWith(userName: profileData.nickname));
+        },
+        apiError: (errorMessage, errorCode) {
+          produceSideEffect(HomeShowError(errorMessage));
+        },
+      );
 
-      response.when(success: (data) {
-        emit(state.copyWith(isLoading: false, userName: data.nickname));
-      }, apiError: (errorMessage, errorCode) {
-        emit(state.copyWith(isLoading: false));
-        produceSideEffect(HomeShowError(errorMessage));
-      });
+      final lanesResponse = await _tripRepository.getRecommendedLanes([]);
+      lanesResponse.when(
+        success: (lanesData) {
+          emit(state.copyWith(lanes: lanesData.sublist(0, 3)));
+        },
+        apiError: (errorMessage, errorCode) {
+          produceSideEffect(HomeShowError(errorMessage));
+        },
+      );
+
+      final destinationsResponse =
+          await _tripRepository.getPopularDestinations();
+      destinationsResponse.when(
+        success: (destinationsData) {
+          emit(state.copyWith(
+              popularDestinations: destinationsData.sublist(0, 10)));
+        },
+        apiError: (errorMessage, errorCode) {
+          produceSideEffect(HomeShowError(errorMessage));
+        },
+      );
+
+      final restaurantsResponse = await _tripRepository.getLocalRestaurants([]);
+      restaurantsResponse.when(
+        success: (restaurantsData) {
+          emit(
+              state.copyWith(localRestaurants: restaurantsData.sublist(0, 10)));
+        },
+        apiError: (errorMessage, errorCode) {
+          produceSideEffect(HomeShowError(errorMessage));
+        },
+      );
     } catch (e) {
-      emit(state.copyWith(isLoading: false));
-      produceSideEffect(HomeShowError(e.toString()));
-    }
-
-    try {
-      final response = await _tripRepository.getRecommendedLanes([]);
-
-      response.when(success: (data) {
-        emit(state.copyWith(isLoading: false, lanes: data.sublist(0, 3)));
-      }, apiError: (errorMessage, errorCode) {
-        emit(state.copyWith(isLoading: false));
-        produceSideEffect(HomeShowError(errorMessage));
-      });
-    } catch (e) {
-      emit(state.copyWith(isLoading: false));
-      produceSideEffect(HomeShowError(e.toString()));
-    }
-
-    try {
-      final response = await _tripRepository.getPopularDestinations();
-
-      response.when(success: (data) {
-        emit(state.copyWith(
-            isLoading: false, popularDestinations: data.sublist(0, 10)));
-      }, apiError: (errorMessage, errorCode) {
-        emit(state.copyWith(isLoading: false));
-        produceSideEffect(HomeShowError(errorMessage));
-      });
-    } catch (e) {
-      emit(state.copyWith(isLoading: false));
-      produceSideEffect(HomeShowError(e.toString()));
-    }
-
-    try {
-      final response = await _tripRepository.getLocalRestaurants([]);
-
-      response.when(success: (data) {
-        emit(state.copyWith(
-            isLoading: false, localRestaurants: data.sublist(0, 10)));
-      }, apiError: (errorMessage, errorCode) {
-        emit(state.copyWith(isLoading: false));
-        produceSideEffect(HomeShowError(errorMessage));
-      });
-    } catch (e) {
-      emit(state.copyWith(isLoading: false));
       produceSideEffect(HomeShowError(e.toString()));
     }
   }

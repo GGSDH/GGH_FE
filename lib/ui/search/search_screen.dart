@@ -29,6 +29,22 @@ class SearchScreenContent extends StatefulWidget {
 class _SearchScreenContentState extends State<SearchScreenContent> {
   final TextEditingController _searchController = TextEditingController();
 
+  bool _isValidSearchTerm(String term) {
+    return term.trim().length > 2;
+  }
+
+  void _performSearch(String value) {
+    if (_isValidSearchTerm(value)) {
+      context.read<SearchBloc>().add(PerformSearch(value.trim()));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('검색어는 3글자 이상이어야 합니다.'),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -57,13 +73,7 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
                       Expanded(
                         child: SearchBar(
                           controller: _searchController,
-                          onSubmitted: (value) {
-                            if (value.isNotEmpty) {
-                              context
-                                  .read<SearchBloc>()
-                                  .add(PerformSearch(value));
-                            }
-                          },
+                          onSubmitted: _performSearch,
                           onClearSearch: () {
                             _searchController.clear();
                             context

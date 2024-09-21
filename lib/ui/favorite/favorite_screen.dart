@@ -7,6 +7,7 @@ import 'package:gyeonggi_express/data/models/response/tour_area_summary_response
 import 'package:gyeonggi_express/route_extension.dart';
 import 'package:gyeonggi_express/themes/color_styles.dart';
 import 'package:gyeonggi_express/themes/text_styles.dart';
+import 'package:gyeonggi_express/ui/component/app/app_action_bar.dart';
 import 'package:gyeonggi_express/ui/component/lane/lane_list_item.dart';
 import 'package:gyeonggi_express/ui/component/place/place_list_item.dart';
 import 'package:gyeonggi_express/ui/favorite/favorite_bloc.dart';
@@ -21,33 +22,37 @@ class FavoritesScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: DefaultTabController(
-          length: 2,
-          child: Column(
-            children: [
-              const TabBar(
-                tabs: [
-                  Tab(text: '노선'),
-                  Tab(text: '역'),
+          child: DefaultTabController(
+        length: 2,
+        child: Column(
+          children: [
+            AppActionBar(
+              rightText: "",
+              onBackPressed: () => GoRouter.of(context).pop(),
+              menuItems: const [],
+            ),
+            const TabBar(
+              tabs: [
+                Tab(text: '노선'),
+                Tab(text: '역'),
+              ],
+              indicatorColor: ColorStyles.gray900,
+              indicatorWeight: 1,
+              indicatorSize: TabBarIndicatorSize.tab,
+              labelColor: Colors.black,
+              unselectedLabelColor: ColorStyles.gray400,
+            ),
+            Expanded(
+              child: TabBarView(
+                children: [
+                  _buildContent(isLaneTab: true),
+                  _buildContent(isLaneTab: false),
                 ],
-                indicatorColor: ColorStyles.gray900,
-                indicatorWeight: 1,
-                indicatorSize: TabBarIndicatorSize.tab,
-                labelColor: Colors.black,
-                unselectedLabelColor: ColorStyles.gray400,
               ),
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    _buildContent(isLaneTab: true),
-                    _buildContent(isLaneTab: false),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ),
+      )),
     );
   }
 

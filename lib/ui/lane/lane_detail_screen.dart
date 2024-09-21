@@ -55,22 +55,31 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                         menuItems: [
                           ActionBarMenuItem(
                             icon: SvgPicture.asset(
-                              (state.isLikedByMe) ? "assets/icons/ic_heart_filled.svg" : "assets/icons/ic_heart.svg",
+                              (state.isLikedByMe)
+                                  ? "assets/icons/ic_heart_filled.svg"
+                                  : "assets/icons/ic_heart.svg",
                               width: 24,
                               height: 24,
                               colorFilter: ColorFilter.mode(
-                                  (state.isLikedByMe) ? Colors.red : Colors.black, BlendMode.srcIn),
+                                  (state.isLikedByMe)
+                                      ? Colors.red
+                                      : Colors.black,
+                                  BlendMode.srcIn),
                             ),
                             onPressed: () => {
-                              if (state.isLikedByMe) {
-                                context.read<LaneDetailBloc>().add(
-                                  LaneDetailUnlike(laneId: state.laneDetail.id)
-                                )
-                              } else {
-                                context.read<LaneDetailBloc>().add(
-                                  LaneDetailLike(laneId: state.laneDetail.id),
-                                )
-                              }
+                              if (state.isLikedByMe)
+                                {
+                                  context.read<LaneDetailBloc>().add(
+                                      LaneDetailUnlike(
+                                          laneId: state.laneDetail.id))
+                                }
+                              else
+                                {
+                                  context.read<LaneDetailBloc>().add(
+                                        LaneDetailLike(
+                                            laneId: state.laneDetail.id),
+                                      )
+                                }
                             },
                           ),
                         ],
@@ -189,9 +198,8 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                       ],
                     ),
                     const SizedBox(height: 14),
-                    // Provide a fixed height for the PageView
                     SizedBox(
-                      height: 120, // Adjust the height as necessary
+                      height: 120,
                       child: PageView.builder(
                         controller: PageController(),
                         itemCount: laneDetail
@@ -201,7 +209,8 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                         itemBuilder: (context, index) {
                           final tourArea = laneDetail
                               .getTourAreasByDay(_selectedDayIndex + 1)[index];
-                          return _placeDetailItemInBottomSheet(tourArea);
+                          return _placeDetailItemInBottomSheet(
+                              index + 1, tourArea);
                         },
                       ),
                     )
@@ -378,79 +387,83 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
             ),
             const SizedBox(width: 20),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(laneTourArea.tourAreaName,
-                      style: TextStyles.titleMedium.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: ColorStyles.gray800)),
-                  const SizedBox(height: 2),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Row(
-                          children: [
-                            Text(laneTourArea.sigunguCode.value,
-                                style: TextStyles.bodyMedium.copyWith(
-                                    color: ColorStyles.gray500,
-                                    fontWeight: FontWeight.w400)),
-                            const SizedBox(width: 4),
-                            Text("|",
-                                style: TextStyles.bodyMedium.copyWith(
-                                    color: ColorStyles.gray300,
-                                    fontWeight: FontWeight.w400)),
-                            const SizedBox(width: 4),
-                            Text(laneTourArea.sigunguCode.value,
-                                style: TextStyles.bodyMedium.copyWith(
-                                    color: ColorStyles.gray500,
-                                    fontWeight: FontWeight.w400)),
-                          ],
+              child: GestureDetector(
+                onTap: () {
+                  GoRouter.of(context).push(
+                      '${Routes.stations.path}/${laneTourArea.tourAreaId}');
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(laneTourArea.tourAreaName,
+                        style: TextStyles.titleMedium.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: ColorStyles.gray800)),
+                    const SizedBox(height: 2),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Text(laneTourArea.sigunguCode.value,
+                                  style: TextStyles.bodyMedium.copyWith(
+                                      color: ColorStyles.gray500,
+                                      fontWeight: FontWeight.w400)),
+                              const SizedBox(width: 4),
+                              Text("|",
+                                  style: TextStyles.bodyMedium.copyWith(
+                                      color: ColorStyles.gray300,
+                                      fontWeight: FontWeight.w400)),
+                              const SizedBox(width: 4),
+                              Text(laneTourArea.sigunguCode.value,
+                                  style: TextStyles.bodyMedium.copyWith(
+                                      color: ColorStyles.gray500,
+                                      fontWeight: FontWeight.w400)),
+                            ],
+                          ),
                         ),
-                      ),
-                      SvgPicture.asset(
-                        (laneTourArea.likedByMe) ? "assets/icons/ic_heart_filled.svg" : "assets/icons/ic_heart.svg",
-                        width: 18,
-                        height: 18
-                      ),
-                      const SizedBox(width: 2),
-                      Text(laneTourArea.likeCnt.toString(),
-                          style: TextStyles.bodyXSmall.copyWith(
-                              color: ColorStyles.gray600,
-                              fontWeight: FontWeight.w400)),
-                      const SizedBox(width: 20),
-                    ],
-                  ),
-                  const SizedBox(height: 14),
-                  GestureDetector(
-                    onTap: () {
-                      GoRouter.of(context).push('${Routes.stations.path}/${laneTourArea.tourAreaId}');
-                    },
-                    child: SingleChildScrollView(
+                        SvgPicture.asset(
+                            (laneTourArea.likedByMe)
+                                ? "assets/icons/ic_heart_filled.svg"
+                                : "assets/icons/ic_heart.svg",
+                            width: 18,
+                            height: 18),
+                        const SizedBox(width: 2),
+                        Text(laneTourArea.likeCnt.toString(),
+                            style: TextStyles.bodyXSmall.copyWith(
+                                color: ColorStyles.gray600,
+                                fontWeight: FontWeight.w400)),
+                        const SizedBox(width: 20),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
                           Padding(
                             padding: const EdgeInsets.only(right: 10),
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: CachedNetworkImage(
-                                imageUrl: laneTourArea.image,
-                                placeholder: (context, url) => const AppImagePlaceholder(width: 150, height: 230),
-                                errorWidget: (context, url, error) => const AppImagePlaceholder(width: 150, height: 230),
-                                width: 240,
-                                height: 150,
-                                fit: BoxFit.cover
-                              )
-                            ),
+                                borderRadius: BorderRadius.circular(20),
+                                child: CachedNetworkImage(
+                                    imageUrl: laneTourArea.image,
+                                    placeholder: (context, url) =>
+                                        const AppImagePlaceholder(
+                                            width: 150, height: 230),
+                                    errorWidget: (context, url, error) =>
+                                        const AppImagePlaceholder(
+                                            width: 150, height: 230),
+                                    width: 240,
+                                    height: 150,
+                                    fit: BoxFit.cover)),
                           )
                         ],
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                ],
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
             ),
           ],
@@ -470,7 +483,8 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
     }
   }
 
-  Widget _placeDetailItemInBottomSheet(TourAreaSummary laneTourArea) {
+  Widget _placeDetailItemInBottomSheet(
+      int orderNumber, TourAreaSummary laneTourArea) {
     return GestureDetector(
       onTap: () => _moveCameraToLocation(laneTourArea),
       child: SizedBox(
@@ -503,21 +517,50 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                GestureDetector(
-                  onTap: () {
-                    GoRouter.of(context).push("${Routes.stations.path}/${laneTourArea.tourAreaId}");
-                  },
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child: CachedNetworkImage(
-                      imageUrl: laneTourArea.image,
-                      placeholder: (context, url) => const AppImagePlaceholder(width: 80, height: 80),
-                      errorWidget: (context, url, error) => const AppImagePlaceholder(width: 80, height: 80),
-                      height: 80,
-                      width: 80,
-                      fit: BoxFit.cover,
+                Stack(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        GoRouter.of(context).push(
+                            "${Routes.stations.path}/${laneTourArea.tourAreaId}");
+                      },
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: CachedNetworkImage(
+                          imageUrl: laneTourArea.image,
+                          placeholder: (context, url) =>
+                              const AppImagePlaceholder(width: 80, height: 80),
+                          errorWidget: (context, url, error) =>
+                              const AppImagePlaceholder(width: 80, height: 80),
+                          height: 80,
+                          width: 80,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
-                  ),
+                    Positioned(
+                      left: 4,
+                      top: 4,
+                      child: Container(
+                        width: 20,
+                        height: 20,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: ColorStyles.primary,
+                        ),
+                        child: Center(
+                          child: Text(
+                            orderNumber.toString(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 Expanded(
                   child: Padding(
@@ -550,7 +593,9 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                         Row(
                           children: [
                             SvgPicture.asset(
-                              (laneTourArea.likedByMe) ? "assets/icons/ic_heart_filled.svg" : "assets/icons/ic_heart.svg",
+                              (laneTourArea.likedByMe)
+                                  ? "assets/icons/ic_heart_filled.svg"
+                                  : "assets/icons/ic_heart.svg",
                               width: 18,
                               height: 18,
                             ),
@@ -629,13 +674,13 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
     if (_mapController == null) return;
 
     _mapController!.clearOverlays();
-    List<LaneSpecificResponse> selectedDayResponses = laneDetail.laneSpecificResponses
+    List<LaneSpecificResponse> selectedDayResponses = laneDetail
+        .laneSpecificResponses
         .where((response) => response.day == _selectedDayIndex + 1)
         .toList();
     NaverMapUtil.addMarkersAndPathForLane(
         _mapController!, selectedDayResponses, context);
 
-    // 카메라 위치 업데이트
     if (selectedDayResponses.isNotEmpty) {
       var firstPlace = selectedDayResponses.first.tourAreaResponse;
       _mapController!.updateCamera(
