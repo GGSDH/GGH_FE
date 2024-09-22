@@ -111,8 +111,8 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                             child: _laneHeader(
                               state.laneData.title,
                               _formatDays(widget.days),
-                              widget.sigunguCodes.first.value,
-                              widget.tripThemes.first.title,
+                              widget.sigunguCodes,
+                              widget.tripThemes,
                             ),
                           ),
                           const TabBar(
@@ -304,8 +304,8 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
   Widget _laneHeader(
     String title,
     String period,
-    String category,
-    String theme
+    List<SigunguCode> sigunguCodes,
+    List<TripTheme> tripThemes,
   ) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -313,22 +313,13 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
       children: [
         Align(
           alignment: Alignment.centerLeft,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: ColorStyles.primary,
-                width: 1,
-              ),
-              borderRadius: BorderRadius.circular(100),
-            ),
-            child: Text(
-              category,
-              style: TextStyles.titleXSmall.copyWith(
-                color: ColorStyles.primary,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+          child: Row(
+            children: [
+              for (var i = 0; i < sigunguCodes.length; i++) ...[
+                _regionBadge(sigunguCodes[i]),
+                const SizedBox(width: 8)
+              ]
+            ],
           ),
         ),
         const SizedBox(height: 14),
@@ -340,7 +331,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
           ),
         ),
         Text(
-          "$period | $theme",
+          getSubDescription(period, tripThemes),
           style: TextStyles.bodyLarge.copyWith(
             fontWeight: FontWeight.w400,
             color: ColorStyles.gray500,
@@ -348,6 +339,33 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
         ),
       ],
     );
+  }
+
+  Widget _regionBadge(SigunguCode code) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: ColorStyles.primary,
+          width: 1,
+        ),
+        borderRadius: BorderRadius.circular(100),
+      ),
+      child: Text(
+        code.value,
+        style: TextStyles.titleXSmall.copyWith(
+          color: ColorStyles.primary,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
+  String getSubDescription(String period, List<TripTheme> tripThemes) {
+    var periodText = '$period | ';
+    var themeText = tripThemes.map((e) => e.title).join(', ');
+
+    return periodText + themeText;
   }
 
   Widget _laneDivider() {
