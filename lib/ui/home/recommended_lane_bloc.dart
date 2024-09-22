@@ -1,9 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gyeonggi_express/data/models/sigungu_code.dart';
+import 'package:gyeonggi_express/util/event_bus.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
+
 import '../../data/models/response/lane_response.dart';
-import '../../data/repository/trip_repository.dart';
 import '../../data/repository/favorite_repository.dart';
+import '../../data/repository/trip_repository.dart';
 
 final class RecommendedLaneState {
   final bool isInitialLoading;
@@ -48,21 +50,22 @@ final class SelectSigunguCodes extends RecommendedLaneEvent {
   final List<SigunguCode> sigunguCodes;
   SelectSigunguCodes(this.sigunguCodes);
 }
-
 final class LikeLane extends RecommendedLaneEvent {
   final int laneId;
   LikeLane(this.laneId);
 }
-
 final class UnlikeLane extends RecommendedLaneEvent {
   final int laneId;
   UnlikeLane(this.laneId);
 }
-
+final class LaneLikeStatusChanged extends RecommendedLaneEvent {
+  final int laneId;
+  final bool isLiked;
+  LaneLikeStatusChanged(this.laneId, this.isLiked);
+}
 final class RecommendedLaneRefresh extends RecommendedLaneEvent {}
 
 sealed class RecommendedLaneSideEffect {}
-
 final class RecommendedLaneShowError extends RecommendedLaneSideEffect {
   final String message;
   RecommendedLaneShowError(this.message);
@@ -79,11 +82,29 @@ class RecommendedLaneBloc extends SideEffectBloc<RecommendedLaneEvent,
   })  : _tripRepository = tripRepository,
         _favoriteRepository = favoriteRepository,
         super(RecommendedLaneState.initial()) {
+    EventBus().on<ChangeLaneLikeEvent>().listen((event) {
+      add(LaneLikeStatusChanged(event.laneId, event.isLike));
+    });
+
     on<RecommendedLaneInitialize>(_onRecommendedLaneInitialize);
     on<SelectSigunguCodes>(_onSelectSigunguCodes);
     on<LikeLane>(_onLikeLane);
     on<UnlikeLane>(_onUnlikeLane);
     on<RecommendedLaneRefresh>(_onRecommendedLaneRefresh);
+    on<LaneLikeStatusChanged>(_onLaneLikeStatusChanged);
+  }
+
+  void _onLaneLikeStatusChanged(
+    LaneLikeStatusChanged event,
+    Emitter<RecommendedLaneState> emit,
+  ) {
+    final updatedLanes = state.lanes.map((lane) {
+      if (lane.laneId == event.laneId) {
+        return lane.copyWith(likedByMe: event.isLiked);
+      }
+      return lane;
+    }).toList();
+    emit(state.copyWith(lanes: updatedLanes));
   }
 
   void _onRecommendedLaneInitialize(
@@ -171,6 +192,7 @@ class RecommendedLaneBloc extends SideEffectBloc<RecommendedLaneEvent,
           return lane;
         }).toList();
         emit(state.copyWith(lanes: updatedLanes));
+        EventBus().fire(ChangeLaneLikeEvent(event.laneId, true));
       },
       apiError: (errorMessage, errorCode) {
         produceSideEffect(
@@ -194,6 +216,7 @@ class RecommendedLaneBloc extends SideEffectBloc<RecommendedLaneEvent,
           return lane;
         }).toList();
         emit(state.copyWith(lanes: updatedLanes));
+        EventBus().fire(ChangeLaneLikeEvent(event.laneId, false));
       },
       apiError: (errorMessage, errorCode) {
         produceSideEffect(

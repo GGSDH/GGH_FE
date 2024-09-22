@@ -84,6 +84,18 @@ final class HomeNicknameChanged extends HomeEvent {
 
   HomeNicknameChanged(this.nickname);
 }
+final class HomeLaneLikeStatusChanged extends HomeEvent {
+  final int laneId;
+  final bool isLiked;
+
+  HomeLaneLikeStatusChanged(this.laneId, this.isLiked);
+}
+final class HomeStationLikeStatusChanged extends HomeEvent {
+  final int stationId;
+  final bool isLiked;
+
+  HomeStationLikeStatusChanged(this.stationId, this.isLiked);
+}
 
 sealed class HomeSideEffect {}
 final class HomeShowError extends HomeSideEffect {
@@ -109,6 +121,12 @@ class HomeBloc extends SideEffectBloc<HomeEvent, HomeState, HomeSideEffect> {
     EventBus().on<ChangeNicknameEvent>().listen(
       (event) => add(HomeNicknameChanged(event.nickname))
     );
+    EventBus().on<ChangeLaneLikeEvent>().listen(
+      (event) => add(HomeLaneLikeStatusChanged(event.laneId, event.isLike))
+    );
+    EventBus().on<ChangeStationLikeEvent>().listen(
+      (event) => add(HomeStationLikeStatusChanged(event.stationId, event.isLike))
+    );
 
     on<HomeInitialize>(_onInitialize);
     on<HomeLikeLane>(_onLikeLane);
@@ -117,6 +135,8 @@ class HomeBloc extends SideEffectBloc<HomeEvent, HomeState, HomeSideEffect> {
     on<HomeUnlikeTourArea>(_onUnlikeTourArea);
     on<HomeRefresh>(_onRefresh);
     on<HomeNicknameChanged>(_onNicknameChanged);
+    on<HomeLaneLikeStatusChanged>(_onLaneLikeStatusChanged);
+    on<HomeStationLikeStatusChanged>(_onStationLikeStatusChanged);
   }
 
   void _onInitialize(HomeInitialize event, Emitter<HomeState> emit) async {
@@ -133,6 +153,29 @@ class HomeBloc extends SideEffectBloc<HomeEvent, HomeState, HomeSideEffect> {
 
   void _onNicknameChanged(HomeNicknameChanged event, Emitter<HomeState> emit) {
     emit(state.copyWith(userName: event.nickname));
+  }
+
+  void _onLaneLikeStatusChanged(HomeLaneLikeStatusChanged event, Emitter<HomeState> emit) {
+    final updatedLanes = state.lanes.map((lane) {
+      if (lane.laneId == event.laneId) {
+        return lane.copyWith(likedByMe: event.isLiked);
+      }
+      return lane;
+    }).toList();
+
+    emit(state.copyWith(lanes: updatedLanes));
+  }
+
+  void _onStationLikeStatusChanged(HomeStationLikeStatusChanged event, Emitter<HomeState> emit) {
+    final updatedRestaurants = state.localRestaurants.map((restaurant) {
+      if (restaurant.tourAreaId == event.stationId) {
+        return restaurant.copyWith(
+            likedByMe: event.isLiked, likeCount: restaurant.likeCount + 1);
+      }
+      return restaurant;
+    }).toList();
+
+    emit(state.copyWith(localRestaurants: updatedRestaurants,));
   }
 
   Future<void> _fetchAllData(Emitter<HomeState> emit) async {
@@ -196,6 +239,7 @@ class HomeBloc extends SideEffectBloc<HomeEvent, HomeState, HomeSideEffect> {
           return lane;
         }).toList();
         emit(state.copyWith(lanes: updatedLanes));
+        EventBus().fire(ChangeLaneLikeEvent(event.laneId, true));
       }, apiError: (errorMessage, errorCode) {
         produceSideEffect(HomeShowError("Failed to like lane"));
       });
@@ -217,6 +261,7 @@ class HomeBloc extends SideEffectBloc<HomeEvent, HomeState, HomeSideEffect> {
           return lane;
         }).toList();
         emit(state.copyWith(lanes: updatedLanes));
+        EventBus().fire(ChangeLaneLikeEvent(event.laneId, false));
       }, apiError: (errorMessage, errorCode) {
         produceSideEffect(HomeShowError("Failed to unlike lane"));
       });
@@ -240,6 +285,7 @@ class HomeBloc extends SideEffectBloc<HomeEvent, HomeState, HomeSideEffect> {
         }).toList();
 
         emit(state.copyWith(localRestaurants: updatedTourAreas));
+        EventBus().fire(ChangeStationLikeEvent(event.tourAreaId, true));
       }, apiError: (errorMessage, errorCode) {
         produceSideEffect(HomeShowError("Failed to like tour area"));
       });
@@ -266,6 +312,7 @@ class HomeBloc extends SideEffectBloc<HomeEvent, HomeState, HomeSideEffect> {
         }).toList();
 
         emit(state.copyWith(localRestaurants: updatedTourAreas));
+        EventBus().fire(ChangeStationLikeEvent(event.tourAreaId, false));
       }, apiError: (errorMessage, errorCode) {
         produceSideEffect(HomeShowError("Failed to unlike tour area"));
       });

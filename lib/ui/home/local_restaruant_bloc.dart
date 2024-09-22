@@ -7,6 +7,7 @@ import 'package:gyeonggi_express/ui/ext/throttle_util.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../data/models/response/local_restaurant_response.dart';
+import '../../util/event_bus.dart';
 
 final class LocalRestaurantState {
   final bool isLoading;
@@ -73,6 +74,13 @@ final class LocalRestaurantUnlike extends LocalRestaurantEvent {
 
   LocalRestaurantUnlike(this.restaurantId);
 }
+final class LocalRestaurantLikeStatusChanged extends LocalRestaurantEvent {
+  final int restaurantId;
+  final bool isLiked;
+
+  LocalRestaurantLikeStatusChanged(this.restaurantId, this.isLiked);
+
+}
 
 sealed class LocalRestaurantSideEffect { }
 final class LocalRestaurantShowError extends LocalRestaurantSideEffect {
@@ -91,6 +99,10 @@ class LocalRestaurantBloc extends SideEffectBloc<LocalRestaurantEvent, LocalRest
   }) : _tripRepository = tripRepository,
       _favoriteRepository = favoriteRepository,
         super(LocalRestaurantState.initial()) {
+    EventBus().on<ChangeStationLikeEvent>().listen((event) {
+      add(LocalRestaurantLikeStatusChanged(event.stationId, event.isLike));
+    });
+
     on<LocalRestaurantFetched>(
       _onLocalRestaurantFetched,
       transformer: throttleDroppable(throttleDuration),
@@ -101,6 +113,23 @@ class LocalRestaurantBloc extends SideEffectBloc<LocalRestaurantEvent, LocalRest
     );
     on<LocalRestaurantLike>(_onLikeRestaurant);
     on<LocalRestaurantUnlike>(_onUnlikeRestaurant);
+    on<LocalRestaurantLikeStatusChanged>(_onLocalRestaurantChangeStatusChanged);
+  }
+
+  void _onLocalRestaurantChangeStatusChanged(
+    LocalRestaurantLikeStatusChanged event,
+    Emitter<LocalRestaurantState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        localRestaurants: state.localRestaurants.map((restaurant) {
+          if (restaurant.tourAreaId == event.restaurantId) {
+            return restaurant.copyWith(likedByMe: event.isLiked);
+          }
+          return restaurant;
+        }).toList(),
+      ),
+    );
   }
 
   void _onLocalRestaurantFetched(
@@ -186,6 +215,7 @@ class LocalRestaurantBloc extends SideEffectBloc<LocalRestaurantEvent, LocalRest
                   }).toList()
               )
           );
+          EventBus().fire(ChangeStationLikeEvent(event.restaurantId, true));
         },
         apiError: (errorMessage, errorCode) {
           emit(state.copyWith(isLoading: false));
@@ -220,6 +250,7 @@ class LocalRestaurantBloc extends SideEffectBloc<LocalRestaurantEvent, LocalRest
                   }).toList()
               )
           );
+          EventBus().fire(ChangeStationLikeEvent(event.restaurantId, false));
         },
         apiError: (errorMessage, errorCode) {
           emit(state.copyWith(isLoading: false));

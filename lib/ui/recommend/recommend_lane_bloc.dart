@@ -6,6 +6,7 @@ import 'package:side_effect_bloc/side_effect_bloc.dart';
 import '../../data/models/response/recommended_lane_response.dart';
 import '../../data/models/trip_theme.dart';
 import '../../data/repository/favorite_repository.dart';
+import '../../util/event_bus.dart';
 
 final class RecommendLaneState {
   final bool isLoading;
@@ -64,27 +65,35 @@ final class RecommendLaneLike extends RecommendLaneEvent {
 
   RecommendLaneLike(this.laneId);
 }
-
 final class RecommendLaneUnlike extends RecommendLaneEvent {
   final int laneId;
 
   RecommendLaneUnlike(this.laneId);
 }
-
 final class StationLike extends RecommendLaneEvent {
   final int stationId;
 
   StationLike(this.stationId);
 }
-
 final class StationUnlike extends RecommendLaneEvent {
   final int stationId;
 
   StationUnlike(this.stationId);
 }
+final class LaneLikeStatusChanged extends RecommendLaneEvent {
+  final int laneId;
+  final bool isLiked;
+
+  LaneLikeStatusChanged(this.laneId, this.isLiked);
+}
+final class StationLikeStatusChanged extends RecommendLaneEvent {
+  final int stationId;
+  final bool isLiked;
+
+  StationLikeStatusChanged(this.stationId, this.isLiked);
+}
 
 sealed class RecommendLaneSideEffect {}
-
 final class RecommendLaneShowError extends RecommendLaneSideEffect {
   final String message;
 
@@ -102,11 +111,34 @@ class RecommendLaneBloc extends SideEffectBloc<RecommendLaneEvent,
   })  : _tripRepository = tripRepository,
         _favoriteRepository = favoriteRepository,
         super(RecommendLaneState.initial()) {
+    EventBus().on<ChangeLaneLikeEvent>().listen((event) {
+      add(LaneLikeStatusChanged(event.laneId, event.isLike));
+    });
+    EventBus().on<ChangeStationLikeEvent>().listen((event) {
+      add(StationLikeStatusChanged(event.stationId, event.isLike));
+    });
+
     on<RecommendLaneInitialize>(_onInitialize);
     on<RecommendLaneLike>(_onLikeAiLane);
     on<RecommendLaneUnlike>(_onUnlikeAiLane);
     on<StationLike>(_onLikeStation);
     on<StationUnlike>(_onUnlikeStation);
+    on<LaneLikeStatusChanged>(_onLaneLikeStatusChanged);
+    on<StationLikeStatusChanged>(_onStationLikeStatusChanged);
+  }
+
+  void _onLaneLikeStatusChanged(
+    LaneLikeStatusChanged event,
+    Emitter<RecommendLaneState> emit,
+  ) {
+    emit(state.copyWith(isLikedByMe: event.isLiked));
+  }
+
+  void _onStationLikeStatusChanged(
+    StationLikeStatusChanged event,
+    Emitter<RecommendLaneState> emit,
+  ) {
+    emit(state.copyWith(laneData: state.laneData.updateLikeStatusOfStation(event.stationId, event.isLiked)));
   }
 
   void _onInitialize(
@@ -145,7 +177,7 @@ class RecommendLaneBloc extends SideEffectBloc<RecommendLaneEvent,
 
       response.when(
         success: (data) {
-          emit(state.copyWith(isLikedByMe: true));
+          EventBus().fire(ChangeLaneLikeEvent(event.laneId, true));
         },
         apiError: (errorMessage, errorCode) {
           produceSideEffect(RecommendLaneShowError(errorMessage));
@@ -164,7 +196,7 @@ class RecommendLaneBloc extends SideEffectBloc<RecommendLaneEvent,
 
       response.when(
         success: (data) {
-          emit(state.copyWith(isLikedByMe: false));
+          EventBus().fire(ChangeLaneLikeEvent(event.laneId, false));
         },
         apiError: (errorMessage, errorCode) {
           produceSideEffect(RecommendLaneShowError(errorMessage));
@@ -183,7 +215,7 @@ class RecommendLaneBloc extends SideEffectBloc<RecommendLaneEvent,
       final response = await _favoriteRepository.addFavoriteTourArea(event.stationId);
       response.when(
         success: (data) {
-          emit(state.copyWith(laneData: state.laneData.updateLikeStatusOfStation(event.stationId, true)));
+          EventBus().fire(ChangeStationLikeEvent(event.stationId, true));
         },
         apiError: (errorMessage, errorCode) {
           produceSideEffect(RecommendLaneShowError(errorMessage));
@@ -202,7 +234,7 @@ class RecommendLaneBloc extends SideEffectBloc<RecommendLaneEvent,
       final response = await _favoriteRepository.removeFavoriteTourArea(event.stationId);
       response.when(
         success: (data) {
-          emit(state.copyWith(laneData: state.laneData.updateLikeStatusOfStation(event.stationId, false)));
+          EventBus().fire(ChangeStationLikeEvent(event.stationId, false));
         },
         apiError: (errorMessage, errorCode) {
           produceSideEffect(RecommendLaneShowError(errorMessage));

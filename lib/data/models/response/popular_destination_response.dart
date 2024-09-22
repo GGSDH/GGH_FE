@@ -32,5 +32,23 @@ class PopularDestination {
   factory PopularDestination.fromJson(Map<String, dynamic> json) =>
       _$PopularDestinationFromJson(json);
 
+  PopularDestination copyWith({
+    int? tourAreaId,
+    int? ranking,
+    String? image,
+    String? name,
+    String? sigunguValue,
+    TripTheme? category,
+  }) {
+    return PopularDestination(
+      tourAreaId: tourAreaId ?? this.tourAreaId,
+      ranking: ranking ?? this.ranking,
+      image: image ?? this.image,
+      name: name ?? this.name,
+      sigunguValue: sigunguValue ?? this.sigunguValue,
+      category: category ?? this.category,
+    );
+  }
+
   Map<String, dynamic> toJson() => _$PopularDestinationToJson(this);
 }

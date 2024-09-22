@@ -20,6 +20,12 @@ final class ChangeNicknameEvent extends Event {
 
   ChangeNicknameEvent(this.nickname);
 }
+final class ChangeLaneLikeEvent extends Event {
+  final int laneId;
+  final bool isLike;
+
+  ChangeLaneLikeEvent(this.laneId, this.isLike);
+}
 final class ChangeStationLikeEvent extends Event {
   final int stationId;
   final bool isLike;

@@ -8,6 +8,7 @@ import '../../data/models/response/tour_area_response.dart';
 import '../../data/models/sigungu_code.dart';
 import '../../data/models/tour_content_type.dart';
 import '../../data/models/trip_theme.dart';
+import '../../util/event_bus.dart';
 
 final class StationDetailState {
   final bool isLoading;
@@ -93,6 +94,18 @@ final class UnlikeRecommendation extends StationDetailEvent {
 
   UnlikeRecommendation(this.stationId);
 }
+final class LaneLikeStatusChanged extends StationDetailEvent {
+  final int laneId;
+  final bool isLiked;
+
+  LaneLikeStatusChanged(this.laneId, this.isLiked);
+}
+final class StationLikeStatusChanged extends StationDetailEvent {
+  final int stationId;
+  final bool isLiked;
+
+  StationLikeStatusChanged(this.stationId, this.isLiked);
+}
 
 sealed class StationDetailSideEffect { }
 final class StationDetailShowError extends StationDetailSideEffect {
@@ -111,6 +124,13 @@ class StationDetailBloc extends SideEffectBloc<StationDetailEvent, StationDetail
   }) : _tourAreaRepository = tourAreaRepository,
         _favoriteRepository = favoriteRepository,
         super(StationDetailState.initial()) {
+    EventBus().on<ChangeLaneLikeEvent>().listen((event) {
+      add(LaneLikeStatusChanged(event.laneId, event.isLike));
+    });
+    EventBus().on<ChangeStationLikeEvent>().listen((event) {
+      add(StationLikeStatusChanged(event.stationId, event.isLike));
+    });
+
     on<InitializeStationDetail>(_onFetchStationDetail);
     on<LikeStation>(_onLikeStation);
     on<UnlikeStation>(_onUnlikeStation);
@@ -118,6 +138,35 @@ class StationDetailBloc extends SideEffectBloc<StationDetailEvent, StationDetail
     on<UnlikeRecommendation>(_onUnlikeRecommendation);
     on<LikeIncludingLane>(_onLikeIncludingLane);
     on<UnlikeIncludingLane>(_onUnlikeIncludingLane);
+    on<LaneLikeStatusChanged>(_onLaneLikeStatusChanged);
+    on<StationLikeStatusChanged>(_onStationLikeStatusChanged);
+  }
+
+  void _onLaneLikeStatusChanged(
+    LaneLikeStatusChanged event, Emitter<StationDetailState> emit
+  ) {
+    emit(
+      state.copyWith(
+        lanes: state.lanes
+            .map((lane) =>
+        lane.laneId == event.laneId
+            ? lane.copyWith(likedByMe: event.isLiked, likeCount: event.isLiked ? lane.likeCount + 1 : lane.likeCount - 1)
+            : lane
+        ).toList(),
+      ),
+    );
+  }
+
+  void _onStationLikeStatusChanged(
+      StationLikeStatusChanged event, Emitter<StationDetailState> emit
+  ) {
+    emit(
+        state.copyWith(
+          tourArea: state.tourArea.copyWith(likedByMe: event.isLiked),
+          otherTourAreas: state.otherTourAreas
+              .map((tourArea) => tourArea.tourAreaId == event.stationId ? tourArea.copyWith(likedByMe: event.isLiked, likeCount: (event.isLiked) ? tourArea.likeCount + 1 : tourArea.likeCount - 1) : tourArea).toList()
+        )
+    );
   }
 
   Future<void> _onFetchStationDetail(
@@ -149,7 +198,7 @@ class StationDetailBloc extends SideEffectBloc<StationDetailEvent, StationDetail
     final response = await _favoriteRepository.addFavoriteTourArea(event.stationId);
     response.when(
       success: (data) {
-        emit(state.copyWith(tourArea: state.tourArea.copyWith(likedByMe: true)));
+        EventBus().fire(ChangeStationLikeEvent(event.stationId, true));
       },
       apiError: (errorMessage, errorCode) {
         produceSideEffect(StationDetailShowError(errorMessage));
@@ -163,7 +212,7 @@ class StationDetailBloc extends SideEffectBloc<StationDetailEvent, StationDetail
     final response = await _favoriteRepository.removeFavoriteTourArea(event.stationId);
     response.when(
       success: (data) {
-        emit(state.copyWith(tourArea: state.tourArea.copyWith(likedByMe: false)));
+        EventBus().fire(ChangeStationLikeEvent(event.stationId, false));
       },
       apiError: (errorMessage, errorCode) {
         produceSideEffect(StationDetailShowError(errorMessage));
@@ -177,16 +226,7 @@ class StationDetailBloc extends SideEffectBloc<StationDetailEvent, StationDetail
     final response = await _favoriteRepository.addFavoriteLane(event.laneId);
     response.when(
       success: (data) {
-        emit(
-          state.copyWith(
-            lanes: state.lanes
-                .map((lane) =>
-            lane.laneId == event.laneId
-                ? lane.copyWith(likedByMe: true, likeCount: lane.likeCount + 1)
-                : lane
-            ).toList(),
-          ),
-        );
+        EventBus().fire(ChangeLaneLikeEvent(event.laneId, true));
       },
       apiError: (errorMessage, errorCode) {
         produceSideEffect(StationDetailShowError(errorMessage));
@@ -200,16 +240,7 @@ class StationDetailBloc extends SideEffectBloc<StationDetailEvent, StationDetail
     final response = await _favoriteRepository.removeFavoriteLane(event.laneId);
     response.when(
       success: (data) {
-        emit(
-          state.copyWith(
-            lanes: state.lanes
-                .map((lane) =>
-            lane.laneId == event.laneId
-                ? lane.copyWith(likedByMe: false, likeCount: lane.likeCount - 1)
-                : lane
-            ).toList(),
-          ),
-        );
+        EventBus().fire(ChangeLaneLikeEvent(event.laneId, false));
       },
       apiError: (errorMessage, errorCode) {
         produceSideEffect(StationDetailShowError(errorMessage));
@@ -223,16 +254,7 @@ class StationDetailBloc extends SideEffectBloc<StationDetailEvent, StationDetail
     final response = await _favoriteRepository.addFavoriteTourArea(event.stationId);
     response.when(
       success: (data) {
-        emit(
-          state.copyWith(
-            otherTourAreas: state.otherTourAreas
-                .map((tourArea) =>
-            tourArea.tourAreaId == event.stationId
-                ? tourArea.copyWith(likedByMe: true, likeCount: tourArea.likeCount + 1)
-                : tourArea
-            ).toList(),
-          ),
-        );
+        EventBus().fire(ChangeStationLikeEvent(event.stationId, true));
       },
       apiError: (errorMessage, errorCode) {
         produceSideEffect(StationDetailShowError(errorMessage));
@@ -246,16 +268,7 @@ class StationDetailBloc extends SideEffectBloc<StationDetailEvent, StationDetail
     final response = await _favoriteRepository.removeFavoriteTourArea(event.stationId);
     response.when(
       success: (data) {
-        emit(
-          state.copyWith(
-            otherTourAreas: state.otherTourAreas
-                .map((tourArea) =>
-            tourArea.tourAreaId == event.stationId
-                ? tourArea.copyWith(likedByMe: false, likeCount: tourArea.likeCount - 1)
-                : tourArea
-            ).toList(),
-          ),
-        );
+        EventBus().fire(ChangeStationLikeEvent(event.stationId, false));
       },
       apiError: (errorMessage, errorCode) {
         produceSideEffect(StationDetailShowError(errorMessage));

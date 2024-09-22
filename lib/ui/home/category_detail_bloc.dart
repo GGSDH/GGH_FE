@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gyeonggi_express/data/repository/favorite_repository.dart';
+import 'package:gyeonggi_express/util/event_bus.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../data/models/response/tour_area_response.dart';
@@ -63,32 +64,31 @@ class CategoryDetailState {
 }
 
 sealed class CategoryDetailEvent {}
-
-class SelectCategory extends CategoryDetailEvent {
+final class SelectCategory extends CategoryDetailEvent {
   final TripTheme tripTheme;
   SelectCategory(this.tripTheme);
 }
-
-class SelectSigunguCodes extends CategoryDetailEvent {
+final class SelectSigunguCodes extends CategoryDetailEvent {
   final List<SigunguCode> sigunguCodes;
   SelectSigunguCodes(this.sigunguCodes);
 }
-
-class LoadMoreTourAreas extends CategoryDetailEvent {}
-
-class LikeTourArea extends CategoryDetailEvent {
+final class LoadMoreTourAreas extends CategoryDetailEvent {}
+final class LikeTourArea extends CategoryDetailEvent {
   final int tourAreaId;
   LikeTourArea(this.tourAreaId);
 }
-
-class UnlikeTourArea extends CategoryDetailEvent {
+final class UnlikeTourArea extends CategoryDetailEvent {
   final int tourAreaId;
   UnlikeTourArea(this.tourAreaId);
 }
+final class TourAreaLikeStatusChanged extends CategoryDetailEvent {
+  final int tourAreaId;
+  final bool isLiked;
+  TourAreaLikeStatusChanged(this.tourAreaId, this.isLiked);
+}
 
 sealed class CategoryDetailSideEffect {}
-
-class CategoryDetailShowError extends CategoryDetailSideEffect {
+final class CategoryDetailShowError extends CategoryDetailSideEffect {
   final String message;
   CategoryDetailShowError(this.message);
 }
@@ -104,11 +104,29 @@ class CategoryDetailBloc extends SideEffectBloc<CategoryDetailEvent,
   })  : _tripRepository = tripRepository,
         _favoriteRepository = favoriteRepository,
         super(CategoryDetailState.initial()) {
+    EventBus().on<ChangeStationLikeEvent>().listen((event) {
+      add(TourAreaLikeStatusChanged(event.stationId, event.isLike));
+    });
+
     on<SelectCategory>(_onSelectCategory);
     on<SelectSigunguCodes>(_onSelectSigunguCodes);
     on<LoadMoreTourAreas>(_onLoadMoreTourAreas);
     on<LikeTourArea>(_onLikeTourArea);
     on<UnlikeTourArea>(_onUnlikeTourArea);
+    on<TourAreaLikeStatusChanged>(_onTourAreaLikeStatusChanged);
+  }
+
+  void _onTourAreaLikeStatusChanged(
+    TourAreaLikeStatusChanged event,
+    Emitter<CategoryDetailState> emit,
+  ) {
+    final updatedTourAreas = state.tourAreas.map((tourArea) {
+      if (tourArea.tourAreaId == event.tourAreaId) {
+        return tourArea.copyWith(likedByMe: event.isLiked, likeCount: event.isLiked ? tourArea.likeCount + 1 : tourArea.likeCount - 1);
+      }
+      return tourArea;
+    }).toList();
+    emit(state.copyWith(tourAreas: updatedTourAreas));
   }
 
   void _onSelectCategory(
@@ -234,6 +252,7 @@ class CategoryDetailBloc extends SideEffectBloc<CategoryDetailEvent,
           return tourArea;
         }).toList();
         emit(state.copyWith(tourAreas: updatedTourAreas));
+        EventBus().fire(ChangeStationLikeEvent(event.tourAreaId, true));
       },
       apiError: (errorMessage, errorCode) {
         produceSideEffect(
@@ -260,6 +279,7 @@ class CategoryDetailBloc extends SideEffectBloc<CategoryDetailEvent,
           return tourArea;
         }).toList();
         emit(state.copyWith(tourAreas: updatedTourAreas));
+        EventBus().fire(ChangeStationLikeEvent(event.tourAreaId, false));
       },
       apiError: (errorMessage, errorCode) {
         produceSideEffect(CategoryDetailShowError(
