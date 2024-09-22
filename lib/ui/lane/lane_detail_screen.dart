@@ -55,19 +55,19 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                         menuItems: [
                           ActionBarMenuItem(
                             icon: SvgPicture.asset(
-                              (state.isLikedByMe)
+                              (state.laneDetail.likedByMe)
                                   ? "assets/icons/ic_heart_filled.svg"
                                   : "assets/icons/ic_heart.svg",
                               width: 24,
                               height: 24,
                               colorFilter: ColorFilter.mode(
-                                  (state.isLikedByMe)
+                                  (state.laneDetail.likedByMe)
                                       ? Colors.red
                                       : Colors.black,
                                   BlendMode.srcIn),
                             ),
                             onPressed: () => {
-                              if (state.isLikedByMe)
+                              if (state.laneDetail.likedByMe)
                                 {
                                   context.read<LaneDetailBloc>().add(
                                       LaneDetailUnlike(

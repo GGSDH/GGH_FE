@@ -31,6 +31,9 @@ class LaneDetail {
   @JsonKey(name: 'laneSpecificResponses')
   final List<LaneSpecificResponse> laneSpecificResponses;
 
+  @JsonKey(name: 'likedByMe')
+  final bool likedByMe;
+
   LaneDetail({
     required this.id,
     required this.days,
@@ -39,6 +42,7 @@ class LaneDetail {
     required this.laneDescription,
     required this.category,
     required this.laneSpecificResponses,
+    required this.likedByMe,
   });
 
   factory LaneDetail.fromJson(Map<String, dynamic> json) =>
@@ -53,6 +57,7 @@ class LaneDetail {
     String? laneDescription,
     TripTheme? category,
     List<LaneSpecificResponse>? laneSpecificResponses,
+    bool? likedByMe,
   }) {
     return LaneDetail(
       id: id ?? this.id,
@@ -62,6 +67,7 @@ class LaneDetail {
       laneDescription: laneDescription ?? this.laneDescription,
       category: category ?? this.category,
       laneSpecificResponses: laneSpecificResponses ?? this.laneSpecificResponses,
+      likedByMe: likedByMe ?? this.likedByMe,
     );
   }
 

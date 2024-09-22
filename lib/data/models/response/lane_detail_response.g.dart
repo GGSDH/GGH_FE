@@ -16,6 +16,7 @@ LaneDetail _$LaneDetailFromJson(Map<String, dynamic> json) => LaneDetail(
       laneSpecificResponses: (json['laneSpecificResponses'] as List<dynamic>)
           .map((e) => LaneSpecificResponse.fromJson(e as Map<String, dynamic>))
           .toList(),
+      likedByMe: json['likedByMe'] as bool,
     );
 
 Map<String, dynamic> _$LaneDetailToJson(LaneDetail instance) =>
@@ -28,4 +29,5 @@ Map<String, dynamic> _$LaneDetailToJson(LaneDetail instance) =>
       'tripThemeConstants': TripTheme.toJson(instance.category),
       'laneSpecificResponses':
           instance.laneSpecificResponses.map((e) => e.toJson()).toList(),
+      'likedByMe': instance.likedByMe,
     };

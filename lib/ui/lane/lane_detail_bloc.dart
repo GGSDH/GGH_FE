@@ -9,19 +9,16 @@ import '../../util/event_bus.dart';
 
 final class LaneDetailState {
   final bool isLoading;
-  final bool isLikedByMe;
   final LaneDetail laneDetail;
 
   const LaneDetailState({
     required this.isLoading,
-    required this.isLikedByMe,
     required this.laneDetail,
   });
 
   factory LaneDetailState.initial() {
     return LaneDetailState(
       isLoading: false,
-      isLikedByMe: false,
       laneDetail: LaneDetail(
         id: 0,
         days: 0,
@@ -30,18 +27,17 @@ final class LaneDetailState {
         laneDescription: '',
         category: TripTheme.RESTAURANT,
         laneSpecificResponses: [],
+        likedByMe: false
       ),
     );
   }
 
   LaneDetailState copyWith({
     bool? isLoading,
-    bool? isLikedByMe,
     LaneDetail? laneDetail,
   }) {
     return LaneDetailState(
       isLoading: isLoading ?? this.isLoading,
-      isLikedByMe: isLikedByMe ?? this.isLikedByMe,
       laneDetail: laneDetail ?? this.laneDetail,
     );
   }
@@ -160,7 +156,7 @@ class LaneDetailBloc extends SideEffectBloc<LaneDetailEvent, LaneDetailState, La
     LaneLikeStatusChanged event,
     Emitter<LaneDetailState> emit,
   ) async {
-    emit(state.copyWith(isLikedByMe: event.isLiked));
+    emit(state.copyWith(laneDetail: state.laneDetail.copyWith(likedByMe: event.isLiked)));
   }
 
   void _onStationLikeStatusChanged(
