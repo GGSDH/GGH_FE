@@ -169,14 +169,28 @@ enum Routes {
             ]),
         StatefulShellRoute.indexedStack(
             builder: (context, state, child) => Scaffold(
-                  backgroundColor: Colors.white,
-                  body: child,
-                  bottomNavigationBar: AppBottomNavigationBar(
-                      currentIndex: child.currentIndex,
-                      onTap: (index) {
-                        child.goBranch(index);
-                      }),
-                ),
+              backgroundColor: Colors.white,
+              body: child,
+              bottomNavigationBar: AppBottomNavigationBar(
+                currentIndex: child.currentIndex,
+                onTap: (index) {
+                  switch (index) {
+                    case 0:
+                      GoRouter.of(context).go(Routes.home.path); // 첫 번째 branch로 이동
+                      break;
+                    case 1:
+                      GoRouter.of(context).go(Routes.recommend.path); // 두 번째 branch로 이동
+                      break;
+                    case 2:
+                      GoRouter.of(context).go(Routes.photobook.path); // 세 번째 branch로 이동
+                      break;
+                    case 3:
+                      GoRouter.of(context).go(Routes.myPage.path); // 네 번째 branch로 이동
+                      break;
+                  }
+                },
+              ),
+            ),
             branches: [
               StatefulShellBranch(routes: [
                 GoRoute(
