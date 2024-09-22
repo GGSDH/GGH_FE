@@ -39,7 +39,35 @@ class RecommendResultScreen extends StatefulWidget {
 
 class _RecommendResultScreen extends State<RecommendResultScreen> {
   NaverMapController? _mapController;
+  late PageController _pageController;
   int _selectedDayIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+    _pageController.addListener(() {
+      int index = _pageController.page?.round() ?? 0;
+      _onPageChanged(index);
+    });
+  }
+
+  void _onPageChanged(int index) {
+    final laneDetail = context.read<RecommendLaneBloc>().state.laneData;
+
+    if (_selectedDayIndex + 1 <= laneDetail.days.length) {
+      List<TourAreaSummary> tourAreas = laneDetail.days[_selectedDayIndex].tourAreas.map((e) => e.tourAreaResponse).toList();
+      if (index >= 0 && index < tourAreas.length) {
+        _moveCameraToLocation(tourAreas[index]);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -210,7 +238,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                     SizedBox(
                       height: 120,
                       child: PageView.builder(
-                        controller: PageController(),
+                        controller: _pageController,
                         itemCount: laneData.days[_selectedDayIndex].tourAreas.length,
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (context, index) {
@@ -284,7 +312,7 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
                           onTap: () {
                             setState(() {
                               _selectedDayIndex = idx;
-                              _updateMapMarkers(laneData);
+                              _updateMapMarkers (laneData);
                             });
                             Navigator.pop(context);
                           },

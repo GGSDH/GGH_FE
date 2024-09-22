@@ -30,7 +30,35 @@ class LaneDetailScreen extends StatefulWidget {
 
 class _LaneDetailScreenState extends State<LaneDetailScreen> {
   NaverMapController? _mapController;
+  late PageController _pageController;
   int _selectedDayIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+    _pageController.addListener(() {
+      int index = _pageController.page?.round() ?? 0;
+      _onPageChanged(index);
+    });
+  }
+
+  void _onPageChanged(int index) {
+    final laneDetail = context.read<LaneDetailBloc>().state.laneDetail;
+
+    if (_selectedDayIndex + 1 <= laneDetail.getDaysWithTourAreas().length) {
+      List<TourAreaSummary> tourAreas = laneDetail.getTourAreasByDay(_selectedDayIndex + 1);
+      if (index >= 0 && index < tourAreas.length) {
+        _moveCameraToLocation(tourAreas[index]);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -201,7 +229,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                     SizedBox(
                       height: 120,
                       child: PageView.builder(
-                        controller: PageController(),
+                        controller: _pageController,
                         itemCount: laneDetail
                             .getTourAreasByDay(_selectedDayIndex + 1)
                             .length,
@@ -416,7 +444,7 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                                       color: ColorStyles.gray300,
                                       fontWeight: FontWeight.w400)),
                               const SizedBox(width: 4),
-                              Text(laneTourArea.sigunguCode.value,
+                              Text(laneTourArea.tripTheme.title,
                                   style: TextStyles.bodyMedium.copyWith(
                                       color: ColorStyles.gray500,
                                       fontWeight: FontWeight.w400)),
