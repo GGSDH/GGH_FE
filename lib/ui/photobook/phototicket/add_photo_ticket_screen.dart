@@ -76,18 +76,23 @@ class AddPhotoTicketScreen extends StatelessWidget {
                             )
                           ),
                           const SizedBox(height: 32),
-                          SizedBox(
-                            width: screenWidth * 0.7,
-                            child: AspectRatio(
-                              aspectRatio: 0.7,
-                              child: PhotoTicketItem(
-                                title: state.title,
-                                filePath: state.selectedPhotoPath,
-                                startDate: state.startDate.isNotEmpty ? DateTime.parse(state.startDate) : null,
-                                endDate: state.endDate.isNotEmpty ? DateTime.parse(state.endDate) : null,
-                                location: state.location,
-                              ),
-                            )
+                          GestureDetector(
+                            onTap: () {
+                              GoRouter.of(context).pop();
+                            },
+                            child: SizedBox(
+                              width: screenWidth * 0.7,
+                              child: AspectRatio(
+                                aspectRatio: 0.7,
+                                child: PhotoTicketItem(
+                                  title: state.title,
+                                  filePath: state.selectedPhotoPath,
+                                  startDate: state.startDate.isNotEmpty ? DateTime.parse(state.startDate) : null,
+                                  endDate: state.endDate.isNotEmpty ? DateTime.parse(state.endDate) : null,
+                                  location: state.location,
+                                ),
+                              )
+                            ),
                           ),
                         ],
                       ),
