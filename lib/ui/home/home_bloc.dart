@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gyeonggi_express/data/models/response/local_restaurant_response.dart';
 import 'package:gyeonggi_express/data/models/response/popular_destination_response.dart';
 import 'package:gyeonggi_express/data/repository/favorite_repository.dart';
+import 'package:gyeonggi_express/util/event_bus.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../data/models/response/lane_response.dart';
@@ -54,9 +55,7 @@ final class HomeState {
 }
 
 sealed class HomeEvent {}
-
 final class HomeInitialize extends HomeEvent {}
-
 final class HomeLikeLane extends HomeEvent {
   final int laneId;
 
@@ -80,15 +79,18 @@ final class HomeUnlikeTourArea extends HomeEvent {
 
   HomeUnlikeTourArea(this.tourAreaId);
 }
+final class HomeNicknameChanged extends HomeEvent {
+  final String nickname;
+
+  HomeNicknameChanged(this.nickname);
+}
 
 sealed class HomeSideEffect {}
-
 final class HomeShowError extends HomeSideEffect {
   final String message;
 
   HomeShowError(this.message);
 }
-
 class HomeRefresh extends HomeEvent {}
 
 class HomeBloc extends SideEffectBloc<HomeEvent, HomeState, HomeSideEffect> {
@@ -104,12 +106,17 @@ class HomeBloc extends SideEffectBloc<HomeEvent, HomeState, HomeSideEffect> {
         _tripRepository = tripRepository,
         _favoriteRepository = favoriteRepository,
         super(HomeState.initial()) {
+    EventBus().on<ChangeNicknameEvent>().listen(
+      (event) => add(HomeNicknameChanged(event.nickname))
+    );
+
     on<HomeInitialize>(_onInitialize);
     on<HomeLikeLane>(_onLikeLane);
     on<HomeUnlikeLane>(_onUnlikeLane);
     on<HomeLikeTourArea>(_onLikeTourArea);
     on<HomeUnlikeTourArea>(_onUnlikeTourArea);
     on<HomeRefresh>(_onRefresh);
+    on<HomeNicknameChanged>(_onNicknameChanged);
   }
 
   void _onInitialize(HomeInitialize event, Emitter<HomeState> emit) async {
@@ -122,6 +129,10 @@ class HomeBloc extends SideEffectBloc<HomeEvent, HomeState, HomeSideEffect> {
     emit(state.copyWith(isRefreshing: true));
     await _fetchAllData(emit);
     emit(state.copyWith(isRefreshing: false));
+  }
+
+  void _onNicknameChanged(HomeNicknameChanged event, Emitter<HomeState> emit) {
+    emit(state.copyWith(userName: event.nickname));
   }
 
   Future<void> _fetchAllData(Emitter<HomeState> emit) async {

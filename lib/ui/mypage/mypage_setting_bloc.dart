@@ -3,6 +3,7 @@ import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../data/models/login_provider.dart';
 import '../../data/repository/auth_repository.dart';
+import '../../util/event_bus.dart';
 
 final class MyPageSettingState {
   final bool isLoading;
@@ -111,6 +112,7 @@ class MyPageSettingBloc extends SideEffectBloc<MyPageSettingEvent, MyPageSetting
               nickname: event.nickname,
             )
           );
+          EventBus().fire(ChangeNicknameEvent(event.nickname));
           produceSideEffect(MyPageSettingNavigateToMyPage());
         },
         apiError: (errorMessage, errorCode) {
