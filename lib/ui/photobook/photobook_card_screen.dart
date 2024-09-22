@@ -199,12 +199,19 @@ class _PhotobookCardScreenState extends State<PhotobookCardScreen> {
 
   double calculateLeftOffset(int index) {
     if (index == currentPage) {
-      // 선택된 페이지는 항상 offset이 0이 되도록 설정
-      return swipeOffset;
+      return (pageCount == 1)
+          ? 20
+          : (pageCount == 2)
+          ? 10
+          : 0;
     }
 
     double offsetFromCenter = (index - currentPage).toDouble();
-    double cumulativeWidth = 0;
+    double cumulativeWidth = (pageCount == 1)
+        ? 20
+        : (pageCount == 2)
+        ? 10
+        : 0;
 
     if (index > currentPage) {
       // 현재 페이지보다 오른쪽에 있는 페이지들에 대해 cumulativeWidth를 계산
