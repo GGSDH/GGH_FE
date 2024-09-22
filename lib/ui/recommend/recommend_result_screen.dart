@@ -55,7 +55,22 @@ class _RecommendResultScreen extends State<RecommendResultScreen> {
             body: Material(
               color: Colors.white,
               child: state.isLoading
-                  ? const Center(child: CircularProgressIndicator())
+                  ? const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "AI 추천 노선을 생성중이에요",
+                        style: TextStyles.title2ExtraLarge,
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 20),
+                      Center(
+                        child: CircularProgressIndicator(
+                          strokeWidth: 10,
+                        )
+                      ),
+                    ],
+                  )
                   : SafeArea(
                 child: DefaultTabController(
                   length: 2,
