@@ -18,6 +18,7 @@ import 'package:side_effect_bloc/side_effect_bloc.dart';
 import '../../routes.dart';
 import '../../util/toast_util.dart';
 import '../component/app/app_image_plaeholder.dart';
+import '../component/expandable_text.dart';
 
 class LaneDetailScreen extends StatefulWidget {
   final int laneId;
@@ -357,10 +358,9 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
             color: ColorStyles.gray900,
           ),
         ),
-        Text(
-          state.laneDescription ?? '',
+        ExpandableText(
+          text: state.laneDescription ?? '',
           style: TextStyles.bodyLarge.copyWith(
-            fontWeight: FontWeight.w400,
             color: ColorStyles.gray500,
           ),
         ),
@@ -455,9 +455,10 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                           onTap: () {
                             context.read<LaneDetailBloc>().add(
                                 (laneTourArea.likedByMe)
-                                    ? StationUnlike(stationId: laneTourArea.tourAreaId)
-                                    : StationLike(stationId: laneTourArea.tourAreaId)
-                            );
+                                    ? StationUnlike(
+                                    stationId: laneTourArea.tourAreaId)
+                                    : StationLike(
+                                    stationId: laneTourArea.tourAreaId));
                           },
                           child: SvgPicture.asset(
                               (laneTourArea.likedByMe)
