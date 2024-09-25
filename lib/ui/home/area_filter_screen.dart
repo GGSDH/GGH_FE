@@ -22,6 +22,7 @@ class AreaFilterScreen extends StatefulWidget {
 
 class AreaFilterScreenState extends State<AreaFilterScreen> {
   late Set<SigunguCode> _selectedAreas;
+  bool isInitial = true;
 
   final chips = SigunguCode.values.sublist(0, SigunguCode.values.length - 1);
 
@@ -69,6 +70,7 @@ class AreaFilterScreenState extends State<AreaFilterScreen> {
                      onTap: () {
                        setState(() {
                          _selectedAreas.clear();
+                         isInitial = false;
                        });
                      },
                      child: Padding(
@@ -94,11 +96,11 @@ class AreaFilterScreenState extends State<AreaFilterScreen> {
                    const SizedBox(width: 10),
                    Expanded(
                      child: AppButton(
-                       text: '적응하기',
+                       text: '적용하기',
                        onPressed: () {
                          GoRouter.of(context).pop(_selectedAreas.map((e) => SigunguCode.toJson(e)).toList());
                        },
-                       isEnabled: _selectedAreas.isNotEmpty,
+                       isEnabled: !isInitial,
                      ),
                    ),
                  ],
@@ -116,6 +118,7 @@ class AreaFilterScreenState extends State<AreaFilterScreen> {
     return GestureDetector(
       onTap: () {
         setState(() {
+          isInitial = false;
           if (isSelected) {
             _selectedAreas.remove(code);
           } else {
