@@ -185,8 +185,6 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware, Tick
   }) {
     void addMarkersToMap(List<PhotobookResponse> photobooks) async {
       if (_mapController == null) return;
-
-      await _mapController!.clearOverlays();
       NaverMapUtil.addMarkers(_mapController!, photobooks, context);
     }
 

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:gyeonggi_express/data/models/response/lane_specific_response.dart';
 import 'package:gyeonggi_express/ui/ext/file_path_extension.dart';
+import 'package:image/image.dart' as img;
 
 import '../data/models/response/photobook_response.dart';
 import '../themes/color_styles.dart';
@@ -36,9 +37,13 @@ class NaverMapUtil {
           );
           controller.addOverlay(photobookMarker);
 
+          log('Adding overlayImage for photobook ${photobook.id} at ${photobook.filePathUrl}');
+
           final circleMarker =
               _createCircleMarker(photobook.id, currentLocation);
           controller.addOverlay(circleMarker);
+
+          log('Adding circleMarker for photobook ${photobook.id} at $currentLocation');
         } catch (e) {
           final errorMarker =
               await _createErrorMarker(photobook.id, currentLocation, context);
@@ -77,7 +82,7 @@ class NaverMapUtil {
         try {
           final overlayImage = await _createOverlayImage(
               photobook.mainPhoto?.path ?? '', context);
-          final photobookMarker = NMarker(
+          NMarker photobookMarker = NMarker(
             id: "${photobook.id}",
             position: currentLocation,
             icon: overlayImage,
@@ -89,7 +94,6 @@ class NaverMapUtil {
               _createCircleMarker("${photobook.id}", currentLocation);
           controller.addOverlay(circleMarker);
         } catch (e) {
-          log('Error creating marker for photobook ${photobook.id}: $e');
           final errorMarker = await _createErrorMarker(
               "${photobook.id}", currentLocation, context);
           controller.addOverlay(errorMarker);
@@ -106,18 +110,46 @@ class NaverMapUtil {
     String imageFilePath,
     BuildContext context,
   ) async {
-    final filePath = await imageFilePath.getFilePath();
-    final imageFile = File(filePath);
+    try {
+      final filePath = await imageFilePath.getFilePath();
+      final imageFile = File(filePath);
 
-    if (await imageFile.exists()) {
-      return NOverlayImage.fromFile(imageFile);
-    } else {
-      return await NOverlayImage.fromWidget(
-        context: context,
-        widget: const AppImagePlaceholder(width: 48, height: 48),
-        size: const Size(48, 48),
-      );
+      if (await imageFile.exists()) {
+        log('Creating overlay image from file: $imageFilePath');
+
+        // 이미지 파일을 읽어오고 디코딩
+        final imageBytes = await imageFile.readAsBytes();
+        img.Image? image = img.decodeImage(imageBytes);
+
+        if (image != null) {
+          // 이미지 크기를 48x48로 리사이즈
+          final resizedImage = img.copyResize(image, width: 48, height: 48);
+
+          // 리사이징한 이미지를 byteArray로 변환
+          final resizedImageBytes = img.encodeJpg(resizedImage);  // jpg로 인코딩하여 용량을 줄일 수 있음
+
+          return NOverlayImage.fromByteArray(resizedImageBytes);
+        } else {
+          log('Failed to decode image: $imageFilePath');
+          return _createPlaceholderOverlayImage(context);
+        }
+      } else {
+        return _createPlaceholderOverlayImage(context);
+      }
+    } catch (e, stackTrace) {
+      log('Error creating overlay image: $e', stackTrace: stackTrace);
+      return _createPlaceholderOverlayImage(context);
     }
+  }
+
+  static Future<NOverlayImage> _createPlaceholderOverlayImage(
+    BuildContext context,
+  ) async {
+    return await NOverlayImage.fromWidget(
+      context: context,
+      widget: const AppImagePlaceholder(width: 48, height: 48),
+      size: const Size(48, 48),
+    );
   }
 
   static NCircleOverlay _createCircleMarker(String id, NLatLng location) {

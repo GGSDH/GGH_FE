@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
@@ -23,7 +21,7 @@ class PhotobookMapScreen extends StatefulWidget {
 }
 
 class _PhotobookMapScreenState extends State<PhotobookMapScreen> {
-  final Completer<NaverMapController> _mapControllerCompleter = Completer<NaverMapController>();
+  NaverMapController? _mapController;
 
   @override
   Widget build(BuildContext context) {
@@ -48,8 +46,7 @@ class _PhotobookMapScreenState extends State<PhotobookMapScreen> {
                     onBackPressed: () => GoRouter.of(context).pop(),
                   ),
                   Expanded(
-                    child: _MapSection(
-                      mapControllerCompleter: _mapControllerCompleter,
+                    child: _mapSection(
                       photobookDetailCards: state.photobookDetailCards,
                     ),
                   ),
@@ -61,19 +58,19 @@ class _PhotobookMapScreenState extends State<PhotobookMapScreen> {
       ),
     );
   }
-}
 
-class _MapSection extends StatelessWidget {
-  const _MapSection({
-    required this.mapControllerCompleter,
-    required this.photobookDetailCards,
-  });
+  Widget _mapSection({
+    required List<PhotobookDetailCard> photobookDetailCards,
+  }) {
+    void addMarkersAndPath(NaverMapController controller) async {
+      if (_mapController == null) return;
+      await NaverMapUtil.addMarkersAndPath(controller, photobookDetailCards, context);
+    }
 
-  final Completer<NaverMapController> mapControllerCompleter;
-  final List<PhotobookDetailCard> photobookDetailCards;
+    if (_mapController != null) {
+      addMarkersAndPath(_mapController!);
+    }
 
-  @override
-  Widget build(BuildContext context) {
     return NaverMap(
       options: const NaverMapViewOptions(
         initialCameraPosition: Constants.DEFAULT_CAMERA_POSITION,
@@ -85,11 +82,8 @@ class _MapSection extends StatelessWidget {
         zoomGesturesEnable: true,
       ),
       onMapReady: (controller) async {
-        if (!mapControllerCompleter.isCompleted) {
-          mapControllerCompleter.complete(controller);
-        }
-
-        await NaverMapUtil.addMarkersAndPath(controller, photobookDetailCards, context);
+        _mapController = controller;
+        addMarkersAndPath(controller);
       },
     );
   }
