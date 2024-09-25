@@ -158,7 +158,7 @@ class HomeBloc extends SideEffectBloc<HomeEvent, HomeState, HomeSideEffect> {
   void _onLaneLikeStatusChanged(HomeLaneLikeStatusChanged event, Emitter<HomeState> emit) {
     final updatedLanes = state.lanes.map((lane) {
       if (lane.laneId == event.laneId) {
-        return lane.copyWith(likedByMe: event.isLiked);
+        return lane.copyWith(likedByMe: event.isLiked, likeCount: event.isLiked ? lane.likeCount + 1 : lane.likeCount - 1);
       }
       return lane;
     }).toList();
