@@ -6,6 +6,7 @@ import 'package:gyeonggi_express/ui/component/app/app_action_bar.dart';
 
 import '../../../routes.dart';
 import '../../../themes/color_styles.dart';
+import '../../../themes/text_styles.dart';
 import '../../component/app/app_button.dart';
 
 class AddPhotobookScreen extends StatelessWidget {
@@ -37,6 +38,14 @@ class AddPhotobookScreen extends StatelessWidget {
                     ),
                     textAlign: TextAlign.center,
                   ),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Text("경기 지역의 여행만 포토북 생성이 가능해요.",
+                        style: TextStyles.bodyLarge
+                            .copyWith(color: ColorStyles.gray600)),
+                  ),
+
 
                   const SizedBox(height: 40),
 

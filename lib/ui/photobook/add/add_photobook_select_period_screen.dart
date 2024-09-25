@@ -105,13 +105,6 @@ class _AddPhotobookSelectPeriodScreenState extends State<AddPhotobookSelectPerio
                   ),
                 ),
               ),
-              const SizedBox(height: 4),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Text("경기 지역의 여행만 포토북 생성이 가능해요.",
-                    style: TextStyles.bodyLarge
-                        .copyWith(color: ColorStyles.gray600)),
-              ),
 
               const SizedBox(height: 38),
 
