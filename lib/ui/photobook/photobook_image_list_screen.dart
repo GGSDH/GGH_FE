@@ -19,7 +19,8 @@ class PhotobookImageListScreen extends StatefulWidget {
   });
 
   @override
-  _PhotobookImageListScreenState createState() => _PhotobookImageListScreenState();
+  _PhotobookImageListScreenState createState() =>
+      _PhotobookImageListScreenState();
 }
 
 class _PhotobookImageListScreenState extends State<PhotobookImageListScreen> {
@@ -42,7 +43,7 @@ class _PhotobookImageListScreenState extends State<PhotobookImageListScreen> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white,
+      color: _isPopupVisible ? Colors.black : Colors.white,
       child: SafeArea(
         child: Stack(
           children: [
@@ -54,7 +55,8 @@ class _PhotobookImageListScreenState extends State<PhotobookImageListScreen> {
                 ),
                 Expanded(
                   child: GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                       crossAxisSpacing: 2,
                       mainAxisSpacing: 2,
@@ -69,8 +71,10 @@ class _PhotobookImageListScreenState extends State<PhotobookImageListScreen> {
                           imageFilePath: widget.filePaths[index],
                           width: double.infinity,
                           height: double.infinity,
-                          placeholder: const AppImagePlaceholder(width: double.infinity, height: double.infinity),
-                          errorWidget: const AppImagePlaceholder(width: double.infinity, height: double.infinity),
+                          placeholder: const AppImagePlaceholder(
+                              width: double.infinity, height: double.infinity),
+                          errorWidget: const AppImagePlaceholder(
+                              width: double.infinity, height: double.infinity),
                         ),
                       );
                     },
@@ -134,7 +138,8 @@ class _PhotoViewPopupState extends State<PhotoViewPopup> {
 
     image.image.resolve(const ImageConfiguration()).addListener(
       ImageStreamListener((info, _) {
-        final imageSize = Size(info.image.width.toDouble(), info.image.height.toDouble());
+        final imageSize =
+            Size(info.image.width.toDouble(), info.image.height.toDouble());
         completer.complete(imageSize);
       }),
     );
@@ -170,7 +175,9 @@ class _PhotoViewPopupState extends State<PhotoViewPopup> {
                 },
                 itemBuilder: (context, index) {
                   final imageSize = _imageSizes[index];
-                  final aspectRatio = imageSize.width != 0 ? imageSize.width / imageSize.height : 1.0;
+                  final aspectRatio = imageSize.width != 0
+                      ? imageSize.width / imageSize.height
+                      : 1.0;
                   final imageHeight = screenWidth / aspectRatio;
 
                   return Center(
@@ -179,8 +186,10 @@ class _PhotoViewPopupState extends State<PhotoViewPopup> {
                       height: imageHeight.isFinite ? imageHeight : 300,
                       child: AppFileImage(
                         imageFilePath: widget.imageUrls[index],
-                        placeholder: AppImagePlaceholder(width: screenWidth, height: 300),
-                        errorWidget: AppImagePlaceholder(width: screenWidth, height: 300),
+                        placeholder: AppImagePlaceholder(
+                            width: screenWidth, height: 300),
+                        errorWidget: AppImagePlaceholder(
+                            width: screenWidth, height: 300),
                       ),
                     ),
                   );
@@ -194,8 +203,10 @@ class _PhotoViewPopupState extends State<PhotoViewPopup> {
               left: 0,
               right: 0,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                color: Colors.black.withOpacity(0.6), // Background for visibility
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                color:
+                    Colors.black.withOpacity(0.6), // Background for visibility
                 child: Stack(
                   children: [
                     // Centered title
@@ -203,7 +214,8 @@ class _PhotoViewPopupState extends State<PhotoViewPopup> {
                       alignment: Alignment.center,
                       child: Text(
                         '사진 상세',
-                        style: TextStyles.titleLarge.copyWith(color: Colors.white),
+                        style:
+                            TextStyles.titleLarge.copyWith(color: Colors.white),
                       ),
                     ),
 
@@ -216,7 +228,8 @@ class _PhotoViewPopupState extends State<PhotoViewPopup> {
                           'assets/icons/ic_close_24px.svg',
                           width: 24,
                           height: 24,
-                          colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                          colorFilter: const ColorFilter.mode(
+                              Colors.white, BlendMode.srcIn),
                         ),
                       ),
                     ),
@@ -247,7 +260,9 @@ class _PhotoViewPopupState extends State<PhotoViewPopup> {
                         child: Container(
                           decoration: BoxDecoration(
                             border: Border.all(
-                              color: index == _currentIndex ? Colors.white : Colors.transparent,
+                              color: index == _currentIndex
+                                  ? Colors.white
+                                  : Colors.transparent,
                               width: 2,
                             ),
                           ),
@@ -255,8 +270,10 @@ class _PhotoViewPopupState extends State<PhotoViewPopup> {
                             imageFilePath: widget.imageUrls[index],
                             width: itemWidth,
                             height: itemHeight,
-                            placeholder: AppImagePlaceholder(width: itemWidth, height: itemHeight),
-                            errorWidget: AppImagePlaceholder(width: itemWidth, height: itemHeight),
+                            placeholder: AppImagePlaceholder(
+                                width: itemWidth, height: itemHeight),
+                            errorWidget: AppImagePlaceholder(
+                                width: itemWidth, height: itemHeight),
                           ),
                         ),
                       ),
@@ -277,4 +294,3 @@ class _PhotoViewPopupState extends State<PhotoViewPopup> {
     super.dispose();
   }
 }
-

@@ -48,7 +48,8 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
     final laneDetail = context.read<LaneDetailBloc>().state.laneDetail;
 
     if (_selectedDayIndex + 1 <= laneDetail.getDaysWithTourAreas().length) {
-      List<TourAreaSummary> tourAreas = laneDetail.getTourAreasByDay(_selectedDayIndex + 1);
+      List<TourAreaSummary> tourAreas =
+          laneDetail.getTourAreasByDay(_selectedDayIndex + 1);
       if (index >= 0 && index < tourAreas.length) {
         _moveCameraToLocation(tourAreas[index]);
       }
@@ -199,7 +200,8 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Padding(
-                padding: const EdgeInsets.all(20),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -271,51 +273,49 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
               Container(
                 width: 46,
                 height: 4,
-                margin: const EdgeInsets.fromLTRB(0, 10, 0, 14),
+                margin: const EdgeInsets.only(top: 10, bottom: 14),
                 decoration: BoxDecoration(
                   color: ColorStyles.gray200,
                   borderRadius: BorderRadius.circular(100),
                 ),
               ),
               Flexible(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: laneDetail.getDaysWithTourAreas().length,
-                    itemBuilder: (context, idx) {
-                      bool isSelected = idx == _selectedDayIndex;
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        child: ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          title: Text(
-                            'Day ${idx + 1}',
-                            style: TextStyle(
-                              color: isSelected
-                                  ? ColorStyles.primary
-                                  : ColorStyles.gray900,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          trailing: isSelected
-                              ? SvgPicture.asset(
-                                  "assets/icons/ic_check_filled.svg",
-                                  width: 24,
-                                  height: 24,
-                                )
-                              : null,
-                          onTap: () {
-                            setState(() {
-                              _selectedDayIndex = idx;
-                            });
-                            _updateMapMarkers(laneDetail);
-                            Navigator.pop(context);
-                          },
+                child: ListView.separated(
+                  padding: const EdgeInsets.only(
+                      top: 0, left: 20, right: 20, bottom: 20),
+                  shrinkWrap: true,
+                  itemCount: laneDetail.getDaysWithTourAreas().length,
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 0),
+                  itemBuilder: (context, idx) {
+                    bool isSelected = idx == _selectedDayIndex;
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(
+                        'Day ${idx + 1}',
+                        style: TextStyle(
+                          color: isSelected
+                              ? ColorStyles.primary
+                              : ColorStyles.gray900,
+                          fontWeight: FontWeight.w600,
                         ),
-                      );
-                    },
-                  ),
+                      ),
+                      trailing: isSelected
+                          ? SvgPicture.asset(
+                              "assets/icons/ic_check_filled.svg",
+                              width: 24,
+                              height: 24,
+                            )
+                          : null,
+                      onTap: () {
+                        setState(() {
+                          _selectedDayIndex = idx;
+                        });
+                        _updateMapMarkers(laneDetail);
+                        Navigator.pop(context);
+                      },
+                    );
+                  },
                 ),
               ),
             ],
@@ -456,9 +456,9 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                             context.read<LaneDetailBloc>().add(
                                 (laneTourArea.likedByMe)
                                     ? StationUnlike(
-                                    stationId: laneTourArea.tourAreaId)
+                                        stationId: laneTourArea.tourAreaId)
                                     : StationLike(
-                                    stationId: laneTourArea.tourAreaId));
+                                        stationId: laneTourArea.tourAreaId));
                           },
                           child: SvgPicture.asset(
                               (laneTourArea.likedByMe)
@@ -631,21 +631,23 @@ class _LaneDetailScreenState extends State<LaneDetailScreen> {
                         Row(
                           children: [
                             GestureDetector(
-                              onTap: () {
-                                context.read<LaneDetailBloc>().add(
-                                    (laneTourArea.likedByMe)
-                                        ? StationUnlike(stationId: laneTourArea.tourAreaId)
-                                        : StationLike(stationId: laneTourArea.tourAreaId)
-                                );
-                              },
-                              child: SvgPicture.asset(
-                                (laneTourArea.likedByMe)
-                                    ? "assets/icons/ic_heart_filled.svg"
-                                    : "assets/icons/ic_heart.svg",
-                                width: 18,
-                                height: 18,
-                              )
-                            ),
+                                onTap: () {
+                                  context.read<LaneDetailBloc>().add(
+                                      (laneTourArea.likedByMe)
+                                          ? StationUnlike(
+                                              stationId:
+                                                  laneTourArea.tourAreaId)
+                                          : StationLike(
+                                              stationId:
+                                                  laneTourArea.tourAreaId));
+                                },
+                                child: SvgPicture.asset(
+                                  (laneTourArea.likedByMe)
+                                      ? "assets/icons/ic_heart_filled.svg"
+                                      : "assets/icons/ic_heart.svg",
+                                  width: 18,
+                                  height: 18,
+                                )),
                             const SizedBox(width: 2),
                             Text(laneTourArea.likeCnt.toString(),
                                 style: TextStyles.bodyXSmall.copyWith(
