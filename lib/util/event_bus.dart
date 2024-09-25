@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import '../data/models/response/photobook_response.dart';
+
 class EventBus {
   static final EventBus _instance = EventBus._internal();
   factory EventBus() => _instance;
@@ -31,4 +33,15 @@ final class ChangeStationLikeEvent extends Event {
   final bool isLike;
 
   ChangeStationLikeEvent(this.stationId, this.isLike);
+}
+
+final class PhotobookAddEvent extends Event {
+  final PhotobookResponse photobook;
+
+  PhotobookAddEvent(this.photobook);
+}
+final class PhotobookRemoveEvent extends Event {
+  final int photobookId;
+
+  PhotobookRemoveEvent(this.photobookId);
 }

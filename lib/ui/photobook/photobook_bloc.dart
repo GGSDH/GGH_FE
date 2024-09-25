@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gyeonggi_express/util/event_bus.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../data/models/response/photo_ticket_response.dart';
@@ -40,6 +41,17 @@ final class PhotobookState {
 sealed class PhotobookEvent { }
 final class FetchPhotobooks extends PhotobookEvent { }
 final class FetchPhotoTickets extends PhotobookEvent { }
+final class PhotobookAdded extends PhotobookEvent {
+  final PhotobookResponse photobook;
+
+  PhotobookAdded(this.photobook);
+}
+final class PhotobookRemoved extends PhotobookEvent {
+  final int photobookId;
+
+  PhotobookRemoved(this.photobookId);
+}
+final class ShowPhotobookBottomSheet extends PhotobookEvent { }
 
 sealed class PhotobookSideEffect { }
 final class PhotobookShowBottomSheet extends PhotobookSideEffect {
@@ -60,8 +72,18 @@ class PhotobookBloc extends SideEffectBloc<PhotobookEvent, PhotobookState, Photo
     required PhotobookRepository photobookRepository,
   }) : _photobookRepository = photobookRepository,
        super(PhotobookState.initial()) {
+    EventBus().on<PhotobookAddEvent>().listen((event) {
+      add(PhotobookAdded(event.photobook));
+    });
+    EventBus().on<PhotobookRemoveEvent>().listen((event) {
+      add(PhotobookRemoved(event.photobookId));
+    });
+
     on<FetchPhotobooks>(_onFetchPhotobooks);
     on<FetchPhotoTickets>(_onFetchPhotoTickets);
+    on<PhotobookAdded>(_onPhotobookAdded);
+    on<PhotobookRemoved>(_onPhotobookRemoved);
+    on<ShowPhotobookBottomSheet>(_onShowPhotobookBottomSheet);
   }
 
   void _onFetchPhotobooks(
@@ -121,5 +143,32 @@ class PhotobookBloc extends SideEffectBloc<PhotobookEvent, PhotobookState, Photo
       emit(state.copyWith(isLoading: false));
       produceSideEffect(PhotobookShowError(e.toString()));
     }
+  }
+
+  void _onPhotobookAdded(
+    PhotobookAdded event,
+    Emitter<PhotobookState> emit
+  ) {
+    emit(state.copyWith(
+      photobooks: [...state.photobooks, event.photobook]
+    ));
+    produceSideEffect(PhotobookShowBottomSheet(state.photobooks));
+  }
+
+  void _onPhotobookRemoved(
+    PhotobookRemoved event,
+    Emitter<PhotobookState> emit
+  ) {
+    emit(state.copyWith(
+      photobooks: state.photobooks.where((photobook) => photobook.id != event.photobookId).toList()
+    ));
+    produceSideEffect(PhotobookShowBottomSheet(state.photobooks));
+  }
+
+  void _onShowPhotobookBottomSheet(
+    ShowPhotobookBottomSheet event,
+    Emitter<PhotobookState> emit
+  ) {
+    produceSideEffect(PhotobookShowBottomSheet(state.photobooks));
   }
 }

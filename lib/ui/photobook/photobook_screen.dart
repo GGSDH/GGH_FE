@@ -39,7 +39,6 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware, Tick
 
   void _showBottomSheet(
     List<PhotobookResponse> photobooks,
-    Function onLoadPhotobooks,
     VoidCallback onAddPhotobook
   ) {
     showBottomSheet(
@@ -83,9 +82,7 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware, Tick
                                   path: "${Routes.photobook.path}/${Routes.photobookCard.path}",
                                   queryParameters: { 'photobookId': "${photobook.id}" }
                               ).toString()
-                            ).then((result) {
-                              if (result == true) onLoadPhotobooks();
-                            });
+                            );
                           },
                         );
                       },
@@ -123,7 +120,6 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware, Tick
         } else if (sideEffect is PhotobookShowBottomSheet) {
           _showBottomSheet(
             sideEffect.photobooks,
-            () => context.read<PhotobookBloc>().add(FetchPhotobooks()),
             () => GoRouter.of(context).push("${Routes.photobook.path}/${Routes.addPhotobook.path}")
           );
         }
@@ -152,10 +148,7 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware, Tick
                                     photobooks: state.photobooks,
                                     onAddPhotobook: () {
                                       GoRouter.of(context).push("${Routes.photobook.path}/${Routes.addPhotobook.path}");
-                                    },
-                                    showPhotobookList: () => {
-                                      context.read<PhotobookBloc>().add(FetchPhotobooks()),
-                                    },
+                                    }
                                   ),
                                   _PhotoTicketSection(
                                     photobookCount: state.photobooks.length,
@@ -181,7 +174,6 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware, Tick
   Widget _buildPhotobookSection({
     required List<PhotobookResponse> photobooks,
     required VoidCallback onAddPhotobook,
-    required VoidCallback showPhotobookList,
   }) {
     void addMarkersToMap(List<PhotobookResponse> photobooks) async {
       if (_mapController == null) return;
@@ -230,7 +222,9 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware, Tick
               child: Container(
                 alignment: Alignment.center,
                 child: GestureDetector(
-                  onTap: showPhotobookList,
+                  onTap: () {
+                    context.read<PhotobookBloc>().add(ShowPhotobookBottomSheet());
+                  },
                   child: Container(
                     decoration: BoxDecoration(
                       color: ColorStyles.primary,

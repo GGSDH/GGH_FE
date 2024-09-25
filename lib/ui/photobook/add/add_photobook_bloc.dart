@@ -7,6 +7,7 @@ import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../../data/models/request/add_photobook_request.dart';
 import '../../../data/repository/photobook_repository.dart';
+import '../../../util/event_bus.dart';
 
 final class AddPhotobookState {
   final bool isLoading;
@@ -102,6 +103,7 @@ class AddPhotobookBloc extends SideEffectBloc<AddPhotobookEvent, AddPhotobookSta
       response.when(
         success: (data) {
           emit(state.copyWith(isLoading: false));
+          EventBus().fire(PhotobookAddEvent(data));
           produceSideEffect(AddPhotobookComplete(data.id));
         },
         apiError: (errorMessage, errorCode) {

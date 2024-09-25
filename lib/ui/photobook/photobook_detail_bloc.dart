@@ -1,10 +1,9 @@
-import 'dart:developer';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:side_effect_bloc/side_effect_bloc.dart';
 
 import '../../data/models/response/photobook_response.dart';
 import '../../data/repository/photobook_repository.dart';
+import '../../util/event_bus.dart';
 
 final class PhotobookDetailCard {
   final String id;
@@ -167,7 +166,7 @@ class PhotobookDetailBloc extends SideEffectBloc<PhotobookDetailEvent, Photobook
       response.when(
         success: (data) {
           emit(state.copyWith(isLoading: false));
-          log("Photobook deleted");
+          EventBus().fire(PhotobookRemoveEvent(event.photobookId));
           produceSideEffect(PhotobookDeleteComplete());
         },
         apiError: (errorMessage, errorCode) {
