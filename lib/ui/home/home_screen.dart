@@ -244,18 +244,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return SizedBox(
       height: 120,
-      child: ListView(
-        shrinkWrap: true,
-        scrollDirection: Axis.horizontal,
+      child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-        children: [
-          for (final category in categories) ...[
-            _buildCategoryItem(category, () {
-              onTapCategory(category);
-            }),
-            const SizedBox(width: 18)
-          ]
-        ],
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            for (final category in categories)
+              _buildCategoryItem(category, () {
+                onTapCategory(category);
+              }),
+          ],
+        ),
       ),
     );
   }
