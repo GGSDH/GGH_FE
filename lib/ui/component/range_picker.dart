@@ -126,6 +126,10 @@ class _RangePickerState extends State<RangePicker> {
       weeks.add(days.sublist(i, i + 7));
     }
 
+    if (weeks.length == 5) {
+      weeks.add(List.filled(7, null));
+    }
+
     return weeks;
   }
 }
