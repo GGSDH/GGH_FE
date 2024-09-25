@@ -122,6 +122,8 @@ class _PhotobookScreenState extends State<PhotobookScreen> with RouteAware, Tick
             sideEffect.photobooks,
             () => GoRouter.of(context).push("${Routes.photobook.path}/${Routes.addPhotobook.path}")
           );
+        } else if (sideEffect is PhotobookHideBottomSheet) {
+          Navigator.of(context).pop();
         }
       },
       child: BlocBuilder<PhotobookBloc, PhotobookState>(

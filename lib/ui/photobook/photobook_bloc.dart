@@ -59,6 +59,9 @@ final class PhotobookShowBottomSheet extends PhotobookSideEffect {
 
   PhotobookShowBottomSheet(this.photobooks);
 }
+final class PhotobookHideBottomSheet extends PhotobookSideEffect {
+
+}
 final class PhotobookShowError extends PhotobookSideEffect {
   final String message;
 
@@ -162,7 +165,11 @@ class PhotobookBloc extends SideEffectBloc<PhotobookEvent, PhotobookState, Photo
     emit(state.copyWith(
       photobooks: state.photobooks.where((photobook) => photobook.id != event.photobookId).toList()
     ));
-    produceSideEffect(PhotobookShowBottomSheet(state.photobooks));
+    if (state.photobooks.isNotEmpty) {
+      produceSideEffect(PhotobookShowBottomSheet(state.photobooks));
+    } else {
+      produceSideEffect(PhotobookHideBottomSheet());
+    }
   }
 
   void _onShowPhotobookBottomSheet(
