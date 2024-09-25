@@ -253,7 +253,7 @@ class _HomeScreenState extends State<HomeScreen> {
             _buildCategoryItem(category, () {
               onTapCategory(category);
             }),
-            const SizedBox(width: 8)
+            const SizedBox(width: 18)
           ]
         ],
       ),
