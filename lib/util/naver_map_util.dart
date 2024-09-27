@@ -107,9 +107,9 @@ class NaverMapUtil {
   }
 
   static Future<NOverlayImage> _createOverlayImage(
-    String imageFilePath,
-    BuildContext context,
-  ) async {
+      String imageFilePath,
+      BuildContext context,
+      ) async {
     try {
       final filePath = await imageFilePath.getFilePath();
       final imageFile = File(filePath);
@@ -122,11 +122,16 @@ class NaverMapUtil {
         img.Image? image = img.decodeImage(imageBytes);
 
         if (image != null) {
-          // 이미지 크기를 48x48로 리사이즈
-          final resizedImage = img.copyResize(image, width: 48, height: 48);
+          // 이미지 크기를 48x48로 리사이즈 (빠른 리사이징을 위해 simple 방식 사용)
+          final resizedImage = img.copyResize(
+            image,
+            width: 48,
+            height: 48,
+            interpolation: img.Interpolation.average, // 빠른 리사이징을 위해 보간법 선택
+          );
 
           // 리사이징한 이미지를 byteArray로 변환
-          final resizedImageBytes = img.encodeJpg(resizedImage);  // jpg로 인코딩하여 용량을 줄일 수 있음
+          final resizedImageBytes = img.encodeJpg(resizedImage, quality: 70);  // 품질을 70으로 설정해 용량 줄임
 
           return NOverlayImage.fromByteArray(resizedImageBytes);
         } else {
